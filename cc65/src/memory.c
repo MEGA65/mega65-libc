@@ -5,8 +5,7 @@ unsigned char dma_byte;
 
 void do_dma(void)
 {
-  unsigned char i;
-  m65_io_enable();
+  mega65_io_enable();
 
   //  for(i=0;i<24;i++)
   // screen_hex_byte(SCREEN_ADDRESS+i*3,PEEK(i+(unsigned int)&dmalist));

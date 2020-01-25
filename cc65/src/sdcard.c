@@ -40,7 +40,7 @@ void mega65_sdcard_reset(void)
   
   if (sdhc_card) {
     // Set SDHC flag (else writing doesnt work for some reason)
-    write_line("Setting SDHC mode",0);
+    // write_line("Setting SDHC mode",0);
     POKE(sd_ctl,0x41);
   }
 }
@@ -91,7 +91,7 @@ uint32_t mega65_sdcard_getsize(void)
   } else {
     //    write_line("SDSC (<4GB) card detected. Using byte addressing.",0);
     POKE(0xD680U,0x40);
-    sdcard_reset();
+    mega65_sdcard_reset();
     sdhc_card=0;
   }
 
@@ -156,21 +156,21 @@ uint32_t write_count=0;
 
 void mega65_sdcard_map_sector_buffer(void)
 {
-  m65_io_enable();
+  mega65_io_enable();
   
   POKE(sd_ctl,0x81);
 }
 
 void mega65_sdcard_unmap_sector_buffer(void)
 {
-  m65_io_enable();
+  mega65_io_enable();
   
   POKE(sd_ctl,0x82);
 }
 
 unsigned short timeout;
 
-void mega65_sdcard_readsector(const uint32_t sector_number)
+uint8_t mega65_sdcard_readsector(const uint32_t sector_number)
 {
   char tries=0;
   
@@ -178,8 +178,8 @@ void mega65_sdcard_readsector(const uint32_t sector_number)
   if (sdhc_card) sector_address=sector_number;
   else {
     if (sector_number>=0x7fffff) {
-      write_line("ERROR: Asking for sector @ >= 4GB on SDSC card.",0);
-      while(1) continue;
+      //      write_line("ERROR: Asking for sector @ >= 4GB on SDSC card.",0);
+      return -1;
     }
   }
 
@@ -197,14 +197,14 @@ void mega65_sdcard_readsector(const uint32_t sector_number)
     timeout=50000U;
     while (PEEK(sd_ctl)&0x3)
       {
-	timeout--; if (!timeout) return;
+	timeout--; if (!timeout) return -1;
 	if (PEEK(sd_ctl)&0x40)
 	  {
-	    return;
+	    return -1;
 	  }
 	// Sometimes we see this result, i.e., sdcard.vhdl thinks it is done,
 	// but sdcardio.vhdl thinks not. This means a read error
-	if (PEEK(sd_ctl)==0x01) return;
+	if (PEEK(sd_ctl)==0x01) return -1;
       }
 
     // Command read
@@ -213,15 +213,15 @@ void mega65_sdcard_readsector(const uint32_t sector_number)
     // Wait for read to complete
     timeout=50000U;
     while (PEEK(sd_ctl)&0x3) {
-      timeout--; if (!timeout) return;
+      timeout--; if (!timeout) return -1;
 	//      write_line("Waiting for read to complete",0);
       if (PEEK(sd_ctl)&0x40)
 	{
-	  return;
+	  return -1;
 	}
       // Sometimes we see this result, i.e., sdcard.vhdl thinks it is done,
       // but sdcardio.vhdl thinks not. This means a read error
-      if (PEEK(sd_ctl)==0x01) return;
+      if (PEEK(sd_ctl)==0x01) return -1;
     }
 
       // Note result
@@ -231,7 +231,7 @@ void mega65_sdcard_readsector(const uint32_t sector_number)
       // Copy data from hardware sector buffer via DMA
       lcopy(sd_sectorbuffer,(long)sector_buffer,512);
   
-      return;
+      return 0;
     }
     
     POKE(0xd020,(PEEK(0xd020)+1)&0xf);
@@ -241,6 +241,8 @@ void mega65_sdcard_readsector(const uint32_t sector_number)
 
     tries++;
   }
+
+  return -1;
   
 }
 
@@ -374,8 +376,8 @@ uint8_t mega65_sdcard_writesector(const uint32_t sector_number)
       }
       if (i!=512) {
 	// VErify error has occurred
-	write_line("Verify error for sector $$$$$$$$",0);
-	screen_hex(screen_line_address-80+24,sector_number);
+	// write_line("Verify error for sector $$$$$$$$",0);
+	// screen_hex(screen_line_address-80+24,sector_number);
       }
       else {
       //      write_line("Wrote sector $$$$$$$$, result=$$",2);      
@@ -434,7 +436,7 @@ void mega65_sdcard_erase(const uint32_t first_sector,const uint32_t last_sector)
 #endif
     
     // Show count-down
-    screen_decimal(screen_line_address,last_sector-n);
+    // screen_decimal(screen_line_address,last_sector-n);
     //    fprintf(stderr,"."); fflush(stderr);
   }
 
