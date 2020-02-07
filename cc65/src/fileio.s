@@ -18,6 +18,7 @@ mega65_io_enable:
 cc65_args_read_ptr1_16:	
         ;; sp here is the ca65 sp ZP variable, not the stack pointer of a 4510
         .p02
+	
         lda (sp),y
         sta ptr1
         iny
@@ -76,26 +77,21 @@ _closeall:
 	RTS
 
 _read512:
-        ;; Get pointer to FD and to buffer
-	;; (Note we have to exract the args in reverse order)
-        ldy #0
-	jsr cc65_args_read_ptr1_16
-	jsr cc65_args_read_tmp1_8
 
+;;;  With a single argument, it seems to get passed via A and X, not on the stack!?
+	;; XXX Why? It should go on the stack the same way it does for open().
+	sta ptr1+0
+	stx ptr1+1
+	
 	;; Select current file
 	;; XXX - Not currently implemented
-	
 	
 	;; Read the next sector of data
 	jsr mega65_io_enable
 	LDA #$1A
 	STA $D640
 	NOP
-	sta $0427
 	LDX #$00
-	php
-	pla
-	sta $0426
 
 	;; Number of bytes read returned in X and Y
 	;; Store these for returning
@@ -120,7 +116,7 @@ _read512:
 	sta $d701
 	lda #<dmalist_copysectorbuffer
 	sta $d705
-		
+
 	;; Retrieve the return value
 	lda tmp2
 	ldx tmp3
@@ -150,7 +146,7 @@ copysectorbuffer_destaddr:
 	.code
 	
 _open:
-	
+
         ;; Get pointer to file name
         ldy #0
 	jsr cc65_args_read_ptr1_16	
