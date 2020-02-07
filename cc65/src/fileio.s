@@ -8,6 +8,13 @@
 
 	.p4510
 
+mega65_io_enable:
+	lda #$47
+	sta $d02f
+	lda #$53
+	sta $d02f
+	rts
+	
 cc65_args_read_ptr1_16:	
         ;; sp here is the ca65 sp ZP variable, not the stack pointer of a 4510
         .p02
@@ -43,10 +50,11 @@ cc65_copy_ptr1_string_to_0100:
 	ply
 	rts	
 
-setname_0100:	
+setname_0100:
         ;;  Call dos_setname()
         ldy #>$0100
         ldx #<$0100
+	jsr mega65_io_enable
         lda #$2E                ; dos_setname Hypervisor trap
         STA $D640               ; Do hypervisor trap
         NOP                     ; Wasted instruction slot required following hyper trap instruction
@@ -60,7 +68,7 @@ setname_ok:
 	
 	;; closeall
 _closeall:
-	TAX
+	jsr mega65_io_enable
 	LDA #$22
 	STA $D640
 	NOP
@@ -77,11 +85,17 @@ _read512:
 	;; Select current file
 	;; XXX - Not currently implemented
 	
+	
 	;; Read the next sector of data
+	jsr mega65_io_enable
 	LDA #$1A
 	STA $D640
 	NOP
+	sta $0427
 	LDX #$00
+	php
+	pla
+	sta $0426
 
 	;; Number of bytes read returned in X and Y
 	;; Store these for returning
@@ -136,22 +150,42 @@ copysectorbuffer_destaddr:
 	.code
 	
 _open:
-
+	
         ;; Get pointer to file name
         ldy #0
-	jsr cc65_args_read_ptr1_16
+	jsr cc65_args_read_ptr1_16	
 	jsr cc65_copy_ptr1_string_to_0100
-	jsr setname_0100
-	
+	jsr setname_0100	
+
+	;; Find file
+	; Look for file on FAT file system via hypervisor calls
+	lda #$34
+	sta $d640
+	nop
+	bcs open_file_exists
+
+	;; No such file.
+	lda #$ff
+	tax
+	rts
+
+open_file_exists:	
 	;; Actually call open
+	jsr mega65_io_enable
+	lda #$00
+	sta $d640
+	nop
+	
 	LDA #$18
 	STA $D640
 	NOP
+	
 	LDX #$00
 	RTS
 
 _close:
 	TAX
+	jsr mega65_io_enable
 	LDA #$20
 	STA $D640
 	NOP
