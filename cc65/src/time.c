@@ -4,6 +4,7 @@
   The RTC varies between revisions of the MEGA65, though, so we have to take that into account.
 */
 
+#include <stdio.h>
 #include <memory.h>
 #include <time.h>
 #include <targets.h>
@@ -53,7 +54,7 @@ void getrtc(struct m65_tm *tm)
   case TARGET_MEGA65R2:
     tm->tm_sec = unbcd(lpeek_debounced(0xffd7110));
     tm->tm_min = unbcd(lpeek_debounced(0xffd7111));
-    tm->tm_hour = unbcd(lpeek_debounced(0xffd7112));
+    tm->tm_hour = lpeek_debounced(0xffd7112);
     if (tm->tm_hour&0x80) {
       tm->tm_hour=unbcd(tm->tm_hour&0x3f);
     } else {
@@ -77,6 +78,8 @@ void getrtc(struct m65_tm *tm)
   }
 }
 
+unsigned char z;
+
 void setrtc(struct m65_tm *tm)
 {
   if (!tm) return;
@@ -91,14 +94,17 @@ void setrtc(struct m65_tm *tm)
     if (lpeek_debounced(0xffd7112)&0x80) {
       lpoke(0xffd7112,tobcd(tm->tm_hour)|0x80);
     } else {
-      if (tm->tm_hour>12) {
+      if (tm->tm_hour>=12) {
 	// PM
 	lpoke(0xffd7112,tobcd(tm->tm_hour-12)|0x20);
       } else {
 	// AM
-	lpoke(0xffd7112,tobcd(tm->tm_hour)|0x20);
+	lpoke(0xffd7112,tobcd(tm->tm_hour));
       }
     }
+    while(!lpeek(0xffd3610)) continue;
+
+    
     while(lpeek(0xffd71ff)) continue;
     lpoke(0xffd7113,tobcd(tm->tm_mday+1));
     while(lpeek(0xffd71ff)) continue;
@@ -107,6 +113,7 @@ void setrtc(struct m65_tm *tm)
     lpoke(0xffd7115,tobcd(tm->tm_year-100));
     while(lpeek(0xffd71ff)) continue;
     lpoke(0xffd7116,tobcd(tm->tm_wday));
+    while(lpeek(0xffd71ff)) continue;
     if (tm->tm_isdst) {
       lpoke(0xffd7117,lpeek_debounced(0xffd7117)|0x20);
     } else {
