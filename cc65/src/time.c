@@ -8,6 +8,34 @@
 #include <time.h>
 #include <targets.h>
 
+unsigned char bcd_work;
+
+/*
+  While the double dabble algorithm is more time efficient, we mostly care about saving
+  space, so use a simple loop.  Getting/setting time should not be called particularly often.
+ */
+unsigned char tobcd(unsigned char in)
+{
+  bcd_work=0;
+  while(in>9) {
+    bcd_work += 0x10;
+    in-=10;
+  }
+  bcd_work+=in;
+  return bcd_work;
+}
+
+unsigned char unbcd(unsigned char in)
+{
+  bcd_work=0;
+  while(in&0xf0) {
+    bcd_work+=10;
+    in-=0x10;
+  }
+  bcd_work+=in;
+  return bcd_work;
+}
+
 void getrtc(struct m65_tm *tm)
 {
   if (!tm) return;
