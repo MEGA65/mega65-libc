@@ -1,4 +1,4 @@
-#include "mega65_hal.h"
+#include <hal.h>
 
 #ifndef __MEGA65_SDCARD_H
 #define __MEGA65_SDCARD_H
