@@ -1,4 +1,4 @@
-#include "mega65_memory.h"
+#include <memory.h>
 
 struct dmagic_dmalist dmalist;
 unsigned char dma_byte;

@@ -1,9 +1,9 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "mega65_sdcard.h"
-#include "mega65_hal.h"
-#include "mega65_memory.h"
+#include <sdcard.h>
+#include <hal.h>
+#include <memory.h>
 
 uint8_t sector_buffer[512];
 
