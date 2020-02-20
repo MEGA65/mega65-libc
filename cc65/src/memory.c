@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include <memory.h>
 
 struct dmagic_dmalist dmalist;
@@ -5,10 +6,13 @@ unsigned char dma_byte;
 
 void do_dma(void)
 {
+  //  unsigned char i;
   mega65_io_enable();
 
   //  for(i=0;i<24;i++)
-  // screen_hex_byte(SCREEN_ADDRESS+i*3,PEEK(i+(unsigned int)&dmalist));
+  //    printf("%02x ",PEEK(i+(unsigned int)&dmalist));
+  //  printf("\n");
+  //  while(1) continue;
   
   // Now run DMA job (to and from anywhere, and list is in low 1MB)
   POKE(0xd702U,0);
@@ -30,16 +34,17 @@ unsigned char lpeek(long address)
   dmalist.option_81=0x81;
   dmalist.dest_mb=0x00; // dma_byte lives in 1st MB
   dmalist.end_of_options=0x00;
+  dmalist.sub_cmd=0x00;
   
   dmalist.command=0x00; // copy
   dmalist.count=1;
   dmalist.source_addr=address&0xffff;
-  dmalist.source_bank=(address>>16)&0x7f;
+  dmalist.source_bank=(address>>16)&0x0f;
   dmalist.dest_addr=(unsigned int)&dma_byte;
   dmalist.dest_bank=0;
 
   do_dma();
-   
+
   return dma_byte;
 }
 
@@ -66,6 +71,7 @@ void lpoke(long address, unsigned char value)
   dmalist.option_81=0x81;
   dmalist.dest_mb=(address>>20);
   dmalist.end_of_options=0x00;
+  dmalist.sub_cmd=0x00;
   
   dma_byte=value;
   dmalist.command=0x00; // copy
@@ -73,7 +79,7 @@ void lpoke(long address, unsigned char value)
   dmalist.source_addr=(unsigned int)&dma_byte;
   dmalist.source_bank=0;
   dmalist.dest_addr=address&0xffff;
-  dmalist.dest_bank=(address>>16)&0x7f;
+  dmalist.dest_bank=(address>>16)&0x0f;
 
   do_dma(); 
   return;
@@ -88,6 +94,7 @@ void lcopy(long source_address, long destination_address,
   dmalist.option_81=0x81;
   dmalist.dest_mb=(destination_address>>20);
   dmalist.end_of_options=0x00;
+  dmalist.sub_cmd=0x00;
 
   dmalist.command=0x00; // copy
   dmalist.count=count;
@@ -120,7 +127,7 @@ void lfill(long destination_address, unsigned char value,
   dmalist.count=count;
   dmalist.source_addr=value;
   dmalist.dest_addr=destination_address&0xffff;
-  dmalist.dest_bank=(destination_address>>16)&0x7f;
+  dmalist.dest_bank=(destination_address>>16)&0x0f;
   if (destination_address>=0xd000 && destination_address<0xe000)
     dmalist.dest_bank|=0x80;
 
