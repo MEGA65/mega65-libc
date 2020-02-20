@@ -20,6 +20,8 @@ unsigned char open(char *filename);
 void close(unsigned char fd);
 unsigned short read512(unsigned char fd,unsigned char *buffer);
 
+To use these functions you must include fileio.h
+
 ## FAT32 Directory Access
 
 Functions similar to the Posix equivalents are provided. Key differences are that unsigned char *
@@ -36,3 +38,12 @@ unsigned char *opendir(void);
 m65_dirent *readdir(unsigned char *dir_handle);
 void closedir(unsigned char *dir_handle);
 
+To use these functions you must include dirent.h
+
+## Clock Access
+
+getrtc(struct m65_tm *) and setrtc(struct struct m65_tm *) allow retrieval and setting of the real-time-clock
+(RTC) using structures broadly similar to the posix tm structure.
+These routines abstract the different model RTCs that exist on different MEGA65 hardware targets.
+
+To use these functions you must include time.h
