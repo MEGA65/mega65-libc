@@ -26,6 +26,7 @@ extern unsigned char dma_byte;
 
 void mega65_io_enable(void);
 unsigned char lpeek(long address);
+unsigned char lpeek_debounced(long address);
 void lpoke(long address, unsigned char value);
 void lcopy(long source_address, long destination_address,
 	   unsigned int count);

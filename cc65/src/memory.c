@@ -43,6 +43,20 @@ unsigned char lpeek(long address)
   return dma_byte;
 }
 
+unsigned char db1,db2,db3;
+
+unsigned char lpeek_debounced(long address)
+{
+  db1=0; db2=1;
+  while(db1!=db2||db1!=db3) {
+    db1=lpeek(address);
+    db2=lpeek(address);
+    db3=lpeek(address);
+  }
+  return db1;
+}
+
+
 void lpoke(long address, unsigned char value)
 {  
 
