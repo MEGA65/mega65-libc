@@ -118,4 +118,5 @@ void setrtc(struct m65_tm *tm)
   default:
     return;
   }
-  
+
+}
