@@ -4,6 +4,9 @@
   The RTC varies between revisions of the MEGA65, though, so we have to take that into account.
 */
 
+#ifndef _TIME_H_
+#define _TIME_H_
+
 struct m65_tm {
   unsigned char tm_sec;    /* Seconds (0-60) */
   unsigned char tm_min;    /* Minutes (0-59) */
@@ -18,3 +21,5 @@ struct m65_tm {
 
 void getrtc(struct m65_tm *tm);
 void setrtc(struct m65_tm *tm);
+
+#endif
