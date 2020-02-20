@@ -4,7 +4,9 @@
   The RTC varies between revisions of the MEGA65, though, so we have to take that into account.
 */
 
-#include "mega65_memory.h"
+#include <memory.h>
+#include <time.h>
+#include <targets.h>
 
 void getrtc(struct m65_tm *tm)
 {
@@ -70,7 +72,7 @@ void setrtc(struct m65_tm *tm)
       }
     }
     while(lpeek(0xffd71ff)) continue;
-    lpoke(0xffd7113,tobcd(tm->tm_day+1));
+    lpoke(0xffd7113,tobcd(tm->tm_mday+1));
     while(lpeek(0xffd71ff)) continue;
     lpoke(0xffd7114,tobcd(tm->tm_mon));
     while(lpeek(0xffd71ff)) continue;
