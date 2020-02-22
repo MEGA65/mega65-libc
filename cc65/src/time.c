@@ -78,8 +78,6 @@ void getrtc(struct m65_tm *tm)
   }
 }
 
-unsigned char z;
-
 void setrtc(struct m65_tm *tm)
 {
   if (!tm) return;
