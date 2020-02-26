@@ -84,6 +84,10 @@ void setrtc(struct m65_tm *tm)
 
   switch (detect_target()) {
   case TARGET_MEGA65R2:
+    // Unlock RTC registers
+    while(lpeek(0xffd71ff)) continue;
+    lpoke(0xffd7118,0x41);
+    
     while(lpeek(0xffd71ff)) continue;
     lpoke(0xffd7110,tobcd(tm->tm_sec));
     while(lpeek(0xffd71ff)) continue;
@@ -116,7 +120,12 @@ void setrtc(struct m65_tm *tm)
       lpoke(0xffd7117,lpeek_debounced(0xffd7117)|0x20);
     } else {
       lpoke(0xffd7117,lpeek_debounced(0xffd7117)&(0xff-0x20));
-    }    
+    }
+
+    // Re-lock RTC registers
+    while(lpeek(0xffd71ff)) continue;
+    lpoke(0xffd7118,0x01);
+    
     break;
   case TARGET_MEGAPHONER1:
     break;
