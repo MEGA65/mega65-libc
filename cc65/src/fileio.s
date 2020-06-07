@@ -151,9 +151,17 @@ copysectorbuffer_destaddr:
 	
 _open:
 
+	sta $0426
+	stx $0427
+	
         ;; Get pointer to file name
         ldy #0
-	jsr cc65_args_read_ptr1_16	
+	jsr cc65_args_read_ptr1_16
+	lda ptr1+0
+	sta $0425
+	lda ptr1+1
+	sta $0426
+	
 	jsr cc65_copy_ptr1_string_to_0100
 	jsr setname_0100	
 
