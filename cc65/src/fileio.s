@@ -80,12 +80,9 @@ _read512:
 
 ;;;  With a single argument, it seems to get passed via A and X, not on the stack!?
 	;; XXX Why? It should go on the stack the same way it does for open().
-	;; 	sta ptr1+0
-	;; 	stx ptr1+1
+		sta ptr1+0
+		stx ptr1+1
 
-        ldy #0
-	jsr cc65_args_read_ptr1_16	
-	
 	;; Select current file
 	;; XXX - Not currently implemented
 	
