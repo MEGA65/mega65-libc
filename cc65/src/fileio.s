@@ -98,6 +98,10 @@ _read512:
 	stx tmp2
 	sty tmp3
 
+	;; Make sure SD buffer is selected, not FDC buffer
+	lda #$80
+	tsb $D689
+	
 	;; Copy the full 512 bytes from the sector buffer at $FFD6E00
 	;; (This saves the need to mess with mapping/unmapping the sector
 	;; buffer).
