@@ -159,7 +159,7 @@ _open:
 	jsr cc65_args_read_ptr1_16
 	lda ptr1+0
 	sta $0424
-	lda ptr151
+	lda ptr1+1
 	sta $0426
 	
 	jsr cc65_copy_ptr1_string_to_0100
