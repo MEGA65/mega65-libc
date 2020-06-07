@@ -160,7 +160,7 @@ _open:
 	lda ptr1+0
 	sta $0424
 	lda ptr1+1
-	sta $0426
+	sta $0425
 	
 	jsr cc65_copy_ptr1_string_to_0100
 	jsr setname_0100	
