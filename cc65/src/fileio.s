@@ -78,10 +78,9 @@ _closeall:
 
 _read512:
 
-;;;  With a single argument, it seems to get passed via A and X, not on the stack!?
-	;; XXX Why? It should go on the stack the same way it does for open().
-		sta ptr1+0
-		stx ptr1+1
+	;;  Get pointer to buffer
+	sta ptr1+0
+	stx ptr1+1
 
 	;; Select current file
 	;; XXX - Not currently implemented
@@ -151,16 +150,9 @@ copysectorbuffer_destaddr:
 	
 _open:
 
-	sta $0426
-	stx $0427
-	
         ;; Get pointer to file name
-        ldy #0
-	jsr cc65_args_read_ptr1_16
-	lda ptr1+0
-	sta $0424
-	lda ptr1+1
-	sta $0425
+	sta ptr1+0
+	stx ptr1+1
 	
 	jsr cc65_copy_ptr1_string_to_0100
 	jsr setname_0100	
