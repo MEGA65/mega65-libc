@@ -1,9 +1,23 @@
-/*
- * A minimalistic CONIO.H style header  for the Mega65 libC
- * 
- * Author: Hernán Di Pietro <hernan.di.pietro@gmail.com>
- * Date  : 2020-06-28
- */
+/*  CONIO.H style Text mode support  for the Mega65 libC
+
+    Copyright (c) 2020 Hernán Di Pietro
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Lesser General Public License for more details.
+
+    You should have received a copy of the GNU Lesser General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ 
+    Version   0.3
+    Date      2020-06-28
+*/
 
 #ifndef M65LIBC_CONIO_H
 #define M65LIBC_CONIO_H
