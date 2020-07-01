@@ -220,5 +220,5 @@ unsigned char cgetc (void)
 
 unsigned char kbhit(void)
 {
-    return PEEK(0xD0610U);
+    return PEEK(0xD610U);
 }
