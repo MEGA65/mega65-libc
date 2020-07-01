@@ -213,8 +213,8 @@ void cputcxy (unsigned char x, unsigned char y, char c)
 unsigned char cgetc (void)
 {
     unsigned char k;
-    POKE(0xD610U,0);
     while ((k = PEEK(0xD610U)) == 0);
+    POKE(0xD610U,0);
     return k;
 }
 
