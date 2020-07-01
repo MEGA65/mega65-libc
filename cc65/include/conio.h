@@ -59,7 +59,7 @@
 #define COLOUR_LIGHTGREY 15
 
  /* Clear the text screen. Color RAM will be cleared with current text color */
-void clrscr(); 
+void clrscr(void); 
 
  /* Returns the dimensions of the text mode screen.  
     Ignores any virtual chargen dimensions */
