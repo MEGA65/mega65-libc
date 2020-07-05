@@ -11,4 +11,10 @@ void debug_msg(char *m)
     __asm__ ("NOP");
     m++;
   }
+  __asm__ ("LDA #$0d");
+    __asm__ ("STA $D643");
+    __asm__ ("NOP");
+  __asm__ ("LDA #$0a");
+    __asm__ ("STA $D643");
+    __asm__ ("NOP");
 }
