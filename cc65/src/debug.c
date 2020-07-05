@@ -4,9 +4,9 @@ void debug_msg(char *m)
 {
   // Write debug message to serial monitor
   while(*m) {    
-    POKE(0xD643,*m);
+    asm ("LDA %v",*m);
+    asm ("STA $D643");
+    asm ("NOP");
     m++;
   }
-  POKE(0xD643,0x0D);
-  POKE(0xD643,0x0A);
 }
