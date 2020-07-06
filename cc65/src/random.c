@@ -31,8 +31,6 @@ void generate_random_byte(void)
     }
 }
 
-uint8_t *zero=0;
-
 uint32_t random32(uint32_t range)
 {
 #if 1
@@ -85,4 +83,58 @@ uint8_t random8(uint8_t range)
     POKE(0xD775,0);
     return PEEK(0xD779);
   } else return random_byte;
+}
+
+uint32_t xorshift32_state=1;
+
+/* The state word must be initialized to non-zero */
+uint32_t xorshift32(void)
+{
+  /* Algorithm "xor" from p. 4 of Marsaglia, "Xorshift RNGs" */
+  uint32_t x = xorshift32_state;
+  x ^= x << 13;
+  x ^= x >> 17;
+  x ^= x << 5;
+  xorshift32_state = x;
+  return xorshift32_state;
+}
+
+void xorshift32_seed(uint32_t seed)
+{
+  // If seed is zero, then pick a random one
+  xorshift32_state=seed;
+  while(!xorshift32_state)
+    xorshift32_state=random32(0);
+}
+
+void srand(uint32_t seed)
+{
+  xorshift32_seed(seed);
+}
+
+uint32_t rand32(uint32_t range)
+{
+  xorshift32();
+  if (!range) return xorshift32_state;
+  *(uint32_t *)0xD770 = xorshift32_state;
+  *(uint32_t *)0xD774 = range;
+  return *(uint32_t *)0xD77C;
+}
+
+uint16_t rand16(uint16_t range)
+{
+  xorshift32();
+  if (!range) return xorshift32_state;
+  *(uint32_t *)0xD770 = xorshift32_state;
+  *(uint32_t *)0xD774 = range;
+  return *(uint16_t *)0xD77C;
+}
+
+uint8_t rand8(uint8_t range)
+{
+  xorshift32();
+  if (!range) return xorshift32_state;
+  *(uint32_t *)0xD770 = xorshift32_state;
+  *(uint32_t *)0xD774 = range;
+  return *(uint8_t*)0xD77C;
 }
