@@ -9,6 +9,8 @@
 
 */
 
+#include <stdint.h>
+
 uint32_t random_temp;
 uint8_t random_step;
 uint8_t random_byte;
