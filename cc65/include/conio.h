@@ -24,9 +24,18 @@
 #include "../include/memory.h"
 
 #define VIC_BASE            0xD000UL
-#define REG_H640            (PEEK(VIC_BASE+0x31) & 128)
-#define REG_V400            (PEEK(VIC_BASE+0x31) & 8)
-#define REG_16BITCHARSET    (PEEK(VIC_BASE + 0x54) & 1)
+#define IS_H640             (PEEK(VIC_BASE + 0x31) & 128)
+#define IS_V400             (PEEK(VIC_BASE + 0x31) & 8)
+#define SET_H640()          POKE(VIC_BASE + 0x31, PEEK(VIC_BASE + 0x31) | 128)
+#define CLEAR_H640()        POKE(VIC_BASE + 0x31, PEEK(VIC_BASE + 0x31) & 127)
+#define SET_V400()          POKE(VIC_BASE + 0x31, PEEK(VIC_BASE + 0x31) | 8)
+#define CLEAR_V400()        POKE(VIC_BASE + 0x31, PEEK(VIC_BASE + 0x31) & 0xF7)
+#define IS_16BITCHARSET     (PEEK(VIC_BASE + 0x54) & 1)
+#define SET_16BITCHARSET()  POKE(VIC_BASE + 0x54, PEEK(VIC_BASE + 0x54) |1)
+#define CLEAR_16BITCHARSET() POKE(VIC_BASE + 0x54, PEEK(VIC_BASE + 0x54) & 0xFE)
+#define IS_EXTATTR()        (PEEK(VIC_BASE + 0x31) & 32)
+#define SET_EXTATTR()        POKE(VIC_BASE + 0x31, PEEK(VIC_BASE + 0x31) | 32)
+#define CLEAR_EXTATTR()      POKE(VIC_BASE + 0x31, PEEK(VIC_BASE + 0x31) & 0xDF)
 #define SCREEN_RAM_BASE_B0  (PEEK(VIC_BASE + 0x60)) // LSB
 #define SCREEN_RAM_BASE_B1  (PEEK(VIC_BASE + 0x61))
 #define SCREEN_RAM_BASE_B2  (PEEK(VIC_BASE + 0x62))
@@ -130,7 +139,17 @@ void clrscr(void);
 
  /* Returns the dimensions of the text mode screen.  
     Ignores any virtual chargen dimensions */
-void fastcall screensize(unsigned char* width, unsigned char* height);
+void fastcall getscreensize(unsigned char* width, unsigned char* height);
+
+ /* Sets the screen size in rows and columns of text.
+    Unsupported values are currently ignored */
+void fastcall setscreensize(unsigned char width, unsigned char height);
+
+/* Sets or clear the 16-bit character mode */
+void fastcall set16bitcharmode(unsigned char f);
+
+/* Sets or clear the extended attribute mode (blink, underline, bold, highlight)*/
+void fastcall setextendedattrib(unsigned char f);
 
 /*------------------------------------------------------------------------
   Color and Attributes
@@ -226,23 +245,21 @@ void cputcxy (unsigned char x, unsigned char y, char c);
     \r           Return
     \n           New-line (assume \r like in C printf)
 
-    \{clr}       Clear screen       \{home}      Move cursor to home (top-left)
-    \{down}      Move cursor down   \{up}        Move cursor up
-    \{right}     Move cursor right  \{left}      Move cursor left
+    {clr}        Clear screen        {home}      Move cursor to home (top-left)
+    {d}          Move cursor down    {u}        Move cursor up
+    {r}          Move cursor right   {l}      Move cursor left
 
     Attributes
 
-    \{rvson}     Reverse attribute ON   \{rvsoff}    Reverse attribute OFF
-    \{blinkon}   Reverse attribute ON   \{blinkoff}  Reverse attribute OFF
-    \{hiliteon}  Reverse attribute ON   \{hiliteoff} Reverse attribute OFF
-    \{underon}   Reverse attribute ON   \{underoff}  Reverse attribute OFF
+    {rvson}    Reverse attribute ON   {rvsoff}   Reverse attribute OFF
+    {blon}     Blink attribute ON     {bloff}    Blink attribute OFF
+    {ulon}     Underline attribute ON {uloff}    Underline attribute OFF
 
     Colors (default palette 0-15)
-
-    \{black}    \{white}    \{red}      \{cyan}     \{purple}   
-    \{green}    \{blue}     \{yellow}   \{orange}   \{brown}    
-    \{pink}     \{grey1}    \{grey2}    \{grey2}    \{ltgreen} 
-    \{ltblue}   \{grey3}
+    {blk}    {wht}    {red}   {cyan}  {pur}   
+    {grn}    {blu}    {yel}   {ora}   {brn}    
+    {pink}   {gray1}  {gray2} {lblu}  {lgrn} 
+    {gray3}
 */
 
 unsigned char cprintf (const unsigned char* format, ...);
@@ -269,7 +286,10 @@ unsigned char fastcall kbhit (void);
     6             CAPSLOCK state
     7             Reserved
 */
-unsigned char fastcall getkeymodstate(void);
+unsigned char getkeymodstate(void);
+
+/* Flush the hardware keyboard buffer */
+void flushkeybuf(void);
 
 void cscanf(const char* format, ...);
 

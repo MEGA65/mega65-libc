@@ -17,6 +17,17 @@
  
     Version   0.4
     Date      2020-06-28
+
+    CHANGELOG
+
+    v0.4        Added getscreensize, setscreensize, setextendattribute, 
+                set16bitcharmode, moveup,moveleft,moveright, movedown, gohome,
+                flushkeybuf.
+                Cache screen sizes for faster calls.
+                Added cprintf escape codes for formatted screen colors and attributes.
+                Added proper initialization function.
+                Fixed a bug where screen was fixed at $8000!
+
 */
 
 #include "../include/conio.h"
@@ -41,6 +52,8 @@ static ESCAPE_CODE escapeCode[255];
 static unsigned char g_curTextColor = COLOUR_WHITE;
 static unsigned char g_curX = 0;
 static unsigned char g_curY = 0;
+static unsigned char g_curScreenW = 0;
+static unsigned char g_curScreenH = 0;
 static const unsigned char hexDigits[] = { '0','1','2','3','4','5','6','7','8','9',0x41,0x42,0x43,0x44,0x45,0x46};
 
 static unsigned char hash(const unsigned char *str, const unsigned char maxLen)
@@ -56,25 +69,37 @@ static unsigned char hash(const unsigned char *str, const unsigned char maxLen)
     return hash;
 }
 
-static void clrscr_(unsigned char) { clrscr(); } // Callable from Escape Code table 
+static void clrscr_(unsigned char) { clrscr(); gohome(); } // Callable from Escape Code table 
 static void gohome_(unsigned char) { gohome(); } // Callable from Escape Code table
 static void escNOP(unsigned char) { /* do nothing */ }
-
-//
 
 void conioinit(void)
 {
     register unsigned char i = 0;
+
+    // Make sure we go to VIC-IV IO mode
+
+    POKE(0xD02fL, 0x47);
+    POKE(0xd02fL, 0x53);
+
+    g_curScreenW = IS_H640 ? 80 : 40;
+    g_curScreenH = IS_V400 ? 50 : 25;
+
+    flushkeybuf();
+    
     for (i = 0; i < sizeof(escapeCode)/sizeof(escapeCode[0]); ++i) 
     {
         escapeCode[i].fn = escNOP;
         escapeCode[i].arg = 0x0;
     }
 
-    // Setup escape codes. We know that for those codes and with k=277 there are no collisions.
-    // Adding new codes should verify no collisions...
+    // Setup escape codes according to it's hashed strings. 
+    // We know that for those codes and with k=277 there are no collisions.
+    // Adding new codes should verify no collisions are added by changing k 
+    // or by using another algorithm.
 
-    escapeCode[7].fn = movedown;
+    escapeCode[1].fn = moveleft;
+    escapeCode[7].fn = moveright;
     escapeCode[10].fn = moveup;
     escapeCode[22].fn = clrscr_;
     escapeCode[30].fn = gohome_;
@@ -93,9 +118,9 @@ void conioinit(void)
     escapeCode[72].arg = COLOUR_LIGHTGREEN;
     escapeCode[96].fn = blink;
     escapeCode[96].arg = 1;
-    escapeCode[104].fn = textcolor;
-    escapeCode[104].arg = COLOUR_PURPLE;
     escapeCode[139].fn = revers;
+    escapeCode[140].fn = textcolor;
+    escapeCode[140].arg = COLOUR_PURPLE;
     escapeCode[147].fn = underline;
     escapeCode[147].arg = 1;
     escapeCode[151].fn = textcolor;
@@ -119,7 +144,7 @@ void conioinit(void)
     escapeCode[220].arg = COLOUR_GREEN;
     escapeCode[240].fn = textcolor;
     escapeCode[240].arg = COLOUR_RED;
-    escapeCode[248].fn = movedown;
+    escapeCode[249].fn = movedown;
 }
 
 void setscreenaddr(long address)
@@ -135,19 +160,51 @@ long getscreenaddr(void)
     return SCREEN_RAM_BASE;
 }
 
-void screensize(unsigned char* width, unsigned char *height)
+void setscreensize(unsigned char w, unsigned char h)
 {
-    *width = REG_H640 ? 80 : 40;
-    *height = REG_V400 ? 50 : 25;
+    if (w == 80)
+        SET_H640();
+    else if (w == 40)
+        CLEAR_H640();
+    
+    if (h == 50)
+        SET_V400();
+    else if (h == 25)
+        CLEAR_V400();
+
+    // Cache values.
+    if (w == 40 || w == 80)
+        g_curScreenW = w;
+    if (h == 25 || h == 50)
+        g_curScreenH = h;
+}
+
+void getscreensize(unsigned char* width, unsigned char *height)
+{
+    *width = g_curScreenW;
+    *height = g_curScreenH;
+}
+
+void set16bitcharmode(unsigned char f)
+{
+    if (f)
+        SET_16BITCHARSET();
+    else
+        CLEAR_16BITCHARSET();
+}
+
+void setextendedattrib(unsigned char f)
+{
+    if (f)
+        SET_EXTATTR();
+    else
+        CLEAR_EXTATTR();
 }
 
 void clrscr()
 {
     unsigned int cBytes = 0;
-    unsigned char w = 0, h = 0;
-    
-    screensize(&w, &h);
-    cBytes = (unsigned int)w * h * (REG_16BITCHARSET ? 2 : 1);
+    cBytes = (unsigned int)g_curScreenW * g_curScreenH * (IS_16BITCHARSET ? 2 : 1);
     lfill(SCREEN_RAM_BASE, ' ', cBytes);
     lfill(COLOR_RAM_BASE,  g_curTextColor, cBytes);
 }
@@ -170,9 +227,7 @@ void textcolor(unsigned char c)
 
 void cellcolor(unsigned char x, unsigned char y, unsigned char c)
 {
-    unsigned char w = 0, h = 0;
-    screensize(&w, &h);
-    lpoke(COLOR_RAM_BASE + (y * (unsigned int) w) + x, c);
+    lpoke(COLOR_RAM_BASE + (y * (unsigned int) g_curScreenW) + x, c);
 }
 
 void revers(unsigned char enable)
@@ -236,23 +291,24 @@ void cputc(unsigned char c)
 
 void  moveup(unsigned char count)
 {
-
+    g_curY--;
 }
 
 void  movedown(unsigned char count)
 {
-
+    g_curY++;
 }
 
 void  moveleft(unsigned char count)
 {
-
+    g_curX--;
 }
 
 void  moveright(unsigned char count)
 {
-
+    g_curX++;
 }
+
 
 unsigned char cprintf (const unsigned char* fmt, ...)
 {
@@ -302,11 +358,7 @@ unsigned char cprintf (const unsigned char* fmt, ...)
             if (*fmt != '}') // bailout.
                 return 255;
             
-            //cputsxy(0,1,fmt - cch);
-            
             escHash = hash(fmt - cch, cch);
-            //gotoxy(20,1);
-            //cputdec(escHash,0 ,0);
             escapeCode[escHash].fn(escapeCode[escHash].arg);
             printfState = PRINTF_STATE_INIT;
             break;
@@ -361,22 +413,19 @@ void cputs(const char *s)
 
 void cputsxy(unsigned char x, unsigned char y, const char *s)
 {
-    unsigned char w = 0, h = 0, len = strlen(s);
-    screensize(&w, &h);
-    lcopy( (long) s, SCREEN_RAM_BASE + (y * (unsigned int) w) + x, len);     
-    lfill(COLOR_RAM_BASE + (y * (unsigned int) w) + x, g_curTextColor, len);
-    g_curY = y + ((x + len) / w);
-    g_curX = (x + len) % w;
+    unsigned char len = strlen(s);
+    lcopy( (long) s, SCREEN_RAM_BASE + (y * (unsigned int) g_curScreenW) + x, len);     
+    lfill(COLOR_RAM_BASE + (y * (unsigned int) g_curScreenW) + x, g_curTextColor, len);
+    g_curY = y + ((x + len) / g_curScreenW);
+    g_curX = (x + len) % g_curScreenW;
 }
 
 void cputcxy (unsigned char x, unsigned char y, char c)
 {
-    unsigned char w = 0, h = 0;
-    screensize(&w, &h);
-    lpoke(SCREEN_RAM_BASE + (y * (unsigned int) w) + x, c);
-    lpoke(COLOR_RAM_BASE + (y * (unsigned int) w) + x, g_curTextColor);
-    g_curX = (x == w - 1) ? 0 : (x + 1);
-    g_curY = (x == w - 1) ? (y + 1) : y;
+    lpoke(SCREEN_RAM_BASE + (y * (unsigned int) g_curScreenW) + x, c);
+    lpoke(COLOR_RAM_BASE + (y * (unsigned int) g_curScreenW) + x, g_curTextColor);
+    g_curX = (x == g_curScreenW - 1) ? 0 : (x + 1);
+    g_curY = (x == g_curScreenW - 1) ? (y + 1) : y;
 }
 
 unsigned char cgetc (void)
@@ -395,4 +444,10 @@ unsigned char getkeymodstate(void)
 unsigned char kbhit(void)
 {
     return PEEK(0xD610U);
+}
+
+void flushkeybuf(void)
+{
+    while (PEEK(0xD610U))
+        POKE(0xD610U,0);
 }
