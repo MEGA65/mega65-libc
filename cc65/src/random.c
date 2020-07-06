@@ -27,9 +27,11 @@ void generate_random_byte(void)
     }
 }
 
+uint8_t *zero=0;
 
 uint32_t random32(uint32_t range)
 {
+#if 1
   generate_random_byte();
   POKE(0xD770,random_byte);
   generate_random_byte();
@@ -38,15 +40,13 @@ uint32_t random32(uint32_t range)
   POKE(0xD772,random_byte);
   generate_random_byte();
   POKE(0xD773,random_byte);
-  if (!range) return PEEK(0xD770)+(((uint32_t)PEEK(0xD771))<<8)+(((uint32_t)PEEK(0xD771))<<16)+(((uint32_t)PEEK(0xD771))<<24);
 
-  POKE(0xD774,(uint8_t)(range&0xff));
-  POKE(0xD775,(uint8_t)((range>>8)&0xff));
-  POKE(0xD775,(uint8_t)((range>>16)&0xff));
-  POKE(0xD775,(uint8_t)(range>>24));
+  if (!range) return *(uint32_t *)0xD770;
 
-  return PEEK(0xD77C)+(((uint32_t)PEEK(0xD77D))<<8)+(((uint32_t)PEEK(0xD77E))<<8)+(((uint32_t)PEEK(0xD77F))<<8);
-  
+  *(uint32_t *)0xD774 = range;
+
+  return *(uint32_t *)0xD77C;
+
 }
 
 uint16_t random16(uint16_t range)
@@ -55,17 +55,17 @@ uint16_t random16(uint16_t range)
   POKE(0xD770,random_byte);
   generate_random_byte();
   POKE(0xD771,random_byte);
-  if (!range) return PEEK(0xD770)+(((uint16_t)PEEK(0xD771))<<8);
 
   POKE(0xD772,0);
   POKE(0xD773,0);
-  POKE(0xD774,(uint8_t)range);
-  POKE(0xD775,(uint8_t)(range>>8));
   POKE(0xD776,0);
   POKE(0xD777,0);
-
-  return PEEK(0xD77A)+(((uint16_t)PEEK(0xD77B))<<8);
   
+  if (!range) return *(uint16_t *)0xD770;
+
+  *(uint16_t *)0xD774 = range;
+
+  return *(uint16_t *)0xD77A;  
 }
 
 uint8_t random8(uint8_t range)
