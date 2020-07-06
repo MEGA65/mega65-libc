@@ -124,7 +124,7 @@ uint32_t rand32(uint32_t range)
 uint16_t rand16(uint16_t range)
 {
   xorshift32();
-  if (!range) return xorshift32_state;
+  if (!range) return (uint16_t)xorshift32_state;
   *(uint32_t *)0xD770 = xorshift32_state;
   *(uint32_t *)0xD774 = range;
   return *(uint16_t *)0xD77C;
@@ -133,7 +133,7 @@ uint16_t rand16(uint16_t range)
 uint8_t rand8(uint8_t range)
 {
   xorshift32();
-  if (!range) return xorshift32_state;
+  if (!range) return (uint8_t)xorshift32_state;
   *(uint32_t *)0xD770 = xorshift32_state;
   *(uint32_t *)0xD774 = range;
   return *(uint8_t*)0xD77C;
