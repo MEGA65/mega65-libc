@@ -14,16 +14,20 @@
 
 uint32_t random_temp;
 uint8_t random_step;
-uint8_t random_byte;
+uint8_t random_byte,raster_temp;
 
 void generate_random_byte(void)
 {
   random_byte=0;
-  random_step=31;
+  random_step=32;
 
-  while(random_step)
+  while(random_step--)
     {
-      random_byte=(random_byte<<1)|(random_byte>>7)|(PEEK(0xD6DE)&0x01);
+      random_byte=(random_byte<<1)|(random_byte>>7)^(PEEK(0xD6DE)&0x01);
+      // We then have to wait 10usec before the next value is ready.
+      // 1 raster line is more than that, so just wait one raster line
+      raster_temp=PEEK(0xD052);
+      while(PEEK(0xD052)==raster_temp) continue;
     }
 }
 
