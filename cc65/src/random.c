@@ -10,6 +10,7 @@
 */
 
 #include <stdint.h>
+#include <memory.h>
 
 uint32_t random_temp;
 uint8_t random_step;
