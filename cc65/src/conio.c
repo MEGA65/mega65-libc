@@ -15,30 +15,125 @@
     You should have received a copy of the GNU Lesser General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  
-    Version   0.3
+    Version   0.4
     Date      2020-06-28
 */
 
 #include "../include/conio.h"
-#include "../include/memory.h"
+#include <string.h>
 
 #define PRINTF_IN_FORMAT_SPEC    0x1
 #define PRINTF_FLAGS_LEADINGZERO 0x2
+#define PRINTF_STATE_INIT        0
+#define PRINTF_STATE_ESCAPE      1
 
+// cprintf Screen Control Escape Codes.
+//
+// See ESCAPE_HASH() for how to generate.
+//
+typedef struct tagESCAPE_CODE
+{
+    unsigned char arg;
+    void (*fn)(unsigned char);
+} ESCAPE_CODE;
+
+static ESCAPE_CODE escapeCode[255];
 static unsigned char g_curTextColor = COLOUR_WHITE;
-static unsigned char g_curAttr = 0;
 static unsigned char g_curX = 0;
 static unsigned char g_curY = 0;
 static const unsigned char hexDigits[] = { '0','1','2','3','4','5','6','7','8','9',0x41,0x42,0x43,0x44,0x45,0x46};
 
-static unsigned char strlen(const char* s)
-{
-    unsigned char len = 0;
-    while(*s++)
+static unsigned char hash(const unsigned char *str, const unsigned char maxLen)
+{    
+    unsigned long hash = 277;
+    register unsigned char c;
+    register unsigned char len = 0;
+    while ( (c = *str++) && (len < maxLen))
+    {
         len++;
+        hash = ((hash << 5) + hash) + c;
+    }
+    return hash;
+}
 
-    return len;
-}   
+static void clrscr_(unsigned char) { clrscr(); } // Callable from Escape Code table 
+static void gohome_(unsigned char) { gohome(); } // Callable from Escape Code table
+static void escNOP(unsigned char) { /* do nothing */ }
+
+//
+
+void conioinit(void)
+{
+    register unsigned char i = 0;
+    for (i = 0; i < sizeof(escapeCode)/sizeof(escapeCode[0]); ++i) 
+    {
+        escapeCode[i].fn = escNOP;
+        escapeCode[i].arg = 0x0;
+    }
+
+    // Setup escape codes. We know that for those codes and with k=277 there are no collisions.
+    // Adding new codes should verify no collisions...
+
+    escapeCode[7].fn = movedown;
+    escapeCode[10].fn = moveup;
+    escapeCode[22].fn = clrscr_;
+    escapeCode[30].fn = gohome_;
+    escapeCode[49].fn = underline;
+    escapeCode[57].fn = textcolor;
+    escapeCode[57].arg = COLOUR_GREY1;
+    escapeCode[58].fn = textcolor;
+    escapeCode[58].arg = COLOUR_GREY2;
+    escapeCode[59].fn = textcolor;
+    escapeCode[59].arg = COLOUR_GREY3;
+    escapeCode[64].fn = textcolor;
+    escapeCode[64].arg = COLOUR_CYAN;
+    escapeCode[68].fn = textcolor;
+    escapeCode[68].arg = COLOUR_LIGHTBLUE;
+    escapeCode[72].fn = textcolor;
+    escapeCode[72].arg = COLOUR_LIGHTGREEN;
+    escapeCode[96].fn = blink;
+    escapeCode[96].arg = 1;
+    escapeCode[104].fn = textcolor;
+    escapeCode[104].arg = COLOUR_PURPLE;
+    escapeCode[139].fn = revers;
+    escapeCode[147].fn = underline;
+    escapeCode[147].arg = 1;
+    escapeCode[151].fn = textcolor;
+    escapeCode[151].arg = COLOUR_BROWN;
+    escapeCode[158].fn = blink;
+    escapeCode[168].fn = textcolor;
+    escapeCode[168].arg = COLOUR_WHITE;
+    escapeCode[173].fn = revers;
+    escapeCode[173].arg = 1;
+    escapeCode[191].fn = textcolor;
+    escapeCode[191].arg = COLOUR_YELLOW;
+    escapeCode[199].fn = textcolor;
+    escapeCode[199].arg = COLOUR_PINK;
+    escapeCode[206].fn = textcolor;
+    escapeCode[206].arg = COLOUR_BLACK;
+    escapeCode[215].fn = textcolor;
+    escapeCode[215].arg = COLOUR_ORANGE;
+    escapeCode[216].fn = textcolor;
+    escapeCode[216].arg = COLOUR_BLUE;
+    escapeCode[220].fn = textcolor;
+    escapeCode[220].arg = COLOUR_GREEN;
+    escapeCode[240].fn = textcolor;
+    escapeCode[240].arg = COLOUR_RED;
+    escapeCode[248].fn = movedown;
+}
+
+void setscreenaddr(long address)
+{
+    POKE(VIC_BASE + 0x60, address & 0x0000FFUL);
+    POKE(VIC_BASE + 0x61, (address & 0xFF00UL) >> 8);
+    POKE(VIC_BASE + 0x62, (address & 0xFF0000UL) >> 16);
+    POKE(VIC_BASE + 0x63, (PEEK(VIC_BASE + 0x63) & 0xF) | ((address & 0xF000000UL) >> 24));
+}
+
+long getscreenaddr(void)
+{
+    return SCREEN_RAM_BASE;
+}
 
 void screensize(unsigned char* width, unsigned char *height)
 {
@@ -57,6 +152,7 @@ void clrscr()
     lfill(COLOR_RAM_BASE,  g_curTextColor, cBytes);
 }
 
+
 void bordercolor(unsigned char c)
 {
     POKE(VIC_BASE + 0x20, c);
@@ -72,7 +168,7 @@ void textcolor(unsigned char c)
     g_curTextColor = (g_curTextColor & 0xF0) | (c & 0xf);
 }
 
-void ccellcolor(unsigned char x, unsigned char y, unsigned char c)
+void cellcolor(unsigned char x, unsigned char y, unsigned char c)
 {
     unsigned char w = 0, h = 0;
     screensize(&w, &h);
@@ -111,6 +207,11 @@ void underline(unsigned char enable)
         g_curTextColor &= ~ATTRIB_UNDERLINE;
 }
 
+void gohome(void)
+{
+    gotoxy(0,0);
+}
+
 void gotoxy(unsigned char x, unsigned char y)
 {
     g_curX = x;
@@ -132,18 +233,86 @@ void cputc(unsigned char c)
     cputcxy(g_curX, g_curY, c);
 }
 
-unsigned char cprintf (const char* fmt, ...)
-{
-    // TODO: IMPLEMENT.
 
-    // unsigned char readItems = 0;
-    // unsigned char flags = 0;
-    
-    // va_list va;
-    
-    while(*fmt)
+void  moveup(unsigned char count)
+{
+
+}
+
+void  movedown(unsigned char count)
+{
+
+}
+
+void  moveleft(unsigned char count)
+{
+
+}
+
+void  moveright(unsigned char count)
+{
+
+}
+
+unsigned char cprintf (const unsigned char* fmt, ...)
+{
+    unsigned char printfState = PRINTF_STATE_INIT;
+    unsigned char escHash = 0;
+    unsigned char cch = 0;
+
+    while (*fmt)
     {
-        cputc(*fmt++);
+        switch (printfState)
+        {
+        case PRINTF_STATE_INIT:
+            switch (*fmt)
+            {
+            case '{':
+                printfState = PRINTF_STATE_ESCAPE;
+                break;
+
+            case '\t': // Tab
+                //moveleft((g_curX + 7) / 8) * 8, 1);
+                break;
+
+            case '\n': // New-line
+                gotoxy(0, g_curY + 1);
+                break;
+
+            default:
+                cputc(*fmt);
+            }
+            break;
+
+        case PRINTF_STATE_ESCAPE:
+            if (*fmt == '{') // print literal
+            {
+                cputc(*fmt);
+                printfState = PRINTF_STATE_INIT;
+                break;
+            }
+            
+            cch = 0;
+            while(fmt &&  (*fmt != '}'))
+            {
+                fmt++;
+                cch++;
+            }
+
+            if (*fmt != '}') // bailout.
+                return 255;
+            
+            //cputsxy(0,1,fmt - cch);
+            
+            escHash = hash(fmt - cch, cch);
+            //gotoxy(20,1);
+            //cputdec(escHash,0 ,0);
+            escapeCode[escHash].fn(escapeCode[escHash].arg);
+            printfState = PRINTF_STATE_INIT;
+            break;
+        }
+
+        fmt++;
     }
 }
 
@@ -194,7 +363,7 @@ void cputsxy(unsigned char x, unsigned char y, const char *s)
 {
     unsigned char w = 0, h = 0, len = strlen(s);
     screensize(&w, &h);
-    lcopy( (long) s, SCREEN_ADDRESS + (y * (unsigned int) w) + x, len);     
+    lcopy( (long) s, SCREEN_RAM_BASE + (y * (unsigned int) w) + x, len);     
     lfill(COLOR_RAM_BASE + (y * (unsigned int) w) + x, g_curTextColor, len);
     g_curY = y + ((x + len) / w);
     g_curX = (x + len) % w;
@@ -204,7 +373,7 @@ void cputcxy (unsigned char x, unsigned char y, char c)
 {
     unsigned char w = 0, h = 0;
     screensize(&w, &h);
-    lpoke(SCREEN_ADDRESS + (y * (unsigned int) w) + x, c);
+    lpoke(SCREEN_RAM_BASE + (y * (unsigned int) w) + x, c);
     lpoke(COLOR_RAM_BASE + (y * (unsigned int) w) + x, g_curTextColor);
     g_curX = (x == w - 1) ? 0 : (x + 1);
     g_curY = (x == w - 1) ? (y + 1) : y;
@@ -216,6 +385,11 @@ unsigned char cgetc (void)
     while ((k = PEEK(0xD610U)) == 0);
     POKE(0xD610U,0);
     return k;
+}
+
+unsigned char getkeymodstate(void)
+{
+    return PEEK(0xD611U);
 }
 
 unsigned char kbhit(void)
