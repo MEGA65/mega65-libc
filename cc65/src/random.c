@@ -134,7 +134,13 @@ uint8_t rand8(uint8_t range)
 {
   xorshift32();
   if (!range) return (uint8_t)xorshift32_state;
-  *(uint32_t *)0xD770 = xorshift32_state;
-  *(uint32_t *)0xD774 = range;
-  return *(uint8_t*)0xD77C;
+
+  // We do it this way to be compatible with older bitstreams that
+  // have the smaller multiplier.  Not relevant once 138-hdmi-audio-27mhz
+  // branch has been merged in.
+  POKE(0xD770,xorshift32_state&0xff);
+  POKE(0xD771,0);
+  POKE(0xD774,range);
+  POKE(0xD775,0);
+  return PEEK(0xD779);
 }
