@@ -130,6 +130,12 @@ uint16_t rand16(uint16_t range)
   return *(uint16_t *)0xD77C;
 }
 
+#ifdef DEBUG
+#include <stdio.h>
+#include <debug.h>
+char dmsg[80];
+#endif
+
 uint8_t rand8(uint8_t range)
 {
   xorshift32();
@@ -142,5 +148,15 @@ uint8_t rand8(uint8_t range)
   POKE(0xD771,0);
   POKE(0xD774,range);
   POKE(0xD775,0);
+
+#ifdef DEBUG
+  snprintf(dmsg,80,"range=%d, rand=$%02x, regs=%02x %02x, %02x %02x, %02x, %02x\n",
+	   range,PEEK(0xD779),
+	   PEEK(0xD770),PEEK(0xD771),
+	   PEEK(0xD774),PEEK(0xD775),
+	   PEEK(0xD778),PEEK(0xD779));	   
+  debug_msg(dmsg);
+#endif
+  
   return PEEK(0xD779);
 }
