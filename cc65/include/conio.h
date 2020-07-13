@@ -16,7 +16,7 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  
     Version   0.5
-    Date      2020-06-28
+    Date      2020-07-13
 
     CHANGELOG
 
