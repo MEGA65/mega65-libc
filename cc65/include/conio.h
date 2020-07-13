@@ -15,13 +15,26 @@
     You should have received a copy of the GNU Lesser General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  
-    Version   0.4
+    Version   0.5
     Date      2020-06-28
+
+    CHANGELOG
+
+    v0.4        Added getscreensize, setscreensize, setextendattribute, 
+                set16bitcharmode, moveup,moveleft,moveright, movedown, gohome,
+                flushkeybuf.
+                Cache screen sizes for faster calls.
+                Added cprintf escape codes for formatted screen colors and attributes.
+                Added proper initialization function.
+                Fixed a bug where screen was fixed at $8000!
+
+    v0.5        Added fillrect, box, cgets, wherex, wherey, togglecase functions.
+                Fixed moveXXXX to do multiple steps.  Minor optimizations in cputs/cputc.
+
 */
 
 #ifndef M65LIBC_CONIO_H
 #define M65LIBC_CONIO_H
-#include "../include/memory.h"
 
 #define VIC_BASE            0xD000UL
 #define IS_H640             (PEEK(VIC_BASE + 0x31) & 128)
@@ -43,6 +56,9 @@
 #define SCREEN_RAM_BASE     ( ((long)SCREEN_RAM_BASE_B3 << 24) | ((long)SCREEN_RAM_BASE_B2 << 16) | ((long)SCREEN_RAM_BASE_B1 << 8) | (SCREEN_RAM_BASE_B0) )  
 #define COLOR_RAM_BASE      0x1F800UL
 
+/*------------------------------------------------------------------------
+  Color and attributes
+  -----------------------------------------------------------------------*/
 #define ATTRIB_BLINK      0x10
 #define ATTRIB_REVERSE    0x20
 #define ATTRIB_UNDERLINE  0x80
@@ -109,10 +125,10 @@
 #define ASC_CRSR_LEFT
 #define ASC_CRSR_UP
 #define ASC_CRSR_DOWN
+
 /*------------------------------------------------------------------------
   Keyboard modifiers
   -----------------------------------------------------------------------*/
-
 #define KEYMOD_RSHIFT   1
 #define KEYMOD_LSHIFT   2
 #define KEYMOD_CTRL     4
@@ -120,6 +136,22 @@
 #define KEYMOD_ALT      16
 #define KEYMOD_NOSCRL   32
 #define KEYMOD_CAPSLOCK 64
+
+/*------------------------------------------------------------------------
+  Box styles
+  -----------------------------------------------------------------------*/
+#define BOX_STYLE_INNER 0
+#define BOX_STYLE_MID   1
+#define BOX_STYLE_OUTER 2
+#define BOX_STYLE_ROUND 3
+
+/*------------------------------------------------------------------------
+  Public structs
+  -----------------------------------------------------------------------*/
+typedef struct tagRECT
+{
+    unsigned char left, top, right, bottom;
+} RECT;
 
 /*------------------------------------------------------------------------
   Screen configuration and setup
@@ -151,6 +183,9 @@ void fastcall set16bitcharmode(unsigned char f);
 /* Sets or clear the extended attribute mode (blink, underline, bold, highlight)*/
 void fastcall setextendedattrib(unsigned char f);
 
+/* Toggles the character set case */
+void fastcall togglecase(void);
+
 /*------------------------------------------------------------------------
   Color and Attributes
   -----------------------------------------------------------------------*/
@@ -178,6 +213,20 @@ void fastcall underline(unsigned char enable);
 
 /* Set color of character cell */
 void cellcolor(unsigned char x, unsigned char y, unsigned char c);
+
+
+/*------------------------------------------------------------------------
+  Screen draw operations
+  -----------------------------------------------------------------------*/
+
+/* Fill a rectangular area with character and color value */
+void fillrect(const RECT *rc, unsigned char ch, unsigned char col);
+
+/* Draws a box with graphic characters. Style can be set to BOX_STYLE_ROUNDED,
+   BOX_STYLE_INNER, BOX_STYLE_OUTER, BOX_STYLE_MID */
+void box(const RECT *rc, unsigned char color, unsigned char style, 
+         unsigned char clear, unsigned char shadow);
+
 
 
 /*------------------------------------------------------------------------
@@ -209,8 +258,14 @@ void fastcall moveleft(unsigned char count);
 /* Move cursor right X times, going to prev line*/
 void fastcall moveright(unsigned char count);
 
-/* Enable cursor */
+/* Enable cursor when input read */
 void fastcall cursor(unsigned char enable);
+
+/* Get current X position */
+unsigned char wherex(void);
+
+/* Get current Y position */
+unsigned char wherey(void);
 
 /*------------------------------------------------------------------------
   Text output

@@ -14,23 +14,10 @@
 
     You should have received a copy of the GNU Lesser General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
- 
-    Version   0.4
-    Date      2020-06-28
-
-    CHANGELOG
-
-    v0.4        Added getscreensize, setscreensize, setextendattribute, 
-                set16bitcharmode, moveup,moveleft,moveright, movedown, gohome,
-                flushkeybuf.
-                Cache screen sizes for faster calls.
-                Added cprintf escape codes for formatted screen colors and attributes.
-                Added proper initialization function.
-                Fixed a bug where screen was fixed at $8000!
-
 */
 
 #include "../include/conio.h"
+#include "../include/memory.h"
 #include <string.h>
 
 #define PRINTF_IN_FORMAT_SPEC    0x1
@@ -55,6 +42,20 @@ static unsigned char g_curY = 0;
 static unsigned char g_curScreenW = 0;
 static unsigned char g_curScreenH = 0;
 static const unsigned char hexDigits[] = { '0','1','2','3','4','5','6','7','8','9',0x41,0x42,0x43,0x44,0x45,0x46};
+
+// Drawing characters for `box` call
+//                          
+//                                      INNER   MID    OUTER    ROUND
+const unsigned char chTopLeft[]     = {  0x20,  0x70,  0x4F,    0x55 };
+const unsigned char chTopRight[]    = {  0x20,  0x6E,  0x50,    0x49 };
+const unsigned char chBottomLeft[]  = {  0x20,  0x6D,  0x4C,    0x4A };
+const unsigned char chBottomRight[] = {  0x20,  0x7D,  0x7A,    0x4B };
+const unsigned char chHorzTop[]     = {  0x64,  0x43,  0x77,    0x43 };
+const unsigned char chHorzBottom[]  = {  0x63,  0x43,  0x6F,    0x43 };
+const unsigned char chVertRight[]   = {  0x74,  0x5D,  0x6A,    0x5D };
+const unsigned char chVertLeft[]    = {  0x6A,  0x5D,  0x74,    0x5D };
+
+// Hash function for cprintf ESCAPE codes
 
 static unsigned char hash(const unsigned char *str, const unsigned char maxLen)
 {    
@@ -201,6 +202,11 @@ void setextendedattrib(unsigned char f)
         CLEAR_EXTATTR();
 }
 
+void togglecase(void)
+{
+    POKE(0xD018U, PEEK(0xD018U) ^ 0x02);
+}
+
 void clrscr()
 {
     unsigned int cBytes = 0;
@@ -283,6 +289,16 @@ void gotoy(unsigned char y)
     g_curY = y;
 }
 
+unsigned char wherex(void)
+{
+    return g_curX;
+}
+
+unsigned char wherey(void)
+{
+    return g_curY;
+}
+
 void cputc(unsigned char c)
 {
     cputcxy(g_curX, g_curY, c);
@@ -291,22 +307,22 @@ void cputc(unsigned char c)
 
 void  moveup(unsigned char count)
 {
-    g_curY--;
+    g_curY -= count;
 }
 
 void  movedown(unsigned char count)
 {
-    g_curY++;
+    g_curY += count;
 }
 
 void  moveleft(unsigned char count)
 {
-    g_curX--;
+    g_curX -= count;
 }
 
 void  moveright(unsigned char count)
 {
-    g_curX++;
+    g_curX += count;
 }
 
 
@@ -413,20 +429,71 @@ void cputs(const char *s)
 
 void cputsxy(unsigned char x, unsigned char y, const char *s)
 {
-    unsigned char len = strlen(s);
-    lcopy( (long) s, SCREEN_RAM_BASE + (y * (unsigned int) g_curScreenW) + x, len);     
-    lfill(COLOR_RAM_BASE + (y * (unsigned int) g_curScreenW) + x, g_curTextColor, len);
+    const unsigned char len = strlen(s);
+    const unsigned int offset = (y * (unsigned int) g_curScreenW) + x;
+    lcopy( (long) s, SCREEN_RAM_BASE + offset, len);     
+    lfill(COLOR_RAM_BASE + offset, g_curTextColor, len);
     g_curY = y + ((x + len) / g_curScreenW);
     g_curX = (x + len) % g_curScreenW;
 }
 
 void cputcxy (unsigned char x, unsigned char y, char c)
 {
-    lpoke(SCREEN_RAM_BASE + (y * (unsigned int) g_curScreenW) + x, c);
-    lpoke(COLOR_RAM_BASE + (y * (unsigned int) g_curScreenW) + x, g_curTextColor);
+    const unsigned int offset = (y * (unsigned int) g_curScreenW) + x;
+    lpoke(SCREEN_RAM_BASE + offset, c);
+    lpoke(COLOR_RAM_BASE + offset, g_curTextColor);
     g_curX = (x == g_curScreenW - 1) ? 0 : (x + 1);
     g_curY = (x == g_curScreenW - 1) ? (y + 1) : y;
 }
+
+void fillrect(const RECT *rc, unsigned char ch, unsigned char col)
+{
+    register unsigned char i = 0;
+    const unsigned char len = rc->right - rc->left;
+    for (i = rc->top; i <= rc->bottom; ++i)
+    {
+        const unsigned int offset = (i * (unsigned int) g_curScreenW) + rc->left;
+        lfill(SCREEN_RAM_BASE + offset, ch, len);
+        lfill(COLOR_RAM_BASE  + offset, col, len);
+    }
+}
+
+void box(const RECT *rc, unsigned char color, unsigned char style, unsigned char clear, unsigned char shadow)
+{
+    register unsigned char i = 0;
+    const unsigned char len = rc->right - rc->left;
+    unsigned char prevCol = g_curTextColor;
+
+    textcolor(color);
+    if (clear)
+        fillrect(rc, ' ', g_curTextColor);
+
+    cputcxy(rc->left, rc->top, chTopLeft[style]);
+    cputcxy(rc->left, rc->bottom, chBottomLeft[style]);
+    cputcxy(rc->right, rc->top, chTopRight[style]); 
+    cputcxy(rc->right, rc->bottom, chBottomRight[style]);
+
+    for (i = 1; i < len; ++i)
+    {
+        cputcxy(rc->left + i, rc->top, chHorzTop[style]);
+        cputcxy(rc->left + i, rc->bottom, chHorzBottom[style]);
+    }
+
+    for (i = rc->top + 1; i <= rc->bottom - 1; ++i)
+    {
+        cputcxy(rc->left, i, chVertLeft[style]);
+        cputcxy(rc->right, i, chVertRight[style]);
+    }
+
+    if (shadow && rc->bottom < g_curScreenH && rc->right < g_curScreenW)
+    {
+        lfill(COLOR_RAM_BASE + ( (rc->bottom+1) * (unsigned int) g_curScreenW) + (1+rc->left), COLOUR_DARKGREY, len);
+        for (i = rc->top + 1; i <= rc->bottom + 1; ++i)
+            cellcolor(rc->right + 1, i, COLOUR_DARKGREY);
+    }
+    textcolor(prevCol);
+}
+
 
 unsigned char cgetc (void)
 {
