@@ -15,8 +15,8 @@
     You should have received a copy of the GNU Lesser General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  
-    Version   0.5
-    Date      2020-07-13
+    Version   0.6
+    Date      2020-07-14
 
     CHANGELOG
 
@@ -30,6 +30,8 @@
 
     v0.5        Added fillrect, box, cgets, wherex, wherey, togglecase functions.
                 Fixed moveXXXX to do multiple steps.  Minor optimizations in cputs/cputc.
+
+    v0.6        Added vline, hline  to draw lines.
 
 */
 
@@ -146,6 +148,24 @@
 #define BOX_STYLE_ROUND 3
 
 /*------------------------------------------------------------------------
+  Line styles
+  -----------------------------------------------------------------------*/
+#define HLINE_STYLE_TOP_THIN     0x63
+#define HLINE_STYLE_BTM_THIN     0x64
+#define HLINE_STYLE_TOP_NORMAL   0x77
+#define HLINE_STYLE_BTM_NORMAL   0x6F
+#define HLINE_STYLE_TOP1_8       0x45  // 1/8 
+#define HLINE_STYLE_TOP3_8       0x44  // 3/8 
+#define HLINE_STYLE_BTM1_8       0x52  // 1/8 
+#define HLINE_STYLE_BTM3_8       0x46  // 3/8 
+#define HLINE_STYLE_MID          0x40
+#define HLINE_STYLE_CHECKER      0x68
+#define VLINE_STYLE_LEFT_NORMAL  0x74
+#define VLINE_STYLE_RIGHT_NORMAL 0x6A
+#define VLINE_STYLE_MID          0x42
+#define VLINE_STYLE_CHECKER      0x5C
+
+/*------------------------------------------------------------------------
   Public structs
   -----------------------------------------------------------------------*/
 typedef struct tagRECT
@@ -227,7 +247,13 @@ void fillrect(const RECT *rc, unsigned char ch, unsigned char col);
 void box(const RECT *rc, unsigned char color, unsigned char style, 
          unsigned char clear, unsigned char shadow);
 
+/* Draws an horizontal line. See HLINE_ constants for style parameter  */
+void hline(unsigned char x, unsigned char y, unsigned char len, 
+           unsigned char style);
 
+/* Draws a vertical line. See VLINE_ constants for style parameter  */
+void vline(unsigned char x, unsigned char y, unsigned char len, 
+           unsigned char style);
 
 /*------------------------------------------------------------------------
   Cursor Movement
@@ -274,6 +300,9 @@ unsigned char wherey(void);
 /* Output a single character at current position */
 void fastcall cputc(unsigned char c);
 
+/* Output N copies of character at current position */
+void fastcall cputnc(unsigned char count, unsigned char c);
+
 /* Output an hex-formatted number at current position with prec digits */
 void cputhex(long n, unsigned char prec);
 
@@ -287,7 +316,11 @@ void fastcall cputs(const char* s);
 void cputsxy (unsigned char x, unsigned char y, const char* s);
 
 /* Output a character at x,y */
-void cputcxy (unsigned char x, unsigned char y, char c);
+void cputcxy (unsigned char x, unsigned char y, unsigned char c);
+
+/* Outputs N copies of a character at x,y */
+void cputncxy (unsigned char x, unsigned char y, unsigned char count, unsigned char c);
+
 
 /*  Print formatted output. 
     

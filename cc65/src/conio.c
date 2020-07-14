@@ -304,6 +304,11 @@ void cputc(unsigned char c)
     cputcxy(g_curX, g_curY, c);
 }
 
+void cputnc(unsigned char len, unsigned char c)
+{
+    cputncxy(g_curX, g_curY, len, c);
+}
+
 
 void  moveup(unsigned char count)
 {
@@ -446,6 +451,15 @@ void cputcxy (unsigned char x, unsigned char y, char c)
     g_curY = (x == g_curScreenW - 1) ? (y + 1) : y;
 }
 
+void cputncxy (unsigned char x, unsigned char y, unsigned char count, unsigned char c)
+{
+    const unsigned int offset = (y * (unsigned int) g_curScreenW) + x;
+    lfill(SCREEN_RAM_BASE + offset, c, count);
+    lfill(COLOR_RAM_BASE + offset, c, g_curTextColor);
+    g_curY = y + ((x + count) / g_curScreenW);
+    g_curX = (x + count) % g_curScreenW;
+}
+
 void fillrect(const RECT *rc, unsigned char ch, unsigned char col)
 {
     register unsigned char i = 0;
@@ -494,6 +508,19 @@ void box(const RECT *rc, unsigned char color, unsigned char style, unsigned char
     textcolor(prevCol);
 }
 
+void hline(unsigned char x, unsigned char y, unsigned char len, unsigned char style)
+{
+    cputncxy(x, y, len, style);
+}
+
+void vline(unsigned char x, unsigned char y, unsigned char len, unsigned char style)
+{
+    register unsigned char i;
+    for (i = 0; i < len; ++i)
+    {
+        cputcxy(x, y + i, style);
+    }
+}
 
 unsigned char cgetc (void)
 {
