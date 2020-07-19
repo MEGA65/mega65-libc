@@ -56,19 +56,46 @@ To use these functions you must include `time.h`
 
 The `conio.h` file is projected to support all MEGA65 text features in the future.  
 
-In this version, remember to set VIC-III extended character attributes register in $D031 if you want to use the attribute function calls.
+Keep in mind!
 
-Note that **no bounds checking is done in any function due to lazyness and/or performance reasons. Be careful**.
-
+1) Use `conioinit()` to initialize internal state.
+2) **no bounds checking is done in any function due to lazyness and/or performance reasons. Be careful**.
 
 ```
 
+/*------------------------------------------------------------------------
+  Screen configuration and setup
+  -----------------------------------------------------------------------*/
+
+/* Initialize library internal state */
+void conioinit(void);
+
+/* Sets the active screen RAM address */
+void setscreenaddr(long addr);
+
+/* Gets the currently active screen RAM address */
+long getscreenaddr(void);
+
  /* Clear the text screen. Color RAM will be cleared with current text color */
-void clrscr(); 
+void clrscr(void); 
 
  /* Returns the dimensions of the text mode screen.  
     Ignores any virtual chargen dimensions */
-void fastcall screensize(unsigned char* width, unsigned char* height);
+void fastcall getscreensize(unsigned char* width, unsigned char* height);
+
+ /* Sets the screen size in rows and columns of text.
+    Unsupported values are currently ignored */
+void fastcall setscreensize(unsigned char width, unsigned char height);
+
+/* Sets or clear the 16-bit character mode */
+void fastcall set16bitcharmode(unsigned char f);
+
+/* Sets or clear the extended attribute mode (blink, underline, bold, highlight)*/
+void fastcall setextendedattrib(unsigned char f);
+
+/*------------------------------------------------------------------------
+  Color and Attributes
+  -----------------------------------------------------------------------*/
 
 /* Set the current border color */
 void fastcall bordercolor(unsigned char c);
@@ -91,6 +118,17 @@ void fastcall blink(unsigned char enable);
 /* Enable the highlight attribute */
 void fastcall underline(unsigned char enable);
 
+/* Set color of character cell */
+void cellcolor(unsigned char x, unsigned char y, unsigned char c);
+
+
+/*------------------------------------------------------------------------
+  Cursor Movement
+  -----------------------------------------------------------------------*/
+
+/* Put cursor at home (0,0) */
+void fastcall gohome(void);
+
 /* Put cursor at X,Y. 
    The function does not check for screen bounds! */
 void fastcall gotoxy(unsigned char x, unsigned char y);
@@ -101,14 +139,27 @@ void fastcall gotox(unsigned char x);
 /* Put cursor at row Y. The function does not check for screen bounds */
 void fastcall gotoy(unsigned char x);
 
+/* Move cursor up X times with wraparound */
+void fastcall moveup(unsigned char count);
+
+/* Move cursor down X times with wraparound */
+void fastcall movedown(unsigned char count);
+
+/* Move cursor left X times, going to next line.*/ 
+void fastcall moveleft(unsigned char count);
+
+/* Move cursor right X times, going to prev line*/
+void fastcall moveright(unsigned char count);
+
 /* Enable cursor */
 void fastcall cursor(unsigned char enable);
 
+/*------------------------------------------------------------------------
+  Text output
+  -----------------------------------------------------------------------*/
+
 /* Output a single character at current position */
 void fastcall cputc(unsigned char c);
-
-/* Set color of character cell */
-void ccellcolor(unsigned char x, unsigned char y, unsigned char c);
 
 /* Output an hex-formatted number at current position with prec digits */
 void cputhex(long n, unsigned char prec);
@@ -125,9 +176,61 @@ void cputsxy (unsigned char x, unsigned char y, const char* s);
 /* Output a character at x,y */
 void cputcxy (unsigned char x, unsigned char y, char c);
 
+/*  Print formatted output. 
+    
+    Escape strings can be used to modify attributes, move cursor,etc,
+    similar to PRINT in CBM BASIC. Available escape codes:
+   
+    Cursor positioning 
+
+    \t           Go to next tab position (multiple of 8s)
+    \r           Return
+    \n           New-line (assume \r like in C printf)
+
+    {clr}        Clear screen        {home}      Move cursor to home (top-left)
+    {d}          Move cursor down    {u}        Move cursor up
+    {r}          Move cursor right   {l}      Move cursor left
+
+    Attributes
+
+    {rvson}    Reverse attribute ON   {rvsoff}   Reverse attribute OFF
+    {blon}     Blink attribute ON     {bloff}    Blink attribute OFF
+    {ulon}     Underline attribute ON {uloff}    Underline attribute OFF
+
+    Colors (default palette 0-15)
+    {blk}    {wht}    {red}   {cyan}  {pur}   
+    {grn}    {blu}    {yel}   {ora}   {brn}    
+    {pink}   {gray1}  {gray2} {lblu}  {lgrn} 
+    {gray3}
+*/
+
+unsigned char cprintf (const unsigned char* format, ...);
+
+/*------------------------------------------------------------------------
+  Keyboard input 
+  -----------------------------------------------------------------------*/
 /* Wait until a character is in the keyboard buffer and return it */
 unsigned char fastcall cgetc (void);
 
 /* Return the character in the keyboard buffer, if any */
 unsigned char fastcall kbhit (void);
+
+/* Return the key modifiers state, where bits:
+
+    Bit           Meaning
+    -----------------------------------------
+    0             Right SHIFT state
+    1             Left  SHIFT state
+    2             CTRL state
+    3             MEGA/C= state
+    4             ALT state
+    5             NOSCRL state
+    6             CAPSLOCK state
+    7             Reserved
+*/
+unsigned char getkeymodstate(void);
+
+/* Flush the hardware keyboard buffer */
+void flushkeybuf(void);
+
 ```
