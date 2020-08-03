@@ -545,3 +545,8 @@ void flushkeybuf(void)
     while (PEEK(0xD610U))
         POKE(0xD610U,0);
 }
+
+unsigned char cinput(char* buffer, unsigned char buflen, unsigned char flags)
+{
+    
+}
