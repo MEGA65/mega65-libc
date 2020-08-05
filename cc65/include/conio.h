@@ -35,6 +35,8 @@
 
     v0.6.5      Added LaTEX style comments for doc generation. 
 
+    v0.7        Added cinput function. Fixed cputncxy color fill.
+
 */
 
 #ifndef M65LIBC_CONIO_H
@@ -164,6 +166,16 @@
 #define VLINE_STYLE_RIGHT_NORMAL 0x6A
 #define VLINE_STYLE_MID          0x42
 #define VLINE_STYLE_CHECKER      0x5C
+
+/*------------------------------------------------------------------------
+  Input character modes
+  -----------------------------------------------------------------------*/
+#define CINPUT_ACCEPT_NUMERIC   1
+#define CINPUT_ACCEPT_LETTER    2 
+#define CINPUT_ACCEPT_ALL       4
+#define CINPUT_NO_AUTOTRANSLATE 8
+#define CINPUT_ACCEPT_ALPHA     CINPUT_ACCEPT_NUMERIC|CINPUT_ACCEPT_LETTER
+
 
 /*------------------------------------------------------------------------
   Public structs
@@ -576,6 +588,10 @@ void flushkeybuf(void);
             CINPUT_ACCEPT_SYM
             CINPUT_ACCEPT_ALL     
             CINPUT_ACCEPT_ALPHA
+            CINPUT_NO_AUTOTRANSLATE   Disables the feature that makes cinput to autodisplay uppercase characters 
+                                      when standard lowercase character set is selected  and 
+                                      the user enters letters without the SHIFT key, that would display
+                                      graphic characters instead of alphabetic ones. 
   }
    \m65libretval    {Successfully read characters in buffer}
 */

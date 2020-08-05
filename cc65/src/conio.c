@@ -455,7 +455,7 @@ void cputncxy (unsigned char x, unsigned char y, unsigned char count, unsigned c
 {
     const unsigned int offset = (y * (unsigned int) g_curScreenW) + x;
     lfill(SCREEN_RAM_BASE + offset, c, count);
-    lfill(COLOR_RAM_BASE + offset, c, g_curTextColor);
+    lfill(COLOR_RAM_BASE + offset, g_curTextColor, count);
     g_curY = y + ((x + count) / g_curScreenW);
     g_curX = (x + count) % g_curScreenW;
 }
@@ -548,5 +548,52 @@ void flushkeybuf(void)
 
 unsigned char cinput(char* buffer, unsigned char buflen, unsigned char flags)
 {
-    
+    register unsigned char numch = 0, i, ch;
+    const sx = wherex();
+    const sy = wherey();
+
+    if (buffer == NULL || buflen == 0 )
+        return 0;
+
+    flushkeybuf();
+
+    for (i = 0; i < buflen; ++i)
+        buffer[i] = '\0';
+
+    while(1)
+    {
+        cputsxy(sx,sy,buffer);
+        blink(1);
+        cputc(224);
+        blink(0);
+        ch = cgetc();
+
+        if (ch == 13)
+        {
+            break;
+        }
+
+        if (ch == 20 && numch > 0)
+        {
+            moveleft(1);
+            cputc(' ');
+            buffer[--numch] = '\0';
+        }
+        else if (numch < buflen)
+        {
+            if ((((ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z')) && (flags & CINPUT_ACCEPT_LETTER)) ||
+                     ((ch >= '0' && ch <= '9') && (flags & CINPUT_ACCEPT_NUMERIC)) ||
+                     (flags & CINPUT_ACCEPT_ALL))
+            {
+                if ( (ch >= 0x61 && ch <= 0x7a) && (PEEK(0x0D18) & ~2) && (flags & ~CINPUT_NO_AUTOTRANSLATE))
+                {
+                    ch -= 0x20;
+                }
+                
+                buffer[numch++] = ch;
+            }
+        }
+    }
+
+    return numch;
 }
