@@ -253,8 +253,8 @@ void togglecase(void)
 void clrscr()
 {
     const unsigned int cBytes = (unsigned int)g_curScreenW * g_curScreenH * (IS_16BITCHARSET ? 2 : 1);
-    lfill(SCREEN_RAM_BASE, 'A', cBytes);
-    lfill(0xFF80000UL, 5, cBytes);
+    lfill(SCREEN_RAM_BASE, ' ', cBytes);
+    lfill(COLOR_RAM_BASE,  g_curTextColor, cBytes);
 }
 
 
