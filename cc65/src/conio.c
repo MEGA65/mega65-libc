@@ -20,6 +20,26 @@
 #include "../include/memory.h"
 #include <string.h>
 
+#define VIC_BASE            0xD000UL
+#define IS_H640             (PEEK(VIC_BASE + 0x31) & 128)
+#define IS_V400             (PEEK(VIC_BASE + 0x31) & 8)
+#define SET_H640()          POKE(VIC_BASE + 0x31, PEEK(VIC_BASE + 0x31) | 128)
+#define CLEAR_H640()        POKE(VIC_BASE + 0x31, PEEK(VIC_BASE + 0x31) & 127)
+#define SET_V400()          POKE(VIC_BASE + 0x31, PEEK(VIC_BASE + 0x31) | 8)
+#define CLEAR_V400()        POKE(VIC_BASE + 0x31, PEEK(VIC_BASE + 0x31) & 0xF7)
+#define IS_16BITCHARSET     (PEEK(VIC_BASE + 0x54) & 1)
+#define SET_16BITCHARSET()  POKE(VIC_BASE + 0x54, PEEK(VIC_BASE + 0x54) |1)
+#define CLEAR_16BITCHARSET() POKE(VIC_BASE + 0x54, PEEK(VIC_BASE + 0x54) & 0xFE)
+#define IS_EXTATTR()        (PEEK(VIC_BASE + 0x31) & 32)
+#define SET_EXTATTR()        POKE(VIC_BASE + 0x31, PEEK(VIC_BASE + 0x31) | 32)
+#define CLEAR_EXTATTR()      POKE(VIC_BASE + 0x31, PEEK(VIC_BASE + 0x31) & 0xDF)
+#define SCREEN_RAM_BASE_B0  (PEEK(VIC_BASE + 0x60)) // LSB
+#define SCREEN_RAM_BASE_B1  (PEEK(VIC_BASE + 0x61))
+#define SCREEN_RAM_BASE_B2  (PEEK(VIC_BASE + 0x62))
+#define SCREEN_RAM_BASE_B3  (PEEK(VIC_BASE + 0x63) & 7) // upper nybble
+#define SCREEN_RAM_BASE     ( ((long)SCREEN_RAM_BASE_B3 << 24) | ((long)SCREEN_RAM_BASE_B2 << 16) | ((long)SCREEN_RAM_BASE_B1 << 8) | (SCREEN_RAM_BASE_B0) )  
+#define COLOR_RAM_BASE      0xFF80000UL
+
 #define PRINTF_IN_FORMAT_SPEC    0x1
 #define PRINTF_FLAGS_LEADINGZERO 0x2
 #define PRINTF_STATE_INIT        0
@@ -45,15 +65,15 @@ static const unsigned char hexDigits[] = { '0','1','2','3','4','5','6','7','8','
 
 // Drawing characters for `box` call
 //                          
-//                                      INNER   MID    OUTER    ROUND
-const unsigned char chTopLeft[]     = {  0x20,  0x70,  0x4F,    0x55 };
-const unsigned char chTopRight[]    = {  0x20,  0x6E,  0x50,    0x49 };
-const unsigned char chBottomLeft[]  = {  0x20,  0x6D,  0x4C,    0x4A };
-const unsigned char chBottomRight[] = {  0x20,  0x7D,  0x7A,    0x4B };
-const unsigned char chHorzTop[]     = {  0x64,  0x43,  0x77,    0x43 };
-const unsigned char chHorzBottom[]  = {  0x63,  0x43,  0x6F,    0x43 };
-const unsigned char chVertRight[]   = {  0x74,  0x5D,  0x6A,    0x5D };
-const unsigned char chVertLeft[]    = {  0x6A,  0x5D,  0x74,    0x5D };
+//                                      NONE, INNER   MID    OUTER    ROUND
+const unsigned char chTopLeft[]     = { 0x20,  0x20,  0x70,  0x4F,    0x55 };
+const unsigned char chTopRight[]    = { 0x20,  0x20,  0x6E,  0x50,    0x49 };
+const unsigned char chBottomLeft[]  = { 0x20,  0x20,  0x6D,  0x4C,    0x4A };
+const unsigned char chBottomRight[] = { 0x20,  0x20,  0x7D,  0x7A,    0x4B };
+const unsigned char chHorzTop[]     = { 0x20,  0x64,  0x43,  0x77,    0x43 };
+const unsigned char chHorzBottom[]  = { 0x20,  0x63,  0x43,  0x6F,    0x43 };
+const unsigned char chVertRight[]   = { 0x20,  0x74,  0x5D,  0x6A,    0x5D };
+const unsigned char chVertLeft[]    = { 0x20,  0x6A,  0x5D,  0x74,    0x5D };
 
 // Hash function for cprintf ESCAPE codes
 
@@ -161,6 +181,29 @@ long getscreenaddr(void)
     return SCREEN_RAM_BASE;
 }
 
+void setcharsetaddr(long address)
+{
+    POKE(VIC_BASE + 0x68, address & 0x0000FFUL);
+    POKE(VIC_BASE + 0x69, (address & 0xFF00UL) >> 8);
+    POKE(VIC_BASE + 0x6A, (address & 0xFF0000UL) >> 16);
+}
+
+long getcharsetaddr(void)
+{
+    return ( (long)PEEK(VIC_BASE + 0x68)) | ((long)PEEK(VIC_BASE + 0x69) << 8) | (((long)PEEK(VIC_BASE + 0x6A) << 16));
+}
+
+void setcolramoffset(unsigned int offset)
+{
+    POKE(VIC_BASE + 0x64, offset & 0x00FFUL);
+    POKE(VIC_BASE + 0x65, (offset & 0xFF00UL) >> 8);
+}
+
+unsigned int getcolramoffset(void)
+{
+    return ((unsigned int )PEEK(VIC_BASE + 0x64) | ((unsigned int) PEEK(VIC_BASE + 0x65)) << 8 );
+}
+
 void setscreensize(unsigned char w, unsigned char h)
 {
     if (w == 80)
@@ -209,10 +252,9 @@ void togglecase(void)
 
 void clrscr()
 {
-    unsigned int cBytes = 0;
-    cBytes = (unsigned int)g_curScreenW * g_curScreenH * (IS_16BITCHARSET ? 2 : 1);
-    lfill(SCREEN_RAM_BASE, ' ', cBytes);
-    lfill(COLOR_RAM_BASE,  g_curTextColor, cBytes);
+    const unsigned int cBytes = (unsigned int)g_curScreenW * g_curScreenH * (IS_16BITCHARSET ? 2 : 1);
+    lfill(SCREEN_RAM_BASE, 'A', cBytes);
+    lfill(0xFF80000UL, 5, cBytes);
 }
 
 
@@ -455,7 +497,7 @@ void cputncxy (unsigned char x, unsigned char y, unsigned char count, unsigned c
 {
     const unsigned int offset = (y * (unsigned int) g_curScreenW) + x;
     lfill(SCREEN_RAM_BASE + offset, c, count);
-    lfill(COLOR_RAM_BASE + offset, c, g_curTextColor);
+    lfill(COLOR_RAM_BASE + offset, g_curTextColor, count);
     g_curY = y + ((x + count) / g_curScreenW);
     g_curX = (x + count) % g_curScreenW;
 }
@@ -548,5 +590,52 @@ void flushkeybuf(void)
 
 unsigned char cinput(char* buffer, unsigned char buflen, unsigned char flags)
 {
-    
+    register unsigned char numch = 0, i, ch;
+    const sx = wherex();
+    const sy = wherey();
+
+    if (buffer == NULL || buflen == 0 )
+        return 0;
+
+    flushkeybuf();
+
+    for (i = 0; i < buflen; ++i)
+        buffer[i] = '\0';
+
+    while(1)
+    {
+        cputsxy(sx,sy,buffer);
+        blink(1);
+        cputc(224);
+        blink(0);
+        ch = cgetc();
+
+        if (ch == 13)
+        {
+            break;
+        }
+
+        if (ch == 20 && numch > 0)
+        {
+            moveleft(1);
+            cputc(' ');
+            buffer[--numch] = '\0';
+        }
+        else if (numch < buflen)
+        {
+            if ((((ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z')) && (flags & CINPUT_ACCEPT_LETTER)) ||
+                     ((ch >= '0' && ch <= '9') && (flags & CINPUT_ACCEPT_NUMERIC)) ||
+                     (flags & CINPUT_ACCEPT_ALL))
+            {
+                if ( (ch >= 0x61 && ch <= 0x7a) && (PEEK(0x0D18) & ~2) && (flags & ~CINPUT_NO_AUTOTRANSLATE))
+                {
+                    ch -= 0x20;
+                }
+                
+                buffer[numch++] = ch;
+            }
+        }
+    }
+
+    return numch;
 }

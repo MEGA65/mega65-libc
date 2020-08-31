@@ -35,30 +35,15 @@
 
     v0.6.5      Added LaTEX style comments for doc generation. 
 
+    v0.7        Added cinput function. Fixed cputncxy color fill. BOX_STYLE_NONE added.
+
+    v0.8        Fixed documentation. COLOR_RAM_BASE is 0xFF80000UL to access full 32/64KB space.
+                Added setcolramoffset, getcolramoffset, setcharsetaddr, getcharsetaddr.
+
 */
 
 #ifndef M65LIBC_CONIO_H
 #define M65LIBC_CONIO_H
-
-#define VIC_BASE            0xD000UL
-#define IS_H640             (PEEK(VIC_BASE + 0x31) & 128)
-#define IS_V400             (PEEK(VIC_BASE + 0x31) & 8)
-#define SET_H640()          POKE(VIC_BASE + 0x31, PEEK(VIC_BASE + 0x31) | 128)
-#define CLEAR_H640()        POKE(VIC_BASE + 0x31, PEEK(VIC_BASE + 0x31) & 127)
-#define SET_V400()          POKE(VIC_BASE + 0x31, PEEK(VIC_BASE + 0x31) | 8)
-#define CLEAR_V400()        POKE(VIC_BASE + 0x31, PEEK(VIC_BASE + 0x31) & 0xF7)
-#define IS_16BITCHARSET     (PEEK(VIC_BASE + 0x54) & 1)
-#define SET_16BITCHARSET()  POKE(VIC_BASE + 0x54, PEEK(VIC_BASE + 0x54) |1)
-#define CLEAR_16BITCHARSET() POKE(VIC_BASE + 0x54, PEEK(VIC_BASE + 0x54) & 0xFE)
-#define IS_EXTATTR()        (PEEK(VIC_BASE + 0x31) & 32)
-#define SET_EXTATTR()        POKE(VIC_BASE + 0x31, PEEK(VIC_BASE + 0x31) | 32)
-#define CLEAR_EXTATTR()      POKE(VIC_BASE + 0x31, PEEK(VIC_BASE + 0x31) & 0xDF)
-#define SCREEN_RAM_BASE_B0  (PEEK(VIC_BASE + 0x60)) // LSB
-#define SCREEN_RAM_BASE_B1  (PEEK(VIC_BASE + 0x61))
-#define SCREEN_RAM_BASE_B2  (PEEK(VIC_BASE + 0x62))
-#define SCREEN_RAM_BASE_B3  (PEEK(VIC_BASE + 0x63) & 7) // upper nybble
-#define SCREEN_RAM_BASE     ( ((long)SCREEN_RAM_BASE_B3 << 24) | ((long)SCREEN_RAM_BASE_B2 << 16) | ((long)SCREEN_RAM_BASE_B1 << 8) | (SCREEN_RAM_BASE_B0) )  
-#define COLOR_RAM_BASE      0x1F800UL
 
 /*------------------------------------------------------------------------
   Color and attributes
@@ -142,10 +127,12 @@
 /*------------------------------------------------------------------------
   Box styles
   -----------------------------------------------------------------------*/
-#define BOX_STYLE_INNER 0
-#define BOX_STYLE_MID   1
-#define BOX_STYLE_OUTER 2
-#define BOX_STYLE_ROUND 3
+#define BOX_STYLE_NONE  0
+#define BOX_STYLE_INNER 1
+#define BOX_STYLE_MID   2
+#define BOX_STYLE_OUTER 3
+#define BOX_STYLE_ROUND 4
+
 
 /*------------------------------------------------------------------------
   Line styles
@@ -164,6 +151,16 @@
 #define VLINE_STYLE_RIGHT_NORMAL 0x6A
 #define VLINE_STYLE_MID          0x42
 #define VLINE_STYLE_CHECKER      0x5C
+
+/*------------------------------------------------------------------------
+  Input character modes
+  -----------------------------------------------------------------------*/
+#define CINPUT_ACCEPT_NUMERIC   1
+#define CINPUT_ACCEPT_LETTER    2 
+#define CINPUT_ACCEPT_ALL       4
+#define CINPUT_NO_AUTOTRANSLATE 8
+#define CINPUT_ACCEPT_ALPHA     CINPUT_ACCEPT_NUMERIC|CINPUT_ACCEPT_LETTER
+
 
 /*------------------------------------------------------------------------
   Public structs
@@ -200,6 +197,32 @@ void setscreenaddr(long addr);
 */
 long getscreenaddr(void);
 
+/** \m65libsummary{setcolramoffset}{Sets the color RAM start offset value}
+    \m65libsyntax    {void setcolramoffset(long offset);}
+    \m65libparam     {addr}{The offset from the beginning of the color RAM address ($FF80000)}
+    \m65libremarks{No bounds check is performed on the resulting address. Do not exceed the available Color RAM size}
+*/
+void setcolramoffset(unsigned int addr);
+
+/** \m65libsummary{getcolramoffset}{Returns the color RAM start offset value}
+    \m65libsyntax    {long getscreenaddr(void);}
+    \m65libretval    {The current color RAM start offset value.}
+*/
+unsigned int getcolramoffset(void);
+
+/** \m65libsummary{setcharsetaddr}{Sets the character set start address}
+    \m65libsyntax    {void setcharsetaddr(long addr);}
+    \m65libparam     {addr}{The address to set as start of character set}
+    \m65libremarks   {No bounds check is performed on the selected address}
+*/
+void setcharsetaddr(long addr);
+
+/** \m65libsummary{getcharsetaddr}{Returns the current character set start address}
+    \m65libsyntax    {long getscreenaddr(void);}
+    \m65libretval    {The current character set start address.}
+*/
+long getcharsetaddr(void);
+
 /** 
     \m65libsummary{clrscr}{Clear the text screen. }
     \m65libsyntax    {void clrscr(void)}
@@ -215,14 +238,14 @@ void clrscr(void);
 /** \m65libsummary{getscreensize}{Returns the dimensions of the text screen}
     \m65libsyntax    {void getscreensize(unsigned char* width, unsigned char* height)}
     \m65libparam     {width}{Pointer to location where width will be returned}
-    \m65libparam     {width}{Pointer to location where height will be returned}    
+    \m65libparam     {height}{Pointer to location where height will be returned}    
 */
 void fastcall getscreensize(unsigned char* width, unsigned char* height);
 
 /** \m65libsummary{setscreensize}{Sets the dimensions of the text screen}
     \m65libsyntax    {void setscreensize(unsigned char width, unsigned char height)}
     \m65libparam     {width}{The width in columns (40 or 80)}
-    \m65libparam     {width}{The height in rows (25 or 50)}
+    \m65libparam     {height}{The height in rows (25 or 50)}
     \m65libremarks   {Currently only 40/80 and 25/50 are accepted. Other values are ignored.}
 */
 void fastcall setscreensize(unsigned char width, unsigned char height);
@@ -322,7 +345,7 @@ void fillrect(const RECT *rc, unsigned char ch, unsigned char col);
     \m65libsyntax    {void box(const RECT *rc, unsigned char color, unsigned char style, unsigned char clear, unsigned char shadow)}   
     \m65libparam     {rc}{A RECT structure specifying the box coordinates} 
     \m65libparam     {color}{The color to use for the graphic characters} 
-    \m65libparam     {style}{The style for the box borders. Can be set to BOX_STYLE_ROUNDED, BOX_STYLE_INNER, BOX_STYLE_OUTER, BOX_STYLE_MID }
+    \m65libparam     {style}{The style for the box borders. Can be set to BOX_STYLE_NONE, BOX_STYLE_ROUNDED, BOX_STYLE_INNER, BOX_STYLE_OUTER, BOX_STYLE_MID }
     \m65libparam     {clear}{Set to 1 to clear the box interior with the selected color} 
     \m65libparam     {shadow}{Set to 1 to draw a drop shadow}
     \m65libremarks   {No screen bounds checks are performed; out of screen behavior is undefined }
@@ -361,7 +384,7 @@ void vline(unsigned char x, unsigned char y, unsigned char len,
 */
 void fastcall gohome(void);
 
-/** \m65libsummary{gohome}{Set the current position at X,Y coordinates}
+/** \m65libsummary{gotoxy}{Set the current position at X,Y coordinates}
     \m65libsyntax    {void gotoxy(unsigned char x, unsigned char y)}    
     \m65libparam     {x}{The new X-coordinate} 
     \m65libparam     {y}{The new Y-coordinate} 
@@ -465,9 +488,9 @@ void fastcall cputs(const char* s);
 
 /** \m65libsummary{cputsxy}{Output a string at X,Y coordinates}
     \m65libsyntax    {void cputsxy (unsigned char x, unsigned char y, const char* s)}
-    \m65libparam     {s}{The string to print}
     \m65libparam     {x}{The X coordinate where string will be printed}
     \m65libparam     {y}{The Y coordinate where string will be printed}
+    \m65libparam     {s}{The string to print}
     \m65libremarks   {No pointer check is performed.  If s is null or invalid, behavior is undefined }
 */
 void cputsxy (unsigned char x, unsigned char y, const char* s);
@@ -481,7 +504,7 @@ void cputsxy (unsigned char x, unsigned char y, const char* s);
 void cputcxy (unsigned char x, unsigned char y, unsigned char c);
 
 /** \m65libsummary{cputncxy}{Output N copies of a single character at X,Y coordinates}
-    \m65libsyntax    {void cputncxy (unsigned char x, unsigned char y, unsigned char c)}
+    \m65libsyntax    {void cputncxy (unsigned char x, unsigned char y, unsigned char count, unsigned char c)}
     \m65libparam     {x}{The X coordinate where character will be printed}
     \m65libparam     {y}{The Y coordinate where character will be printed}
     \m65libparam     {count}{The number of characters to output}
@@ -496,25 +519,53 @@ void cputncxy (unsigned char x, unsigned char y, unsigned char count, unsigned c
    
     Cursor positioning 
 
-    \t           Go to next tab position (multiple of 8s)
-    \r           Return
-    \n           New-line (assume \r like in C printf)
+    \begin{table}[]
+    \begin{tabular}{ll}
+    \hline
+    \multicolumn{2}{|l|}{Cursor positioning} \\ 
+    \hline
+    {}t             & Go to next tab position (multiple of 8s)            \\ 
+    \hline
+    {}r             & Carriage Return            \\
+    \hline
+    {}n             & New line          \\
 
-    {clr}        Clear screen        {home}   Move cursor to home (top-left)
-    {d}          Move cursor down    {u}      Move cursor up
-    {r}          Move cursor right   {l}      Move cursor left
+    \end{tabular}
+    \end{table}
 
-    Attributes
+    \begin{table}[]
+    \begin{tabular}{llll}
+    \hline
+    \multicolumn{4}{|l|}{}          \\ 
+    \{clr\}   &     Clear screen      &  \{home\}  & Move cursor to home (top-left) \\
+    \hline
+    \{d\}     &    Move cursor down   & \{u\}      & Move cursor up \\
+    \hline
+    \{r\}     &    Move cursor right  &  \{l\}     & Move cursor left \\
+    \hline
 
-    {rvson}    Reverse attribute ON   {rvsoff}   Reverse attribute OFF
-    {blon}     Blink attribute ON     {bloff}    Blink attribute OFF
-    {ulon}     Underline attribute ON {uloff}    Underline attribute OFF
+    \multicolumn{4}{|l|}{ Attributes }          \\ 
 
-    Colors (default palette 0-15)
-    {blk}    {wht}    {red}   {cyan}  {pur}   
-    {grn}    {blu}    {yel}   {ora}   {brn}    
-    {pink}   {gray1}  {gray2} {lblu}  {lgrn} 
-    {gray3}
+    \{rvson\}  &  Reverse attribute ON   & \{rvsoff\} &  Reverse attribute OFF \\
+    \hline
+    \{blon\}   &  Blink attribute ON     & \{bloff\}  &  Blink attribute OFF    \\ 
+    \hline
+    \{ulon\}   &  Underline attribute ON & \{uloff\}  &  Underline attribute OFF \\
+    \hline
+
+    \multicolumn{4}{|l|}{ Colors (default palette) }          \\ 
+
+    \{blk\}  & \{wht\}  &  \{red\} &  \{cyan\}  \\ 
+    \hline
+    \{pur\}  & \{grn\}  &  \{blu\} &  \{yel\}   \\
+    \hline
+    \{ora\}  & \{brn\}  &  \{pink\} & \{gray1\} \\
+    \hline
+    \{gray2\} &  \{lblu\} &  \{lgrn\} & \{gray3\}
+
+    \end{tabular}
+    \end{table}
+  
     }
 
     \m65libsyntax    {unsigned char cprintf (const unsigned char* format, ...)}
@@ -544,16 +595,28 @@ unsigned char fastcall kbhit (void);
 /** \m65libsummary{getkeymodstate}{ 
    Return the key modifiers state, where bits:
 
-    Bit           Meaning             Constant
-    ----------------------------------------------------
-    0             Right SHIFT state   KEYMOD_RSHIFT
-    1             Left  SHIFT state   KEYMOD_LSHIFT
-    2             CTRL state          KEYMOD_CTRL
-    3             MEGA/C= state       KEYMOD_MEGA
-    4             ALT state           KEYMOD_ALT
-    5             NOSCRL state        KEYMOD_NOSCRL
-    6             CAPSLOCK state      KEYMOD_CAPSLOCK
-    7             Reserved            -
+    \begin{table}
+    \begin{tabular}{lll}
+    Bit & Meaning & Constant        \\ 
+    \hline
+    0   & Right SHIFT State & KEYMOD\_RSHIFT \\
+    \hline
+    1   & Left  SHIFT state & KEYMOD\_LSHIFT \\
+    \hline
+    2   & CTRL state        & KEYMOD\_CTRL  \\
+    \hline
+    3   & MEGA state        & KEYMOD\_MEGA \\
+    \hline
+    4   & ALT state         & KEYMOD\_ALT \\
+    \hline
+    5   & NOSCRL state      & KEYMOD\_NOSCRL \\
+    \hline
+    6   & CAPSLOCK state    & KEYMOD\_CAPSLOCK \\
+    \hline
+    7   & Reserved          & - \\
+    \hline
+    \end{tabular}
+    \end{table}
     }
     \m65libsyntax    {unsigned char getkeymodstate(void)}    
     \m65libretval    {A byte with the key modifier state bits.}
@@ -570,12 +633,20 @@ void flushkeybuf(void);
     \m65libparam     {buffer}{Target character buffer preallocated by caller}
     \m65libparam     {buflen}{Target buffer length in characters}
     \m65libparam     {flags}{Flags for input:  (default is accept all printable characters)
+            \begin{table}
+            \begin{tabular}{ll}
             
-            CINPUT_ACCEPT_NUMERIC
-            CINPUT_ACCEPT_LETTER
-            CINPUT_ACCEPT_SYM
-            CINPUT_ACCEPT_ALL     
-            CINPUT_ACCEPT_ALPHA
+            CINPUT_ACCEPT_NUMERIC  & Accepts numeric characters. \\  
+            CINPUT_ACCEPT_LETTER   & Accepts letters.  \\
+            CINPUT_ACCEPT_SYM      & Accepts symbols.  \\ 
+            CINPUT_ACCEPT_ALL      & Accepts all. Equals to CINPUT_ACCEPT_NUMERIC | CINPUT_ACCEPT_LETTER | CINPUT_ACCEPT_SYM \\
+            CINPUT_ACCEPT_ALPHA    & Accepts alphanumeric characters. Equals to CINPUT_ACCEPT_NUMERIC | CINPUT_ACCEPT_LETTER \\
+            CINPUT_NO_AUTOTRANSLATE & Disables the feature that makes cinput to autodisplay uppercase characters 
+                                      when standard lowercase character set is selected  and 
+                                      the user enters letters without the SHIFT key, that would display
+                                      graphic characters instead of alphabetic ones. \\
+            \end{tabular}
+            \end{table}
   }
    \m65libretval    {Successfully read characters in buffer}
 */
