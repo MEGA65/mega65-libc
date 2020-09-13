@@ -1,3 +1,4 @@
+void toggle_rom_write_protect();
 void closeall(void);
 void close(unsigned char fd);
 

@@ -1,6 +1,6 @@
 
 	.setcpu "65C02"
-	.export _closeall, _open, _close, _read512
+	.export _closeall, _open, _close, _read512, _toggle_rom_write_protect
 
 	.include "zeropage.inc"
 	
@@ -76,6 +76,14 @@ _closeall:
 	LDX #$00
 	RTS
 
+_toggle_rom_write_protect:
+	jsr mega65_io_enable
+	lda #$70
+	STA $d640
+	nop
+	ldx #0
+	rts
+	
 _read512:
 
 	;;  Get pointer to buffer
