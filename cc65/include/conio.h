@@ -15,8 +15,8 @@
     You should have received a copy of the GNU Lesser General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  
-    Version   0.6.5
-    Date      2020-08-03
+    Version   0.8.1
+    Date      2020-11-07
 
     CHANGELOG
 
@@ -39,6 +39,8 @@
 
     v0.8        Fixed documentation. COLOR_RAM_BASE is 0xFF80000UL to access full 32/64KB space.
                 Added setcolramoffset, getcolramoffset, setcharsetaddr, getcharsetaddr.
+                
+    v0.8.1      Fixed Latex documentation.
 
 */
 
@@ -512,64 +514,47 @@ void cputcxy (unsigned char x, unsigned char y, unsigned char c);
 */
 void cputncxy (unsigned char x, unsigned char y, unsigned char count, unsigned char c);
 
-/** \m65libsummary{cprintf}{Prints formatted output. 
-    
-    Escape strings can be used to modify attributes, move cursor,etc,
-    similar to PRINT in CBM BASIC. Available escape codes:
-   
-    Cursor positioning 
+/** \m65libsummary{cprintf}{Prints formatted output. \\
+    Escape strings can be used to modify attributes, move cursor, etc similar to PRINT in CBM BASIC. 
+    }
 
-    \begin{table}[]
+    \m65libsyntax    {unsigned char cprintf (const unsigned char* format, ...)}
+    \m65libparam     {format}{The string to output. The available escape codes are: \\
+    %<
+    \textbf{Cursor positioning} \\
     \begin{tabular}{ll}
-    \hline
-    \multicolumn{2}{|l|}{Cursor positioning} \\ 
-    \hline
-    {}t             & Go to next tab position (multiple of 8s)            \\ 
-    \hline
-    {}r             & Carriage Return            \\
-    \hline
-    {}n             & New line          \\
-
+    \textbackslash t             & Go to next tab position (multiple of 8s)            \\ 
+    \textbackslash r             & Carriage Return            \\
+    \textbackslash n             & New line          \\
     \end{tabular}
-    \end{table}
-
-    \begin{table}[]
+    
     \begin{tabular}{llll}
-    \hline
-    \multicolumn{4}{|l|}{}          \\ 
-    \{clr\}   &     Clear screen      &  \{home\}  & Move cursor to home (top-left) \\
-    \hline
-    \{d\}     &    Move cursor down   & \{u\}      & Move cursor up \\
-    \hline
-    \{r\}     &    Move cursor right  &  \{l\}     & Move cursor left \\
-    \hline
+    \texttt{\{clr\}}   &     Clear screen      &  \texttt{\{home\}}  & Move cursor to home (top-left) \\
+    \texttt{\{d\}}     &    Move cursor down   & \texttt{\{u\}}      & Move cursor up \\
+    \texttt{\{r\}}     &    Move cursor right  & \texttt{\{l\}}     & Move cursor left \\
+    
+    \end{tabular}
+    
+    \textbf{Attributes} \\
+    \begin{tabular}{llll}
+    \texttt{\{rvson\}}  &  Reverse attribute ON   & \texttt{\{rvsoff\}} &  Reverse attribute OFF \\
+    \texttt{\{blon\}}   &  Blink attribute ON     & \texttt{\{bloff\}}  &  Blink attribute OFF    \\ 
+    \texttt{\{ulon\}}   &  Underline attribute ON & \texttt{\{uloff\}}  &  Underline attribute OFF \\
+    \end{tabular}
 
-    \multicolumn{4}{|l|}{ Attributes }          \\ 
-
-    \{rvson\}  &  Reverse attribute ON   & \{rvsoff\} &  Reverse attribute OFF \\
-    \hline
-    \{blon\}   &  Blink attribute ON     & \{bloff\}  &  Blink attribute OFF    \\ 
-    \hline
-    \{ulon\}   &  Underline attribute ON & \{uloff\}  &  Underline attribute OFF \\
-    \hline
-
-    \multicolumn{4}{|l|}{ Colors (default palette) }          \\ 
-
-    \{blk\}  & \{wht\}  &  \{red\} &  \{cyan\}  \\ 
-    \hline
-    \{pur\}  & \{grn\}  &  \{blu\} &  \{yel\}   \\
-    \hline
-    \{ora\}  & \{brn\}  &  \{pink\} & \{gray1\} \\
-    \hline
-    \{gray2\} &  \{lblu\} &  \{lgrn\} & \{gray3\}
+    \textbf{Colors (default palette)} \\
+    \begin{tabular}{llll}
+    \texttt{\{blk\}}  & \texttt{\{wht\}}  &  \texttt{\{red\}} &  \texttt{\{cyan\}}  \\ 
+    \texttt{\{pur\}}  & \texttt{\{grn\}}  &  \texttt{\{blu\}} &  \texttt{\{yel\}}   \\
+    \texttt{\{ora\}}  & \texttt{\{brn\}}  &  \texttt{\{pink\}} & \texttt{\{gray1\}} \\
+    \texttt{\{gray2\}} &  \texttt{\{lblu\}} &  \texttt{\{lgrn\}} & \texttt{\{gray3\}}
 
     \end{tabular}
     \end{table}
   
+    %>
+    
     }
-
-    \m65libsyntax    {unsigned char cprintf (const unsigned char* format, ...)}
-    \m65libparam     {format}{The string to output. See escape codes for formatting options.}
     \m65libremarks   {Currently no argument replacement is done with the variable arguments.}
 */
 unsigned char cprintf (const unsigned char* format, ...);
@@ -593,33 +578,23 @@ unsigned char fastcall kbhit (void);
 
 
 /** \m65libsummary{getkeymodstate}{ 
-   Return the key modifiers state, where bits:
-
-    \begin{table}
-    \begin{tabular}{lll}
-    Bit & Meaning & Constant        \\ 
-    \hline
-    0   & Right SHIFT State & KEYMOD\_RSHIFT \\
-    \hline
-    1   & Left  SHIFT state & KEYMOD\_LSHIFT \\
-    \hline
-    2   & CTRL state        & KEYMOD\_CTRL  \\
-    \hline
-    3   & MEGA state        & KEYMOD\_MEGA \\
-    \hline
-    4   & ALT state         & KEYMOD\_ALT \\
-    \hline
-    5   & NOSCRL state      & KEYMOD\_NOSCRL \\
-    \hline
-    6   & CAPSLOCK state    & KEYMOD\_CAPSLOCK \\
-    \hline
-    7   & Reserved          & - \\
-    \hline
-    \end{tabular}
-    \end{table}
-    }
+   Return the key modifiers state.} 
     \m65libsyntax    {unsigned char getkeymodstate(void)}    
-    \m65libretval    {A byte with the key modifier state bits.}
+    \m65libretval    {A byte with the key modifier state bits, 
+    where bits:
+   %<
+    \begin{tabular}{lll}
+    \textbf{Bit} & \textbf{Meaning} & \textbf{Constant}        \\ 
+    0   & Right SHIFT State & \texttt{KEYMOD\_RSHIFT} \\
+    1   & Left  SHIFT state & \texttt{KEYMOD\_LSHIFT} \\
+    2   & CTRL state        & \texttt{KEYMOD\_CTRL}  \\
+    3   & MEGA state        & \texttt{KEYMOD\_MEGA} \\
+    4   & ALT state         & \texttt{KEYMOD\_ALT} \\
+    5   & NOSCRL state      & \texttt{KEYMOD\_NOSCRL} \\
+    6   & CAPSLOCK state    & \texttt{KEYMOD\_CAPSLOCK} \\
+    7   & Reserved          & - \\
+    \end{tabular}        
+    %>}
 */
 unsigned char getkeymodstate(void);
 
@@ -633,22 +608,22 @@ void flushkeybuf(void);
     \m65libparam     {buffer}{Target character buffer preallocated by caller}
     \m65libparam     {buflen}{Target buffer length in characters}
     \m65libparam     {flags}{Flags for input:  (default is accept all printable characters)
-            \begin{table}
-            \begin{tabular}{ll}
-            
-            CINPUT_ACCEPT_NUMERIC  & Accepts numeric characters. \\  
-            CINPUT_ACCEPT_LETTER   & Accepts letters.  \\
-            CINPUT_ACCEPT_SYM      & Accepts symbols.  \\ 
-            CINPUT_ACCEPT_ALL      & Accepts all. Equals to CINPUT_ACCEPT_NUMERIC | CINPUT_ACCEPT_LETTER | CINPUT_ACCEPT_SYM \\
-            CINPUT_ACCEPT_ALPHA    & Accepts alphanumeric characters. Equals to CINPUT_ACCEPT_NUMERIC | CINPUT_ACCEPT_LETTER \\
-            CINPUT_NO_AUTOTRANSLATE & Disables the feature that makes cinput to autodisplay uppercase characters 
-                                      when standard lowercase character set is selected  and 
-                                      the user enters letters without the SHIFT key, that would display
-                                      graphic characters instead of alphabetic ones. \\
-            \end{tabular}
-            \end{table}
+            %<
+            \texttt{CINPUT\_ACCEPT\_NUMERIC} \\ 
+            Accepts numeric characters. \\ \\
+            \texttt{CINPUT\_ACCEPT\_LETTER}  \\  
+            Accepts letters.  \\ \\
+            \texttt{CINPUT\_ACCEPT\_SYM}  \\   
+            Accepts symbols.  \\ \\
+            \texttt{CINPUT\_ACCEPT\_ALL}\\
+            Accepts all. Equals to \texttt{CINPUT\_ACCEPT\_NUMERIC \textbar CINPUT\_ACCEPT\_LETTER \textbar CINPUT\_ACCEPT\_SYM} \\ \\
+            \texttt{CINPUT\_ACCEPT\_ALPHA} \\
+            Accepts alphanumeric characters. Equals to \texttt{CINPUT\_ACCEPT\_NUMERIC \textbar CINPUT\_ACCEPT\_LETTER} \\ \\
+            \texttt{CINPUT\_NO\_AUTOTRANSLATE}\\
+            Disables the feature that makes cinput to autodisplay uppercase characters when standard lowercase character set is selected  and the user enters letters without the SHIFT key, that would display graphic characters instead of alphabetic ones. \\
+            }%>
   }
-   \m65libretval    {Successfully read characters in buffer}
+   \m65libretval    {Count of successfully read characters in buffer}
 */
 
 unsigned char cinput(char* buffer, unsigned char buflen, unsigned char flags);
