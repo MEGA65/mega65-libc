@@ -114,8 +114,10 @@ void setrtc(struct m65_tm *tm)
     lpoke(0xffd7113,tobcd(tm->tm_mday+1));
     usleep(I2CDELAY);
     lpoke(0xffd7114,tobcd(tm->tm_mon));
-    usleep(I2CDELAY);
-    lpoke(0xffd7115,tobcd(tm->tm_year-100));
+    if (tm->tm_year>=100&&tm->tm_year<=355) {
+      usleep(I2CDELAY);
+      lpoke(0xffd7115,tobcd(tm->tm_year-100));
+    }
     usleep(I2CDELAY);
     lpoke(0xffd7116,tobcd(tm->tm_wday));
     usleep(I2CDELAY);
