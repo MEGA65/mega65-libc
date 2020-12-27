@@ -51,7 +51,7 @@ void getrtc(struct m65_tm *tm)
   tm->tm_isdst=0;
   
   switch (detect_target()) {
-  case TARGET_MEGA65R2:
+  case TARGET_MEGA65R2: case TARGET_MEGA65R3:
     tm->tm_sec = unbcd(lpeek_debounced(0xffd7110));
     tm->tm_min = unbcd(lpeek_debounced(0xffd7111));
     tm->tm_hour = lpeek_debounced(0xffd7112);
@@ -83,7 +83,7 @@ void setrtc(struct m65_tm *tm)
   if (!tm) return;
 
   switch (detect_target()) {
-  case TARGET_MEGA65R2:
+  case TARGET_MEGA65R2: case TARGET_MEGA65R3:
     // Unlock RTC registers
     while(lpeek(0xffd71ff)) continue;
     lpoke(0xffd7118,0x41);
