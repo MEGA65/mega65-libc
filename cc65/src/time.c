@@ -8,6 +8,9 @@
 #include <memory.h>
 #include <time.h>
 #include <targets.h>
+#include <hal.h>
+
+#define I2CDELAY 5000L
 
 unsigned char bcd_work;
 
@@ -85,37 +88,37 @@ void setrtc(struct m65_tm *tm)
   switch (detect_target()) {
   case TARGET_MEGA65R2: case TARGET_MEGA65R3:
     // Unlock RTC registers
-    while(lpeek(0xffd71ff)) continue;
+    usleep(I2CDELAY);
     lpoke(0xffd7118,0x41);
     
-    while(lpeek(0xffd71ff)) continue;
+    usleep(I2CDELAY);
     lpoke(0xffd7110,tobcd(tm->tm_sec));
-    while(lpeek(0xffd71ff)) continue;
+    usleep(I2CDELAY);
     lpoke(0xffd7111,tobcd(tm->tm_min));
-    while(lpeek(0xffd71ff)) continue;
     if (lpeek_debounced(0xffd7112)&0x80) {
+      usleep(I2CDELAY);
       lpoke(0xffd7112,tobcd(tm->tm_hour)|0x80);
     } else {
       if (tm->tm_hour>=12) {
 	// PM
+	usleep(I2CDELAY);
 	lpoke(0xffd7112,tobcd(tm->tm_hour-12)|0x20);
       } else {
 	// AM
+	usleep(I2CDELAY);
 	lpoke(0xffd7112,tobcd(tm->tm_hour));
       }
     }
-    while(!lpeek(0xffd3610)) continue;
-
     
-    while(lpeek(0xffd71ff)) continue;
+    usleep(I2CDELAY);
     lpoke(0xffd7113,tobcd(tm->tm_mday+1));
-    while(lpeek(0xffd71ff)) continue;
+    usleep(I2CDELAY);
     lpoke(0xffd7114,tobcd(tm->tm_mon));
-    while(lpeek(0xffd71ff)) continue;
+    usleep(I2CDELAY);
     lpoke(0xffd7115,tobcd(tm->tm_year-100));
-    while(lpeek(0xffd71ff)) continue;
+    usleep(I2CDELAY);
     lpoke(0xffd7116,tobcd(tm->tm_wday));
-    while(lpeek(0xffd71ff)) continue;
+    usleep(I2CDELAY);
     if (tm->tm_isdst) {
       lpoke(0xffd7117,lpeek_debounced(0xffd7117)|0x20);
     } else {
@@ -123,7 +126,7 @@ void setrtc(struct m65_tm *tm)
     }
 
     // Re-lock RTC registers
-    while(lpeek(0xffd71ff)) continue;
+    usleep(I2CDELAY);
     lpoke(0xffd7118,0x01);
     
     break;
