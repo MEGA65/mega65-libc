@@ -1,6 +1,6 @@
 
 	.setcpu "65C02"
-	.export _closeall, _open, _close, _read512, _toggle_rom_write_protect
+	.export _closeall, _open, _close, _read512, _toggle_rom_write_protect, _chdir, _chdirroot
 
 	.include "zeropage.inc"
 	
@@ -199,4 +199,48 @@ _close:
 	NOP
 	LDX #$00
 	RTS
+
+_chdirroot:
+	;; Change to root directory of volume
+
+	lda #$3C
+	sta $d640
+	nop
+
+	ldx #$00
+	rts
 	
+_chdir:
+
+        ;; Get pointer to file name
+	sta ptr1+0
+	stx ptr1+1
+	
+	jsr cc65_copy_ptr1_string_to_0100
+	jsr setname_0100	
+
+	;; Find file
+	; Look for file on FAT file system via hypervisor calls
+	lda #$34
+	sta $d640
+	nop
+	bcs chdir_file_exists
+
+	;; No such file.
+	lda #$ff
+	tax
+	rts
+
+chdir_file_exists:	
+	;; Actually call chdir
+	jsr mega65_io_enable
+	lda #$0C
+	sta $d640
+	nop
+	
+	LDA #$18
+	STA $D640
+	NOP
+	
+	LDX #$00
+	RTS
