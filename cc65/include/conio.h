@@ -42,6 +42,8 @@
                 
     v0.8.1      Fixed Latex documentation.
 
+    v0.9        Added sethotregs.
+
 */
 
 #ifndef M65LIBC_CONIO_H
@@ -255,8 +257,17 @@ void fastcall setscreensize(unsigned char width, unsigned char height);
 /** \m65libsummary{set16bitcharmode}{Sets or clear the 16-bit character mode}
     \m65libsyntax    {void set16bitcharmode(unsigned char f)}
     \m65libparam     {f}{Set true to set the 16-bit character mode}
+    \m65libremarks   {This will trigger a video parameter reset if HOTREG is ENABLED. See sethotregs function.}
 */
 void fastcall set16bitcharmode(unsigned char f);
+
+/** \m65libsummary{sethotregs}{Sets or clear the hot-register behavior of the VIC-IV chip.}
+    \m65libsyntax    {void set16bitcharmode(unsigned char f)}
+    \m65libparam     {f}{Set true to enable the hotreg behavior}
+    \m65libremarks   {When this mode is ENABLED a video mode reset will be triggered when touching $D011, $D016, $D018, $D031 or the VIC-II bank bits of $DD00. }
+*/
+void fastcall sethotregs(unsigned char f);
+
 
 /** \m65libsummary{setextendedattrib}{Sets or clear the VIC-III extended attributes mode to support blink, underline, bold and highlight.}
     \m65libsyntax    {void setextendedattrib(unsigned char f)}

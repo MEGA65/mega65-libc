@@ -30,6 +30,8 @@
 #define IS_16BITCHARSET     (PEEK(VIC_BASE + 0x54) & 1)
 #define SET_16BITCHARSET()  POKE(VIC_BASE + 0x54, PEEK(VIC_BASE + 0x54) |1)
 #define CLEAR_16BITCHARSET() POKE(VIC_BASE + 0x54, PEEK(VIC_BASE + 0x54) & 0xFE)
+#define SET_HOTREGS()       POKE(VIC_BASE + 0x5D, PEEK(VIC_BASE + 0x5D) | 128)
+#define CLEAR_HOTREGS()     POKE(VIC_BASE + 0x5D, PEEK(VIC_BASE + 0x5D) & 127)
 #define IS_EXTATTR()        (PEEK(VIC_BASE + 0x31) & 32)
 #define SET_EXTATTR()        POKE(VIC_BASE + 0x31, PEEK(VIC_BASE + 0x31) | 32)
 #define CLEAR_EXTATTR()      POKE(VIC_BASE + 0x31, PEEK(VIC_BASE + 0x31) & 0xDF)
@@ -235,6 +237,14 @@ void set16bitcharmode(unsigned char f)
         SET_16BITCHARSET();
     else
         CLEAR_16BITCHARSET();
+}
+
+void sethotregs(unsigned char f)
+{
+    if (f)
+        SET_HOTREGS();
+    else
+        CLEAR_HOTREGS();
 }
 
 void setextendedattrib(unsigned char f)
