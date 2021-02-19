@@ -463,15 +463,16 @@ void cputdec(long n, unsigned char padding, unsigned char leadingZeros)
     unsigned char buffer[11];
     unsigned char rem = 0, i = 0;
     char digit = 9;
+    padding = 0;  // NOTE: done to suppress compiler warning
     buffer[10] = '\0';
     do
     {
         rem = n % 10;
         n /= 10;
         buffer[digit--] = hexDigits[rem];
-    } while ( (digit >= 0) && (n != 0) );
+    } while ( ((int)digit >= 0) && (n != 0) );
 
-    while ( (digit >= 0) && (leadingZeros--))
+    while ( ((int)digit >= 0) && (leadingZeros--))
     {
         buffer[digit--] = hexDigits[0];
     }
@@ -601,8 +602,8 @@ void flushkeybuf(void)
 unsigned char cinput(char* buffer, unsigned char buflen, unsigned char flags)
 {
     register unsigned char numch = 0, i, ch;
-    const sx = wherex();
-    const sy = wherey();
+    const int sx = wherex();
+    const int sy = wherey();
 
     if (buffer == NULL || buflen == 0 )
         return 0;
