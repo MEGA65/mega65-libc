@@ -1,6 +1,6 @@
 /*  CONIO.H style Text mode support  for the Mega65 libC
 
-    Copyright (c) 2020 Hernán Di Pietro
+    Copyright (c) 2020-2021 Hernán Di Pietro
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Lesser General Public License as published by
@@ -15,8 +15,8 @@
     You should have received a copy of the GNU Lesser General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  
-    Version   0.8.1
-    Date      2020-11-07
+    Version   0.9.1
+    Date      2021-02-27
 
     CHANGELOG
 
@@ -43,7 +43,8 @@
     v0.8.1      Fixed Latex documentation.
 
     v0.9        Added sethotregs.
-
+    
+    v0.9.1      Fixed cinput buffer overrun bug and documentation.
 */
 
 #ifndef M65LIBC_CONIO_H
@@ -617,7 +618,7 @@ void flushkeybuf(void);
 /** \m65libsummary{cinput}{Get input from keyboard, printing incoming characters at current position.}
     \m65libsyntax    {unsigned char cinput(char* buffer, unsigned char buflen, unsigned char flags)}
     \m65libparam     {buffer}{Target character buffer preallocated by caller}
-    \m65libparam     {buflen}{Target buffer length in characters}
+    \m65libparam     {buflen}{Target buffer length in characters, including the null character terminator}
     \m65libparam     {flags}{Flags for input:  (default is accept all printable characters)
             %<
             \texttt{CINPUT\_ACCEPT\_NUMERIC} \\ 

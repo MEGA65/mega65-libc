@@ -1,6 +1,6 @@
 /*  CONIO.H style Text mode support  for the Mega65 libC
 
-    Copyright (c) 2020 Hernán Di Pietro
+    Copyright (c) 2020-2021 Hernán Di Pietro
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Lesser General Public License as published by
@@ -632,7 +632,7 @@ unsigned char cinput(char* buffer, unsigned char buflen, unsigned char flags)
             cputc(' ');
             buffer[--numch] = '\0';
         }
-        else if (numch < buflen)
+        else if (numch < buflen - 1)
         {
             if ((((ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z')) && (flags & CINPUT_ACCEPT_LETTER)) ||
                      ((ch >= '0' && ch <= '9') && (flags & CINPUT_ACCEPT_NUMERIC)) ||
