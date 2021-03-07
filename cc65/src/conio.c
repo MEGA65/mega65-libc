@@ -480,12 +480,12 @@ void cputdec(long n, unsigned char padding, unsigned char leadingZeros)
     cputs(&buffer[digit + 1]);
 }
 
-void cputs(const char *s)
+void cputs(const unsigned char *s)
 {
     cputsxy(g_curX, g_curY, s);
 }
 
-void cputsxy(unsigned char x, unsigned char y, const char *s)
+void cputsxy(unsigned char x, unsigned char y, const unsigned char *s)
 {
     const unsigned char len = strlen(s);
     const unsigned int offset = (y * (unsigned int) g_curScreenW) + x;
@@ -495,7 +495,7 @@ void cputsxy(unsigned char x, unsigned char y, const char *s)
     g_curX = (x + len) % g_curScreenW;
 }
 
-void cputcxy (unsigned char x, unsigned char y, char c)
+void cputcxy (unsigned char x, unsigned char y, unsigned char c)
 {
     const unsigned int offset = (y * (unsigned int) g_curScreenW) + x;
     lpoke(SCREEN_RAM_BASE + offset, c);
@@ -599,7 +599,7 @@ void flushkeybuf(void)
         POKE(0xD610U,0);
 }
 
-unsigned char cinput(char* buffer, unsigned char buflen, unsigned char flags)
+unsigned char cinput(unsigned char* buffer, unsigned char buflen, unsigned char flags)
 {
     register unsigned char numch = 0, i, ch;
     const int sx = wherex();

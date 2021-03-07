@@ -45,6 +45,8 @@
     v0.9        Added sethotregs.
     
     v0.9.1      Fixed cinput buffer overrun bug and documentation.
+
+    v0.9.2      Fixed CC65 2.19 mismatched header types.  Testing suite added.
 */
 
 #ifndef M65LIBC_CONIO_H
@@ -494,20 +496,20 @@ void cputhex(long n, unsigned char prec);
 void cputdec(long n, unsigned char padding, unsigned char leadingZ);
 
 /** \m65libsummary{cputs}{Output a string at current position}
-    \m65libsyntax    {void cputs(const char* s)}
+    \m65libsyntax    {void cputs(const unsigned char* s)}
     \m65libparam     {s}{The string to print}
     \m65libremarks   {No pointer check is performed.  If s is null or invalid, behavior is undefined }
 */
-void fastcall cputs(const char* s);
+void fastcall cputs(const unsigned char* s);
 
 /** \m65libsummary{cputsxy}{Output a string at X,Y coordinates}
-    \m65libsyntax    {void cputsxy (unsigned char x, unsigned char y, const char* s)}
+    \m65libsyntax    {void cputsxy (unsigned char x, unsigned char y, const unsigned char* s)}
     \m65libparam     {x}{The X coordinate where string will be printed}
     \m65libparam     {y}{The Y coordinate where string will be printed}
     \m65libparam     {s}{The string to print}
     \m65libremarks   {No pointer check is performed.  If s is null or invalid, behavior is undefined }
 */
-void cputsxy (unsigned char x, unsigned char y, const char* s);
+void cputsxy (unsigned char x, unsigned char y, const unsigned char* s);
 
 /** \m65libsummary{cputcxy}{Output a single character at X,Y coordinates}
     \m65libsyntax    {void cputcxy (unsigned char x, unsigned char y, unsigned char c)}
@@ -638,7 +640,7 @@ void flushkeybuf(void);
    \m65libretval    {Count of successfully read characters in buffer}
 */
 
-unsigned char cinput(char* buffer, unsigned char buflen, unsigned char flags);
+unsigned char cinput(unsigned char* buffer, unsigned char buflen, unsigned char flags);
 
 
 
