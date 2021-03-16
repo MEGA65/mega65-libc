@@ -25,7 +25,7 @@
                 flushkeybuf.
                 Cache screen sizes for faster calls.
                 Added cprintf escape codes for formatted screen colors and attributes.
-                Added proper initialization function.
+                Added proper initialisation function.
                 Fixed a bug where screen was fixed at $8000!
 
     v0.5        Added fillrect, box, cgets, wherex, wherey, togglecase functions.
@@ -181,7 +181,7 @@ typedef struct tagRECT
   Screen configuration and setup
   -----------------------------------------------------------------------*/
 
-/** \m65libsummary{conionit}{Initializes the library internal state}
+/** \m65libsummary{conionit}{Initialises the library internal state}
     \m65libsyntax    {void conioinit(void)}
     \m65libremarks{This must be called before using any conio library function.}
 */
