@@ -15,7 +15,7 @@ void unit_test_report(unsigned short issue, unsigned char sub, unsigned char sta
     __asm__("LDA %v", __tests_out);
     __asm__("STA $D643");
     __asm__("NOP");
-    __tests_out = __status;
+    __tests_out = status;
     __asm__("LDA %v", __tests_out);
     __asm__("STA $D643");
     __asm__("NOP");
