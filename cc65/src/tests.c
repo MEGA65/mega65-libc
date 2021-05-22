@@ -24,7 +24,6 @@ void unit_test_report(unsigned short issue, unsigned char sub, unsigned char sta
   __asm__("NOP");
 }
 
-
 void unit_test_set_current_name(char* name)
 {
   unsigned char* current;
@@ -34,10 +33,14 @@ void unit_test_set_current_name(char* name)
 
   while (*current) {
     __tests_out = *current;
-    fprintf(stderr,"%c\n",__tests_out);
+    fprintf(stderr, "%c\n", __tests_out);
     __asm__("LDA %v", __tests_out);
     __asm__("STA $D643");
     __asm__("NOP");
     current++;
   }
+
+  __asm__("LDA #92");
+  __asm__("STA $D643");
+  __asm__("NOP");
 }
