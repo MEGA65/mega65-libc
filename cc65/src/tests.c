@@ -24,21 +24,32 @@ void unit_test_report(unsigned short issue, unsigned char sub, unsigned char sta
   __asm__("NOP");
 }
 
-void unit_test_set_current_name(char* name)
+void _unit_test_msg(char *msg, char cmd)
 {
-  unsigned char* current;
+  unsigned char *current;
 
-  unit_test_report(0, 0, 0xfe);
-  current = name;
+  unit_test_report(0, 0, cmd);
+  current = msg;
 
-  while (*current) {
-    __tests_out = *current;
+  while (*current)
+  {
+    __tests_out = *current++;
     __asm__("LDA %v", __tests_out);
     __asm__("STA $D643");
     __asm__("NOP");
-    current++;
   }
+
   __asm__("LDA #92");
   __asm__("STA $D643");
   __asm__("NOP");
+}
+
+void unit_test_set_current_name(char *name)
+{
+  _unit_test_msg(name, 0xfe);
+}
+
+void unit_test_log(char *msg)
+{
+  _unit_test_msg(msg, 0xfd);
 }
