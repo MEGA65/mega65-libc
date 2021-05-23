@@ -24,7 +24,7 @@ void unit_test_report(unsigned short issue, unsigned char sub, unsigned char sta
 */
 void unit_test_set_current_name(char *name);
 
-/** \m65libsummary{unit_test_log}{Logs a message on the host machibe}
+/** \m65libsummary{unit_test_log}{Logs a message on the host machine}
     \m65libsyntax    {void unit_test_log(char *msg);}
     \m65libparam     {msg}{The message to be logged}
 */
