@@ -3,6 +3,11 @@
 #include <stdio.h>
 
 unsigned char __tests_out;
+unsigned short __ut_issueNum;
+unsigned char __ut_subissue;
+
+#define POKE(a, v) *((uint8_t*)a) = (uint8_t)v
+#define PEEK(a) ((uint8_t)(*((uint8_t*)a)))
 
 void unit_test_report(unsigned short issue, unsigned char sub, unsigned char status)
 {
@@ -52,4 +57,34 @@ void unit_test_set_current_name(char *name)
 void unit_test_log(char *msg)
 {
   _unit_test_msg(msg, 0xfd);
+}
+
+void unit_test_setup(char *testName, unsigned short issueNum)
+{
+  POKE(0xD02F, 0x47);
+  POKE(0xD02F, 0x53);
+  __ut_issueNum = issueNum;
+  __ut_subissue = 0;
+  unit_test_set_current_name(testName);
+  unit_test_report(__ut_issueNum, __ut_subissue, TEST_START);
+}
+
+void unit_test_ok(void)
+{
+  unit_test_report(__ut_issueNum, __ut_subissue, TEST_PASS);
+  ++__ut_subissue;
+}
+
+void unit_test_fail(char *msg)
+{
+  unit_test_report(__ut_issueNum, __ut_subissue, TEST_FAIL);
+  if (msg)
+  {
+    unit_test_log(msg);
+  }
+  ++__ut_subissue;
+}
+
+void unit_test_done(void) {
+    unit_test_report(__ut_issueNum, __ut_subissue, TEST_DONEALL);
 }

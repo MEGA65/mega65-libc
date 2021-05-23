@@ -10,6 +10,7 @@
 #define TEST_SETNAME 0xfe
 #define TEST_DONEALL 0xff
 
+
 /** \m65libsummary{unit_test_report}{Reports unit test result to the host machine}
     \m65libsyntax    {void unit_test_report(unsigned short issue, unsigned char sub, unsigned char status);}
     \m65libparam     {issue}{The issue number that identifies the test issue}
@@ -29,6 +30,12 @@ void unit_test_set_current_name(char *name);
     \m65libparam     {msg}{The message to be logged}
 */
 void unit_test_log(char *msg);
+
+// convenience methods
+void unit_test_setup(char *testName, unsigned short issueNum);
+void unit_test_ok(void);
+void unit_test_fail(char *msg);
+void unit_test_done(void);
 
 
 #endif
