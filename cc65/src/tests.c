@@ -1,6 +1,8 @@
 
 #include <string.h>
 #include <stdio.h>
+#include <stdint.h>
+
 
 unsigned char __tests_out;
 unsigned short __ut_issueNum;
@@ -66,18 +68,18 @@ void unit_test_setup(char *testName, unsigned short issueNum)
   __ut_issueNum = issueNum;
   __ut_subissue = 0;
   unit_test_set_current_name(testName);
-  unit_test_report(__ut_issueNum, __ut_subissue, TEST_START);
+  unit_test_report(__ut_issueNum, __ut_subissue, 0xf0);
 }
 
 void unit_test_ok(void)
 {
-  unit_test_report(__ut_issueNum, __ut_subissue, TEST_PASS);
+  unit_test_report(__ut_issueNum, __ut_subissue, 0xf2);
   ++__ut_subissue;
 }
 
 void unit_test_fail(char *msg)
 {
-  unit_test_report(__ut_issueNum, __ut_subissue, TEST_FAIL);
+  unit_test_report(__ut_issueNum, __ut_subissue, 0xf3);
   if (msg)
   {
     unit_test_log(msg);
@@ -86,5 +88,5 @@ void unit_test_fail(char *msg)
 }
 
 void unit_test_done(void) {
-    unit_test_report(__ut_issueNum, __ut_subissue, TEST_DONEALL);
+    unit_test_report(__ut_issueNum, __ut_subissue, 0xff);
 }
