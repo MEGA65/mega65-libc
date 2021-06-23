@@ -15,8 +15,8 @@
     You should have received a copy of the GNU Lesser General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  
-    Version   0.9.1
-    Date      2021-02-27
+    Version   0.10
+    Date      2021-06-21
 
     CHANGELOG
 
@@ -46,7 +46,10 @@
     
     v0.9.1      Fixed cinput buffer overrun bug and documentation.
 
-    v0.9.2      Fixed CC65 2.19 mismatched header types.  Testing suite added.
+    v0.9.2      Fixed CC65 2.19 mismatched header types. 
+
+    v0.10       Added setpalbank, getpalbank, setpalbanka, getpalbanka, setmapedpal, getmapedpal, setpalentry.
+
 */
 
 #ifndef M65LIBC_CONIO_H
@@ -330,7 +333,6 @@ void fastcall blink(unsigned char enable);
     \m65libsyntax    {void underline(unsigned char c)}  
     \m65libparam     {enable}{0 to disable, 1 to enable}  
     \m65libremarks   {Extended attributes mode must be active. See setextendedattrib.}
-
 */
 void fastcall underline(unsigned char enable);
 
@@ -343,6 +345,57 @@ void fastcall underline(unsigned char enable);
 */
 void cellcolor(unsigned char x, unsigned char y, unsigned char c);
 
+/*------------------------------------------------------------------------
+  Palette management
+  -----------------------------------------------------------------------*/
+/** \m65libsummary{setpalbank}{Set current text/bitmap palette bank (BTPALSEL).}
+    \m65libsyntax    {void setpalbank(unsigned char bank)}  
+    \m65libparam     {bank}{The palette bank to set. Valid values are 0, 1, 2 or 3.}  
+    \m65libremarks   {Use setpalbanka to set alternate text/bitmap palette}
+*/
+void fastcall setpalbank(unsigned char bank);
+
+/** \m65libsummary{setpalbanka}{Set alternate text/bitmap palette bank.}
+    \m65libsyntax    {void setpalbanka(unsigned char bank)}  
+    \m65libparam     {bank}{The palette bank to set. Valid values are 0, 1, 2 or 3.}  
+    \m65libremarks   {Use setpalbank to set main text/bitmap palette}
+*/
+void fastcall setpalbanka(unsigned char bank);
+
+/** \m65libsummary{getpalbank}{Get selected text/bitmap palette bank.}
+    \m65libsyntax    {unsigned char getpalbank(void)}  
+    \m65libremarks   {Use getpalbanka to get alternate text/bitmap selected palette}
+    \m65libretval    {The current selected main text/bitmap palette bank.}
+*/
+unsigned char getpalbank(void);
+
+/** \m65libsummary{getpalbanka}{Get selected alternate text/bitmap palette bank.}
+    \m65libsyntax    {unsigned char getpalbanka(void)}  
+    \m65libremarks   {Use getpalbank to get main text/bitmap selected palette}
+    \m65libretval    {The current selected alternate text/bitmap palette bank.}
+*/
+unsigned char getpalbanka(void);
+
+/** \m65libsummary{setmapedpal}{Set maped-in palette bank at $D100-$D3FF.}
+    \m65libsyntax    {void setmapedpal(unsigned char bank)}  
+    \m65libparam     {bank}{The palette bank to map-in. Valid values are 0, 1, 2 or 3.}  
+*/
+void fastcall setmapedpal(unsigned char bank);
+
+/** \m65libsummary{getmapedpal}{Get maped-in  palette bank at $D100-$D3FF.}
+    \m65libsyntax    {unsigned char getmapedpal(void)}  
+*/
+unsigned char getmapedpal(void);
+
+/** \m65libsummary{setpalentry}{Set color entry for the maped-in palette}
+    \m65libsyntax    {void setpalentry(unsigned char c, unsigned char r, unsigned char g, unsigned char b)}  
+    \m65libparam     {c}{The palette entry index (0-255)}  
+    \m65libparam     {r}{The red component value}  
+    \m65libparam     {g}{The green component value}  
+    \m65libparam     {b}{The blue component value}  
+    \m65libremarks   {Use setmapedmal to bank-in the palette to modify}
+*/
+void fastcall setpalentry(unsigned char c, unsigned char r, unsigned char g, unsigned char b);
 
 /*------------------------------------------------------------------------
   Screen draw operations

@@ -650,3 +650,40 @@ unsigned char cinput(unsigned char* buffer, unsigned char buflen, unsigned char 
 
     return numch;
 }
+
+void setpalbank(unsigned char bank)
+{
+    POKE(0xD070U, (PEEK(0xD070U) & ~0x30) | ( (bank & 0x3) << 4));
+}
+
+void setpalbanka(unsigned char bank)
+{
+    POKE(0xD070U, (PEEK(0xD070U) & ~0x3) | (bank & 0x3) );
+}
+
+unsigned char getpalbank(void) 
+{
+    return (PEEK(0xD070U) & 0x30) >> 4;
+}
+
+unsigned char getpalbanka(void)
+{
+    return PEEK(0xD070U) & 0x3;
+}
+
+void setmapedpal(unsigned char bank)
+{   
+    POKE(0xD070U, (PEEK(0xD070U) & ~0xC0) | ((bank & 0x3) << 6));
+}
+
+unsigned char getmapedpal(void)
+{
+    return PEEK(0xD070U) >> 6;
+}
+
+void setpalentry(unsigned char c, unsigned char r, unsigned char g, unsigned char b)
+{
+    POKE(0xD100U + c, r);
+    POKE(0xD200U + c, g);
+    POKE(0xD300U + c, b);
+}
