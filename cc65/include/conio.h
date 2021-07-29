@@ -631,11 +631,9 @@ void cputncxy (unsigned char x, unsigned char y, unsigned char count, unsigned c
     \texttt{\{gray2\}} &  \texttt{\{lblu\}} &  \texttt{\{lgrn\}} & \texttt{\{gray3\}}
 
     \end{tabular}
-    \end{table}
   
     %>
     
-    }
     \m65libremarks   {Currently no argument replacement is done with the variable arguments.}
 */
 unsigned char cprintf (const unsigned char* format, ...);
@@ -703,7 +701,7 @@ void flushkeybuf(void);
             \texttt{CINPUT\_NO\_AUTOTRANSLATE}\\
             Disables the feature that makes cinput to autodisplay uppercase characters when standard lowercase character set is selected  and the user enters letters without the SHIFT key, that would display graphic characters instead of alphabetic ones. \\
             }%>
-  }
+  
    \m65libretval    {Count of successfully read characters in buffer}
 */
 
