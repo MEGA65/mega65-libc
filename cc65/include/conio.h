@@ -305,6 +305,7 @@ void fastcall bgcolor(unsigned char c);
 /** \m65libsummary{textcolor}{Sets the current text color}
     \m65libsyntax    {void textcolor(unsigned char c)}    
     \m65libparam     {c}{The color to set}
+    \m65libremarks   This function preserves attributes in the upper 4-bits if extended attributes are enabled. See setextendedattrib. 
 */
 void fastcall textcolor(unsigned char c);
 
@@ -335,6 +336,19 @@ void fastcall blink(unsigned char enable);
     \m65libremarks   {Extended attributes mode must be active. See setextendedattrib.}
 */
 void fastcall underline(unsigned char enable);
+
+/** \m65libsummary{altpal}{Enable the alternate-palette attribute}
+    \m65libsyntax    {void altpal(unsigned char c)}  
+    \m65libparam     {enable}{0 to disable, 1 to enable}  
+    \m65libremarks   {Extended attributes mode must be active. See setextendedattrib.}
+*/
+void fastcall altpal(unsigned char enable);
+
+/** \m65libsummary{clearattr}{Clear all text attributes}
+    \m65libsyntax    {void clearattr())}  
+    \m65libremarks   {Extended attributes mode must be active. See setextendedattrib.}
+*/
+void fastcall clearattr(void);
 
 /** \m65libsummary{cellcolor}{Sets the color of a character cell}
     \m65libsyntax    {void cellcolor(unsigned char x, unsigned char y, unsigned char c)}   

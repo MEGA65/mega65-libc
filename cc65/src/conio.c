@@ -320,6 +320,19 @@ void underline(unsigned char enable)
         g_curTextColor &= ~ATTRIB_UNDERLINE;
 }
 
+void altpal(unsigned char enable)
+{
+    if (enable)
+        g_curTextColor |= (ATTRIB_HIGHLIGHT | ATTRIB_REVERSE);
+    else
+        g_curTextColor &= ~(ATTRIB_HIGHLIGHT | ATTRIB_REVERSE);
+}
+
+void clearattr(void)
+{
+    g_curTextColor &= 0x0F;
+}
+
 void gohome(void)
 {
     gotoxy(0,0);
