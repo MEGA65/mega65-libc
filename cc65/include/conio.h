@@ -305,7 +305,7 @@ void fastcall bgcolor(unsigned char c);
 /** \m65libsummary{textcolor}{Sets the current text color}
     \m65libsyntax    {void textcolor(unsigned char c)}    
     \m65libparam     {c}{The color to set}
-    \m65libremarks   This function preserves attributes in the upper 4-bits if extended attributes are enabled. See setextendedattrib. 
+    \m65libremarks   {This function preserves attributes in the upper 4-bits if extended attributes are enabled. See setextendedattrib. }
 */
 void fastcall textcolor(unsigned char c);
 
@@ -632,7 +632,7 @@ void cputncxy (unsigned char x, unsigned char y, unsigned char count, unsigned c
 
     \end{tabular}
   
-    %>
+    %>}
     
     \m65libremarks   {Currently no argument replacement is done with the variable arguments.}
 */
@@ -700,7 +700,7 @@ void flushkeybuf(void);
             Accepts alphanumeric characters. Equals to \texttt{CINPUT\_ACCEPT\_NUMERIC \textbar CINPUT\_ACCEPT\_LETTER} \\ \\
             \texttt{CINPUT\_NO\_AUTOTRANSLATE}\\
             Disables the feature that makes cinput to autodisplay uppercase characters when standard lowercase character set is selected  and the user enters letters without the SHIFT key, that would display graphic characters instead of alphabetic ones. \\
-            }%>
+            %>}
   
    \m65libretval    {Count of successfully read characters in buffer}
 */
