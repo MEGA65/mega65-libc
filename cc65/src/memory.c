@@ -101,12 +101,16 @@ void lcopy(long source_address, long destination_address,
   dmalist.sub_cmd=0;
   dmalist.source_addr=source_address&0xffff;
   dmalist.source_bank=(source_address>>16)&0x0f;
-  if (source_address>=0xd000 && source_address<0xe000)
-    dmalist.source_bank|=0x80;  
+  // User should provide 28-bit address for IO
+  // (otherwise we can't DMA to/from RAM under IO)
+  //  if (source_address>=0xd000 && source_address<0xe000)
+  //    dmalist.source_bank|=0x80;  
   dmalist.dest_addr=destination_address&0xffff;
   dmalist.dest_bank=(destination_address>>16)&0x0f;
-  if (destination_address>=0xd000 && destination_address<0xe000)
-    dmalist.dest_bank|=0x80;
+  // User should provide 28-bit address for IO  
+  // (otherwise we can't DMA to/from RAM under IO)
+  //  if (destination_address>=0xd000 && destination_address<0xe000)
+  //    dmalist.dest_bank|=0x80;
 
   do_dma();
   return;
@@ -128,8 +132,10 @@ void lfill(long destination_address, unsigned char value,
   dmalist.source_addr=value;
   dmalist.dest_addr=destination_address&0xffff;
   dmalist.dest_bank=(destination_address>>16)&0x0f;
-  if (destination_address>=0xd000 && destination_address<0xe000)
-    dmalist.dest_bank|=0x80;
+  // User should provide 28-bit address for IO  
+  // (otherwise we can't DMA to/from RAM under IO)
+  //  if (destination_address>=0xd000 && destination_address<0xe000)
+  //    dmalist.dest_bank|=0x80;
 
   do_dma();
   return;
