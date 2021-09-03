@@ -511,7 +511,7 @@ fciInfo *fc_loadFCI(char *filename, himemPtr address, himemPtr paletteAddress)
     numRows = fcbuf[5];
     numColumns = fcbuf[6];
     fciOptions = fcbuf[7];
-    numColours = fcbuf[8];
+    numColours = fcbuf[8]+1;
     reservedSysPalette = fciOptions & 2;
 
     palsize = numColours * 3;
