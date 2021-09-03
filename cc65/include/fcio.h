@@ -331,7 +331,7 @@ void fc_loadPalette(himemPtr adr, byte size, byte reservedSysPalette);
  * @param green green (0-255)
  * @param blue blue (0-255)
  */
-void fc_setPalette(byte num, byte red, byte green, byte blue);
+void fc_setPalette(int num, byte red, byte green, byte blue);
 
 /**
  * @brief load FCI palette into the VIC

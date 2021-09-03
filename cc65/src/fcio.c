@@ -18,9 +18,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-
 #define __fastcall__ // to silence stupid vscode warning
-
 
 #include <fcio.h>
 #include <memory.h>
@@ -103,42 +101,48 @@ int gBottomBorder;
 bool csrflag; // cursor on/off
 bool autoCR;
 
-unsigned int readExt(FILE *inFile, himemPtr addr, byte skipCBMAddressBytes) {
+unsigned int readExt(FILE *inFile, himemPtr addr, byte skipCBMAddressBytes)
+{
 
     unsigned int readBytes;
     unsigned int overallRead;
     unsigned long insertPos;
 
-    insertPos= addr;
-    overallRead= 0;
+    insertPos = addr;
+    overallRead = 0;
 
-    if (skipCBMAddressBytes) {
+    if (skipCBMAddressBytes)
+    {
         fread(fcbuf, 1, 2, inFile);
     }
 
-    do {
-        readBytes= fread(fcbuf, 1, FCBUFSIZE, inFile);
-        if (readBytes) {
-            overallRead+= readBytes;
+    do
+    {
+        readBytes = fread(fcbuf, 1, FCBUFSIZE, inFile);
+        if (readBytes)
+        {
+            overallRead += readBytes;
             lcopy((long)fcbuf, insertPos, readBytes);
-            insertPos+= readBytes;
+            insertPos += readBytes;
         }
     } while (readBytes);
 
     return overallRead;
 }
 
-unsigned int loadExt(char *filename, himemPtr addr, byte skipCBMAddressBytes) {
+unsigned int loadExt(char *filename, himemPtr addr, byte skipCBMAddressBytes)
+{
 
     FILE *inFile;
     word readBytes;
 
-    inFile= fopen(filename, "r");
-    readBytes= readExt(inFile, addr, skipCBMAddressBytes);
+    inFile = fopen(filename, "r");
+    readBytes = readExt(inFile, addr, skipCBMAddressBytes);
     fclose(inFile);
 
-    if (readBytes==0) {
-        fc_fatal("0 bytes from %s",filename);
+    if (readBytes == 0)
+    {
+        fc_fatal("0 bytes from %s", filename);
     }
 
     return readBytes;
@@ -514,9 +518,9 @@ fciInfo *fc_loadFCI(char *filename, himemPtr address, himemPtr paletteAddress)
     lastColourIndex = fcbuf[8];
     reservedSysPalette = fciOptions & 2;
 
-    palsize = (lastColourIndex+1) * 3;
+    palsize = (lastColourIndex + 1) * 3;
     palette = (byte *)malloc(palsize);
-    fread(palette, 3, lastColourIndex+1, fcifile);
+    fread(palette, 3, lastColourIndex + 1, fcifile);
 
     if (!paletteAddress)
     {
@@ -590,14 +594,17 @@ void fc_loadPalette(himemPtr adr, byte size, byte reservedSysPalette)
 {
     himemPtr colAdr;
     byte start;
+    int i;
     start = reservedSysPalette ? 16 : 0;
 
-    for (cgi = start; cgi < size; ++cgi)
+    for (i = start; i <= size; ++i)
     {
-        colAdr = cgi * 3;
-        POKE(0xd100u + cgi, nyblswap(lpeek(adr + colAdr)));     //  palette[colAdr];
-        POKE(0xd200u + cgi, nyblswap(lpeek(adr + colAdr + 1))); // palette[colAdr + 1];
-        POKE(0xd300u + cgi, nyblswap(lpeek(adr + colAdr + 2))); // palette[colAdr + 2];
+        colAdr = i * 3;
+        // fc_printf("\n%d (%lx) : %2x %2x %2x", i, adr + colAdr, lpeek(adr + colAdr), lpeek(adr + colAdr + 1), lpeek(adr + colAdr + 2));
+        // fc_getkey();
+        POKE(0xd100u + i, nyblswap(lpeek(adr + colAdr)));     //  palette[colAdr];
+        POKE(0xd200u + i, nyblswap(lpeek(adr + colAdr + 1))); // palette[colAdr + 1];
+        POKE(0xd300u + i, nyblswap(lpeek(adr + colAdr + 2))); // palette[colAdr + 2];
     }
 }
 
@@ -1009,7 +1016,7 @@ void fc_center(byte x, byte y, byte width, char *text)
     fc_puts(text);
 }
 
-void fc_setPalette(byte num, byte red, byte green, byte blue)
+void fc_setPalette(int num, byte red, byte green, byte blue)
 {
     POKE(0xd100U + num, nyblswap(red));
     POKE(0xd200U + num, nyblswap(green));
