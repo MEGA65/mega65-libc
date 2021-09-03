@@ -335,12 +335,12 @@ char asciiToPetscii(byte c)
 
 void adjustBorders(byte extraRows, byte extraColumns)
 {
-    // TODO: support for extra columns
 
     byte extraTopRows = 0;
     byte extraBottomRows = 0;
     int newBottomBorder;
 
+    extraColumns++; // TODO: support for extra columns
     extraBottomRows = extraRows / 2;
     extraTopRows = extraRows - extraBottomRows;
 
@@ -479,7 +479,7 @@ void fc_addGraphicsRect(byte x0, byte y0, byte width, byte height,
 
 fciInfo *fc_loadFCI(char *filename, himemPtr address, himemPtr paletteAddress)
 {
-    static byte numColumns, numRows, numColours;
+    static byte numColumns, numRows, lastColourIndex;
     static byte fciOptions;
     static byte reservedSysPalette;
 
@@ -511,12 +511,12 @@ fciInfo *fc_loadFCI(char *filename, himemPtr address, himemPtr paletteAddress)
     numRows = fcbuf[5];
     numColumns = fcbuf[6];
     fciOptions = fcbuf[7];
-    numColours = fcbuf[8]+1;
+    lastColourIndex = fcbuf[8];
     reservedSysPalette = fciOptions & 2;
 
-    palsize = numColours * 3;
+    palsize = (lastColourIndex+1) * 3;
     palette = (byte *)malloc(palsize);
-    fread(palette, 3, numColours, fcifile);
+    fread(palette, 3, lastColourIndex+1, fcifile);
 
     if (!paletteAddress)
     {
@@ -563,7 +563,7 @@ fciInfo *fc_loadFCI(char *filename, himemPtr address, himemPtr paletteAddress)
         info->size = bytesRead;
         info->baseAdr = bitmampAdr;
         info->paletteAdr = palAdr;
-        info->paletteSize = numColours;
+        info->paletteSize = lastColourIndex;
         info->reservedSysPalette = reservedSysPalette;
     }
 
