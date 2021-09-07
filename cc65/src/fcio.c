@@ -180,7 +180,7 @@ void fc_init(byte h640, byte v400, fcioConf *config, byte rows, char *reservedBi
     bordercolor(COLOR_BLACK);
 
     fc_screenmode(h640, v400, rows);
-    autoCR = false;
+    autoCR = true;
 
     if (reservedBitmapFile)
     {
@@ -736,6 +736,10 @@ byte fc_wherex() { return gCurrentWin->xc; }
 
 byte fc_wherey() { return gCurrentWin->yc; }
 
+void fc_setAutoCR(bool a) {
+    autoCR = a;
+}
+
 void fc_putc(char c)
 {
     static char out;
@@ -762,13 +766,13 @@ void fc_putc(char c)
 
     if (autoCR)
     {
-        if (gCurrentWin->xc >= gCurrentWin->width)
+        if (gCurrentWin->xc >= gCurrentWin->width-1)
         {
             gCurrentWin->yc++;
             gCurrentWin->xc = 0;
-            if (gCurrentWin->yc > gCurrentWin->height)
+            if (gCurrentWin->yc > gCurrentWin->height-1)
             {
-                gCurrentWin->yc = gCurrentWin->height;
+                gCurrentWin->yc = gCurrentWin->height-1;
                 fc_scrollUp();
             }
         }

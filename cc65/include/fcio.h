@@ -230,6 +230,14 @@ byte fc_wherex();
 byte fc_wherey();
 
 /**
+ * @brief set auto CR
+ * 
+ * @param a whether to automatically issue a CR when the text cursor reaches the right border
+ */
+void fc_setAutoCR(bool a);
+
+
+/**
  * @brief set active window
  * 
  * @param aWin window to activate
