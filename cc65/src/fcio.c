@@ -158,6 +158,10 @@ void fc_init(byte h640, byte v400, fcioConf *config, byte rows, char *reservedBi
 {
     mega65_io_enable();
 
+    puts("\n");       // cancel leftover quote mode from wrapper or whatever
+    cbm_k_bsout(14);  // lowercase
+    cbm_k_bsout(147); // clr
+
     gFcioConfig = config ? config : &stdConfig;
 
     if ((PEEK(53359U) & 128) == 0)
@@ -766,11 +770,11 @@ void fc_putc(char c)
 
     if (autoCR)
     {
-        if (gCurrentWin->xc >= gCurrentWin->width-1)
+        if (gCurrentWin->xc >= gCurrentWin->width)
         {
             gCurrentWin->yc++;
             gCurrentWin->xc = 0;
-            if (gCurrentWin->yc > gCurrentWin->height-1)
+            if (gCurrentWin->yc >= gCurrentWin->height)
             {
                 gCurrentWin->yc = gCurrentWin->height-1;
                 fc_scrollUp();
