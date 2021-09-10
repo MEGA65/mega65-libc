@@ -740,7 +740,8 @@ byte fc_wherex() { return gCurrentWin->xc; }
 
 byte fc_wherey() { return gCurrentWin->yc; }
 
-void fc_setAutoCR(bool a) {
+void fc_setAutoCR(bool a)
+{
     autoCR = a;
 }
 
@@ -776,7 +777,7 @@ void fc_putc(char c)
             gCurrentWin->xc = 0;
             if (gCurrentWin->yc >= gCurrentWin->height)
             {
-                gCurrentWin->yc = gCurrentWin->height-1;
+                gCurrentWin->yc = gCurrentWin->height - 1;
                 fc_scrollUp();
             }
         }
@@ -951,6 +952,15 @@ char *fc_input(byte maxlen)
             {
                 if (len < maxlen)
                 {
+                    // fix upper/lowercase
+                    if (current >= 97)
+                    {
+                        current -= 32;
+                    }
+                    else if (current >= 65)
+                    {
+                        current += 32;
+                    }
                     fcbuf[len] = current;
                     fcbuf[len + 1] = 0;
                     fc_putc(current);
@@ -968,6 +978,7 @@ char *fc_input(byte maxlen)
                     fc_gotoxy(gCurrentWin->xc - 1, gCurrentWin->yc);
                     fc_cursor(1);
                     --len;
+                    fcbuf[len]=0;
                 }
             }
         }
