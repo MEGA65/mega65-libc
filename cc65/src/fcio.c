@@ -24,7 +24,6 @@
 #include <memory.h>
 #include <c64.h>
 #include <cbm.h>
-#include <conio.h>
 #include <stdarg.h>
 #include <stddef.h>
 #include <stdio.h>
@@ -180,8 +179,8 @@ void fc_init(byte h640, byte v400, fcioConf *config, byte rows, char *reservedBi
         infoBlocks[cgi] = NULL;
     }
     fc_freeGraphAreas();
-    bgcolor(COLOR_BLACK);
-    bordercolor(COLOR_BLACK);
+    fc_bgcolor(COLOR_BLACK);
+    fc_bordercolor(COLOR_BLACK);
 
     fc_screenmode(h640, v400, rows);
     autoCR = true;
@@ -256,9 +255,8 @@ void fc_fatal(const char *format, ...)
     vsprintf(buf, format, args);
     va_end(args);
     fc_go8bit();
-    bordercolor(2);
-    textcolor(2);
-    bgcolor(0);
+    fc_bordercolor(2);
+    fc_bgcolor(0);
     puts("## fatal error ##");
     puts(buf);
     while (1)
@@ -900,29 +898,32 @@ textwin *fc_makeWin(byte x0, byte y0, byte width, byte height)
     return aWin;
 }
 
-int fc_kbhit()
+byte fc_kbhit()
 {
-    // TODO: implement m65 native keyboard scan
-    return kbhit();
+    return PEEK(0xD610U);
+}
+
+byte fc_cgetc()
+{
+    byte k;
+    while ((k = PEEK(0xD610U)) == 0);
+    POKE(0xD610U, 0);
+    return k;
 }
 
 void fc_emptyBuffer(void)
 {
-    while (kbhit())
+    while (fc_kbhit())
     {
-        cgetc();
+        fc_cgetc();
     }
 }
 
-unsigned char fc_cgetc(void)
-{
-    return cgetc();
-}
 
 char fc_getkey(void)
 {
     fc_emptyBuffer();
-    return cgetc();
+    return fc_cgetc();
 }
 
 int fc_getnum(byte maxlen)
@@ -945,7 +946,7 @@ char *fc_input(byte maxlen)
     fc_cursor(1);
     do
     {
-        current = cgetc();
+        current = fc_cgetc();
         if (current != '\n')
         {
             if (current >= 32)
@@ -978,7 +979,7 @@ char *fc_input(byte maxlen)
                     fc_gotoxy(gCurrentWin->xc - 1, gCurrentWin->yc);
                     fc_cursor(1);
                     --len;
-                    fcbuf[len]=0;
+                    fcbuf[len] = 0;
                 }
             }
         }
@@ -1048,7 +1049,7 @@ char fc_getkeyP(byte x, byte y, const char *prompt)
     fc_gotoxy(x, y);
     fc_textcolor(COLOR_WHITE);
     fc_puts(prompt);
-    return cgetc();
+    return fc_cgetc();
 }
 
 void fc_hlinexy(byte x, byte y, byte width, byte lineChar)

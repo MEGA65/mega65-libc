@@ -11,7 +11,6 @@
 #include <memory.h>
 #include <stdbool.h>
 
-
 #define FCBUFSIZE 0xff
 
 #ifndef byte
