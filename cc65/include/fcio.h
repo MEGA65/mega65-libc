@@ -13,6 +13,27 @@
 
 #define FCBUFSIZE 0xff
 
+#define COLOUR_BLACK        0
+#define COLOUR_WHITE        1
+#define COLOUR_RED          2
+#define COLOUR_CYAN         3
+#define COLOUR_PURPLE       4
+#define COLOUR_GREEN        5
+#define COLOUR_BLUE         6
+#define COLOUR_YELLOW       7
+#define COLOUR_ORANGE       8
+#define COLOUR_BROWN        9
+#define COLOUR_PINK         10
+#define COLOUR_GREY1        11
+#define COLOUR_DARKGREY     11
+#define COLOUR_GREY2        12
+#define COLOUR_GREY         12
+#define COLOUR_MEDIUMGREY   12
+#define COLOUR_LIGHTGREEN   13
+#define COLOUR_LIGHTBLUE    14
+#define COLOUR_GREY3        15
+#define COLOUR_LIGHTGREY    15
+
 #ifndef byte
 typedef unsigned char byte;
 #endif
