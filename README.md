@@ -52,6 +52,11 @@ These routines abstract the different model RTCs that exist on different MEGA65 
 
 To use these functions you must include `time.h`
 
+## Full Colour Mode I/O 
+
+The `fcio` portion of the mega65-libc takes care of displaying text and images in full colour & super-extended character modes. 
+It has its own tutorial, located <a href="https://steph72.github.io/fcio-tutorial/">here.</a>
+
 ## Text Console I/O
 
 The `conio.h` file is projected to support all MEGA65 text features in the future.  
