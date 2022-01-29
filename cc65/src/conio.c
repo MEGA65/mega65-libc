@@ -20,6 +20,7 @@
 #include "../include/memory.h"
 #include <string.h>
 
+
 #define VIC_BASE            0xD000UL
 #define IS_H640             (PEEK(VIC_BASE + 0x31) & 128)
 #define IS_V400             (PEEK(VIC_BASE + 0x31) & 8)
@@ -57,16 +58,20 @@ typedef struct tagESCAPE_CODE
     void (*fn)(unsigned char);
 } ESCAPE_CODE;
 
+// use 198 bytes of C64 tape buffer as petscii2screencode conversion buffer
+// in order to save bank 0 memory
+static char *p2sbuf = (char*) 0x334;
+
 static ESCAPE_CODE escapeCode[255];
 static unsigned char g_curTextColor = COLOUR_WHITE;
 static unsigned char g_curX = 0;
 static unsigned char g_curY = 0;
 static unsigned char g_curScreenW = 0;
 static unsigned char g_curScreenH = 0;
-static const unsigned char hexDigits[] = { '0','1','2','3','4','5','6','7','8','9',0x41,0x42,0x43,0x44,0x45,0x46};
+static const unsigned char hexDigits[] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 0x41, 0x42, 0x43, 0x44, 0x45, 0x46};
 
 // Drawing characters for `box` call
-//                          
+//
 //                                      NONE, INNER   MID    OUTER    ROUND
 const unsigned char chTopLeft[]     = { 0x20,  0x20,  0x70,  0x4F,    0x55 };
 const unsigned char chTopRight[]    = { 0x20,  0x20,  0x6E,  0x50,    0x49 };
@@ -80,11 +85,11 @@ const unsigned char chVertLeft[]    = { 0x20,  0x6A,  0x5D,  0x74,    0x5D };
 // Hash function for cprintf ESCAPE codes
 
 static unsigned char hash(const unsigned char *str, const unsigned char maxLen)
-{    
+{
     unsigned long hash = 277;
     register unsigned char c;
     register unsigned char len = 0;
-    while ( (c = *str++) && (len < maxLen))
+    while ((c = *str++) && (len < maxLen))
     {
         len++;
         hash = ((hash << 5) + hash) + c;
@@ -92,9 +97,15 @@ static unsigned char hash(const unsigned char *str, const unsigned char maxLen)
     return hash;
 }
 
-static void clrscr_(unsigned char) { clrscr(); gohome(); } // Callable from Escape Code table 
+static void clrscr_(unsigned char)
+{
+    clrscr();
+    gohome();
+} // Callable from Escape Code table
 static void gohome_(unsigned char) { gohome(); } // Callable from Escape Code table
-static void escNOP(unsigned char) { /* do nothing */ }
+static void escNOP(unsigned char)
+{ /* do nothing */
+}
 
 void conioinit(void)
 {
@@ -105,20 +116,23 @@ void conioinit(void)
     POKE(0xD02fL, 0x47);
     POKE(0xd02fL, 0x53);
 
+    sethotregs(0);
+    setlowercase();
+
     g_curScreenW = IS_H640 ? 80 : 40;
     g_curScreenH = IS_V400 ? 50 : 25;
 
     flushkeybuf();
-    
-    for (i = 0; i < sizeof(escapeCode)/sizeof(escapeCode[0]); ++i) 
+
+    for (i = 0; i < sizeof(escapeCode) / sizeof(escapeCode[0]); ++i)
     {
         escapeCode[i].fn = escNOP;
         escapeCode[i].arg = 0x0;
     }
 
-    // Setup escape codes according to it's hashed strings. 
+    // Setup escape codes according to it's hashed strings.
     // We know that for those codes and with k=277 there are no collisions.
-    // Adding new codes should verify no collisions are added by changing k 
+    // Adding new codes should verify no collisions are added by changing k
     // or by using another algorithm.
 
     escapeCode[1].fn = moveleft;
@@ -170,6 +184,39 @@ void conioinit(void)
     escapeCode[249].fn = movedown;
 }
 
+char petsciitoscreencode(char c)
+{
+    if (c >= 64 && c <= 95)
+    {
+        return c - 64;
+    }
+    
+    if (c >= 192)
+    {
+        return c - 128;
+    }
+    
+    if (c >= 96 && c < 192)
+    {
+        return c - 32;
+    }
+    
+    if (c == '_')
+    {
+        return 100;
+    }
+
+    return c;
+}
+
+char *petsciitoscreencode_s(char *s) {
+    char *src = s;
+    char *dest = p2sbuf;    
+    while (*dest++ = petsciitoscreencode(*src++));
+    return p2sbuf;
+}
+
+
 void setscreenaddr(long address)
 {
     POKE(VIC_BASE + 0x60, address & 0x0000FFUL);
@@ -192,7 +239,7 @@ void setcharsetaddr(long address)
 
 long getcharsetaddr(void)
 {
-    return ( (long)PEEK(VIC_BASE + 0x68)) | ((long)PEEK(VIC_BASE + 0x69) << 8) | (((long)PEEK(VIC_BASE + 0x6A) << 16));
+    return ((long)PEEK(VIC_BASE + 0x68)) | ((long)PEEK(VIC_BASE + 0x69) << 8) | (((long)PEEK(VIC_BASE + 0x6A) << 16));
 }
 
 void setcolramoffset(unsigned int offset)
@@ -203,16 +250,22 @@ void setcolramoffset(unsigned int offset)
 
 unsigned int getcolramoffset(void)
 {
-    return ((unsigned int )PEEK(VIC_BASE + 0x64) | ((unsigned int) PEEK(VIC_BASE + 0x65)) << 8 );
+    return ((unsigned int)PEEK(VIC_BASE + 0x64) | ((unsigned int)PEEK(VIC_BASE + 0x65)) << 8);
 }
 
 void setscreensize(unsigned char w, unsigned char h)
 {
     if (w == 80)
+    {
         SET_H640();
+        POKE(0xd04c, 0x50); // compensate for vic-iii h640 horizontal positioning bug 
+    }
     else if (w == 40)
+    {
         CLEAR_H640();
-    
+        POKE(0xd04c, 0x4e);
+    }
+
     if (h == 50)
         SET_V400();
     else if (h == 25)
@@ -225,7 +278,7 @@ void setscreensize(unsigned char w, unsigned char h)
         g_curScreenH = h;
 }
 
-void getscreensize(unsigned char* width, unsigned char *height)
+void getscreensize(unsigned char *width, unsigned char *height)
 {
     *width = g_curScreenW;
     *height = g_curScreenH;
@@ -255,6 +308,16 @@ void setextendedattrib(unsigned char f)
         CLEAR_EXTATTR();
 }
 
+void setlowercase(void)
+{
+    setcharsetaddr(0x2d800);
+}
+
+void setuppercase(void)
+{
+    setcharsetaddr(0x2d000);
+}
+
 void togglecase(void)
 {
     POKE(0xD018U, PEEK(0xD018U) ^ 0x02);
@@ -264,9 +327,8 @@ void clrscr()
 {
     const unsigned int cBytes = (unsigned int)g_curScreenW * g_curScreenH * (IS_16BITCHARSET ? 2 : 1);
     lfill(SCREEN_RAM_BASE, ' ', cBytes);
-    lfill(COLOR_RAM_BASE,  g_curTextColor, cBytes);
+    lfill(COLOR_RAM_BASE, g_curTextColor, cBytes);
 }
-
 
 void bordercolor(unsigned char c)
 {
@@ -285,7 +347,7 @@ void textcolor(unsigned char c)
 
 void cellcolor(unsigned char x, unsigned char y, unsigned char c)
 {
-    lpoke(COLOR_RAM_BASE + (y * (unsigned int) g_curScreenW) + x, c);
+    lpoke(COLOR_RAM_BASE + (y * (unsigned int)g_curScreenW) + x, c);
 }
 
 void revers(unsigned char enable)
@@ -335,7 +397,7 @@ void clearattr(void)
 
 void gohome(void)
 {
-    gotoxy(0,0);
+    gotoxy(0, 0);
 }
 
 void gotoxy(unsigned char x, unsigned char y)
@@ -374,29 +436,27 @@ void cputnc(unsigned char len, unsigned char c)
     cputncxy(g_curX, g_curY, len, c);
 }
 
-
-void  moveup(unsigned char count)
+void moveup(unsigned char count)
 {
     g_curY -= count;
 }
 
-void  movedown(unsigned char count)
+void movedown(unsigned char count)
 {
     g_curY += count;
 }
 
-void  moveleft(unsigned char count)
+void moveleft(unsigned char count)
 {
     g_curX -= count;
 }
 
-void  moveright(unsigned char count)
+void moveright(unsigned char count)
 {
     g_curX += count;
 }
 
-
-unsigned char cprintf (const unsigned char* fmt, ...)
+unsigned char _cprintf(const unsigned char translateCodes, const unsigned char *fmt, ...)
 {
     unsigned char printfState = PRINTF_STATE_INIT;
     unsigned char escHash = 0;
@@ -422,7 +482,7 @@ unsigned char cprintf (const unsigned char* fmt, ...)
                 break;
 
             default:
-                cputc(*fmt);
+                cputc(translateCodes?petsciitoscreencode(*fmt):*fmt);
             }
             break;
 
@@ -433,9 +493,9 @@ unsigned char cprintf (const unsigned char* fmt, ...)
                 printfState = PRINTF_STATE_INIT;
                 break;
             }
-            
+
             cch = 0;
-            while(fmt &&  (*fmt != '}'))
+            while (fmt && (*fmt != '}'))
             {
                 fmt++;
                 cch++;
@@ -443,7 +503,7 @@ unsigned char cprintf (const unsigned char* fmt, ...)
 
             if (*fmt != '}') // bailout.
                 return 255;
-            
+
             escHash = hash(fmt - cch, cch);
             escapeCode[escHash].fn(escapeCode[escHash].arg);
             printfState = PRINTF_STATE_INIT;
@@ -465,7 +525,7 @@ void cputhex(long n, unsigned char prec)
     buffer[5] = hexDigits[(n & 0x0000F000UL) >> 12];
     buffer[6] = hexDigits[(n & 0x00000F00UL) >> 8];
     buffer[7] = hexDigits[(n & 0x000000F0UL) >> 4];
-    buffer[8] = hexDigits[(n & 0x0000000FUL) ];
+    buffer[8] = hexDigits[(n & 0x0000000FUL)];
     buffer[9] = '\0';
     buffer[8 - prec] = '$';
     cputs(&buffer[8 - prec]);
@@ -476,16 +536,16 @@ void cputdec(long n, unsigned char padding, unsigned char leadingZeros)
     unsigned char buffer[11];
     unsigned char rem = 0, i = 0;
     char digit = 9;
-    padding = 0;  // NOTE: done to suppress compiler warning
+    padding = 0; // NOTE: done to suppress compiler warning
     buffer[10] = '\0';
     do
     {
         rem = n % 10;
         n /= 10;
         buffer[digit--] = hexDigits[rem];
-    } while ( ((int)digit >= 0) && (n != 0) );
+    } while (((int)digit >= 0) && (n != 0));
 
-    while ( ((int)digit >= 0) && (leadingZeros--))
+    while (((int)digit >= 0) && (leadingZeros--))
     {
         buffer[digit--] = hexDigits[0];
     }
@@ -500,26 +560,26 @@ void cputs(const unsigned char *s)
 
 void cputsxy(unsigned char x, unsigned char y, const unsigned char *s)
 {
-    const unsigned char len = strlen(s);
-    const unsigned int offset = (y * (unsigned int) g_curScreenW) + x;
-    lcopy( (long) s, SCREEN_RAM_BASE + offset, len);     
+    const unsigned char len = strlen((const char*)s);
+    const unsigned int offset = (y * (unsigned int)g_curScreenW) + x;
+    lcopy((long)s, SCREEN_RAM_BASE + offset, len);
     lfill(COLOR_RAM_BASE + offset, g_curTextColor, len);
     g_curY = y + ((x + len) / g_curScreenW);
     g_curX = (x + len) % g_curScreenW;
 }
 
-void cputcxy (unsigned char x, unsigned char y, unsigned char c)
+void cputcxy(unsigned char x, unsigned char y, unsigned char c)
 {
-    const unsigned int offset = (y * (unsigned int) g_curScreenW) + x;
+    const unsigned int offset = (y * (unsigned int)g_curScreenW) + x;
     lpoke(SCREEN_RAM_BASE + offset, c);
     lpoke(COLOR_RAM_BASE + offset, g_curTextColor);
     g_curX = (x == g_curScreenW - 1) ? 0 : (x + 1);
     g_curY = (x == g_curScreenW - 1) ? (y + 1) : y;
 }
 
-void cputncxy (unsigned char x, unsigned char y, unsigned char count, unsigned char c)
+void cputncxy(unsigned char x, unsigned char y, unsigned char count, unsigned char c)
 {
-    const unsigned int offset = (y * (unsigned int) g_curScreenW) + x;
+    const unsigned int offset = (y * (unsigned int)g_curScreenW) + x;
     lfill(SCREEN_RAM_BASE + offset, c, count);
     lfill(COLOR_RAM_BASE + offset, g_curTextColor, count);
     g_curY = y + ((x + count) / g_curScreenW);
@@ -532,9 +592,9 @@ void fillrect(const RECT *rc, unsigned char ch, unsigned char col)
     const unsigned char len = rc->right - rc->left;
     for (i = rc->top; i <= rc->bottom; ++i)
     {
-        const unsigned int offset = (i * (unsigned int) g_curScreenW) + rc->left;
+        const unsigned int offset = (i * (unsigned int)g_curScreenW) + rc->left;
         lfill(SCREEN_RAM_BASE + offset, ch, len);
-        lfill(COLOR_RAM_BASE  + offset, col, len);
+        lfill(COLOR_RAM_BASE + offset, col, len);
     }
 }
 
@@ -550,7 +610,7 @@ void box(const RECT *rc, unsigned char color, unsigned char style, unsigned char
 
     cputcxy(rc->left, rc->top, chTopLeft[style]);
     cputcxy(rc->left, rc->bottom, chBottomLeft[style]);
-    cputcxy(rc->right, rc->top, chTopRight[style]); 
+    cputcxy(rc->right, rc->top, chTopRight[style]);
     cputcxy(rc->right, rc->bottom, chBottomRight[style]);
 
     for (i = 1; i < len; ++i)
@@ -567,7 +627,7 @@ void box(const RECT *rc, unsigned char color, unsigned char style, unsigned char
 
     if (shadow && rc->bottom < g_curScreenH && rc->right < g_curScreenW)
     {
-        lfill(COLOR_RAM_BASE + ( (rc->bottom+1) * (unsigned int) g_curScreenW) + (1+rc->left), COLOUR_DARKGREY, len);
+        lfill(COLOR_RAM_BASE + ((rc->bottom + 1) * (unsigned int)g_curScreenW) + (1 + rc->left), COLOUR_DARKGREY, len);
         for (i = rc->top + 1; i <= rc->bottom + 1; ++i)
             cellcolor(rc->right + 1, i, COLOUR_DARKGREY);
     }
@@ -588,11 +648,12 @@ void vline(unsigned char x, unsigned char y, unsigned char len, unsigned char st
     }
 }
 
-unsigned char cgetc (void)
+unsigned char cgetc(void)
 {
     unsigned char k;
-    while ((k = PEEK(0xD610U)) == 0);
-    POKE(0xD610U,0);
+    while ((k = PEEK(0xD610U)) == 0)
+        ;
+    POKE(0xD610U, 0);
     return k;
 }
 
@@ -609,16 +670,16 @@ unsigned char kbhit(void)
 void flushkeybuf(void)
 {
     while (PEEK(0xD610U))
-        POKE(0xD610U,0);
+        POKE(0xD610U, 0);
 }
 
-unsigned char cinput(unsigned char* buffer, unsigned char buflen, unsigned char flags)
+unsigned char cinput(unsigned char *buffer, unsigned char buflen, unsigned char flags)
 {
     register unsigned char numch = 0, i, ch;
     const int sx = wherex();
     const int sy = wherey();
 
-    if (buffer == NULL || buflen == 0 )
+    if (buffer == NULL || buflen == 0)
         return 0;
 
     flushkeybuf();
@@ -626,9 +687,9 @@ unsigned char cinput(unsigned char* buffer, unsigned char buflen, unsigned char 
     for (i = 0; i < buflen; ++i)
         buffer[i] = '\0';
 
-    while(1)
+    while (1)
     {
-        cputsxy(sx,sy,buffer);
+        cputsxy(sx, sy, buffer);
         blink(1);
         cputc(224);
         blink(0);
@@ -648,14 +709,14 @@ unsigned char cinput(unsigned char* buffer, unsigned char buflen, unsigned char 
         else if (numch < buflen - 1)
         {
             if ((((ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z')) && (flags & CINPUT_ACCEPT_LETTER)) ||
-                     ((ch >= '0' && ch <= '9') && (flags & CINPUT_ACCEPT_NUMERIC)) ||
-                     (flags & CINPUT_ACCEPT_ALL))
+                ((ch >= '0' && ch <= '9') && (flags & CINPUT_ACCEPT_NUMERIC)) ||
+                (flags & CINPUT_ACCEPT_ALL))
             {
-                if ( (ch >= 0x61 && ch <= 0x7a) && (PEEK(0x0D18) & ~2) && (flags & ~CINPUT_NO_AUTOTRANSLATE))
+                if ((ch >= 0x61 && ch <= 0x7a) && (PEEK(0x0D18) & ~2) && (flags & ~CINPUT_NO_AUTOTRANSLATE))
                 {
                     ch -= 0x20;
                 }
-                
+
                 buffer[numch++] = ch;
             }
         }
@@ -666,15 +727,15 @@ unsigned char cinput(unsigned char* buffer, unsigned char buflen, unsigned char 
 
 void setpalbank(unsigned char bank)
 {
-    POKE(0xD070U, (PEEK(0xD070U) & ~0x30) | ( (bank & 0x3) << 4));
+    POKE(0xD070U, (PEEK(0xD070U) & ~0x30) | ((bank & 0x3) << 4));
 }
 
 void setpalbanka(unsigned char bank)
 {
-    POKE(0xD070U, (PEEK(0xD070U) & ~0x3) | (bank & 0x3) );
+    POKE(0xD070U, (PEEK(0xD070U) & ~0x3) | (bank & 0x3));
 }
 
-unsigned char getpalbank(void) 
+unsigned char getpalbank(void)
 {
     return (PEEK(0xD070U) & 0x30) >> 4;
 }
@@ -685,7 +746,7 @@ unsigned char getpalbanka(void)
 }
 
 void setmapedpal(unsigned char bank)
-{   
+{
     POKE(0xD070U, (PEEK(0xD070U) & ~0xC0) | ((bank & 0x3) << 6));
 }
 
