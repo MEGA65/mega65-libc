@@ -190,6 +190,9 @@ typedef struct tagRECT
 */
 void conioinit(void);
 
+void setlowercase(void);
+void setuppercase(void);
+
 /** \m65libsummary{setscreenaddr}{Sets the screen RAM start address}
     \m65libsyntax    {void setscreenaddr(long addr);}
     \m65libparam     {addr}{The address to set as start of screen RAM}
@@ -280,6 +283,18 @@ void fastcall sethotregs(unsigned char f);
     \m65libparam     {f}{Set true to set the extended attributes mode}
 */
 void fastcall setextendedattrib(unsigned char f);
+
+/** \m65libsummary{togglecase}{Set lower case character set}
+    \m65libsyntax    {void setlowercase(void)}    
+*/
+void fastcall setlowercase(void);
+
+/** \m65libsummary{togglecase}{Set upper case character set}
+    \m65libsyntax    {void setuppercase(void)}    
+*/
+void fastcall setuppercase(void);
+
+
 
 /** \m65libsummary{togglecase}{Toggle the current character set case}
     \m65libsyntax    {void togglecase(void)}    
@@ -530,18 +545,62 @@ unsigned char wherex(void);
 unsigned char wherey(void);
 
 /*------------------------------------------------------------------------
+  PETSCII conversion output
+  -----------------------------------------------------------------------*/
+
+char petsciitoscreencode(char c);
+char *petsciitoscreencode_s(char *s);
+
+/** \m65libsummary{pcputc}{Output a single petscii character to screen at current position}
+    \m65libsyntax    {void cputc(unsigned char c)}
+    \m65libparam     {c}{The petscii character to output}
+*/
+
+#define pcputc(c) cputc(petsciitoscreencode(c))
+
+/** \m65libsummary{pcputsxy}{Output a petscii string at X,Y coordinates}
+    \m65libsyntax    {void pcputsxy (unsigned char x, unsigned char y, const unsigned char* s)}
+    \m65libparam     {x}{The X coordinate where string will be printed}
+    \m65libparam     {y}{The Y coordinate where string will be printed}
+    \m65libparam     {s}{The petscii string to print}
+    \m65libremarks   {No pointer check is performed.  If s is null or invalid, behavior is undefined }
+*/
+
+#define pcputsxy(x,y,s) cputsxy(x,y,petsciitoscreencode_s(s))
+
+/** \m65libsummary{cputcxy}{Output a single petscii character at X,Y coordinates}
+    \m65libsyntax    {void pcputcxy (unsigned char x, unsigned char y, unsigned char c)}
+    \m65libparam     {x}{The X coordinate where character will be printed}
+    \m65libparam     {y}{The Y coordinate where character will be printed}
+    \m65libparam     {c}{The petscii character to print}
+*/
+
+#define pcputcxy(x,y,c) cputcxy(x,y,petsciitoscreencode(c))
+
+/** \m65libsummary{pcputs}{Output a petscii string at current position}
+    \m65libsyntax    {void pcputs(const unsigned char* s)}
+    \m65libparam     {s}{The string to print}
+    \m65libremarks   {No pointer check is performed.  If s is null or invalid, behavior is undefined }
+    */
+
+#define pcputs(s) cputs((unsigned char*)petsciitoscreencode_s(s));
+
+
+
+
+/*------------------------------------------------------------------------
   Text output
   -----------------------------------------------------------------------*/
 
-/** \m65libsummary{cputc}{Output a single character to screen at current position}
+/** \m65libsummary{cputc}{Output a single screen code character to screen at current position}
     \m65libsyntax    {void cputc(unsigned char c)}
-    \m65libparam     {c}{The character to output}
+    \m65libparam     {c}{The screen code of the character to output}
 */
 void fastcall cputc(unsigned char c);
 
 /** \m65libsummary{cputnc}{Output N copies of a character at current position}
     \m65libsyntax    {void cputnc(unsigned char count, unsigned char c)}
-    \m65libparam     {c}{The character to output}
+    \m65libparam     {c}{The screen code of the characters to output}
     \m65libparam     {count}{The count of characters to print}
 */
 void fastcall cputnc(unsigned char count, unsigned char c);
@@ -562,19 +621,21 @@ void cputhex(long n, unsigned char prec);
 */
 void cputdec(long n, unsigned char padding, unsigned char leadingZ);
 
-/** \m65libsummary{cputs}{Output a string at current position}
+/** \m65libsummary{cputs}{Output screen codes at current position}
     \m65libsyntax    {void cputs(const unsigned char* s)}
-    \m65libparam     {s}{The string to print}
-    \m65libremarks   {No pointer check is performed.  If s is null or invalid, behavior is undefined }
+    \m65libparam     {s}{Am array of screen codes to print}
+    \m65libremarks   {This function works with screen codes only. To output ordinary ASCII/PETSCII strings,
+    use the "pcputs" macro. No pointer check is performed.  If s is null or invalid, behavior is undefined. }
 */
 void fastcall cputs(const unsigned char* s);
 
-/** \m65libsummary{cputsxy}{Output a string at X,Y coordinates}
+/** \m65libsummary{cputsxy}{Output multiple screen codes at X,Y coordinates}
     \m65libsyntax    {void cputsxy (unsigned char x, unsigned char y, const unsigned char* s)}
     \m65libparam     {x}{The X coordinate where string will be printed}
     \m65libparam     {y}{The Y coordinate where string will be printed}
-    \m65libparam     {s}{The string to print}
-    \m65libremarks   {No pointer check is performed.  If s is null or invalid, behavior is undefined }
+    \m65libparam     {s}{An array of screen codes to print}
+    \m65libremarks   {This function works with screen codes only. To output ordinary ASCII/PETSCII strings,
+    use the "pcputsxy" macro. No pointer check is performed.  If s is null or invalid, behavior is undefined. }
 */
 void cputsxy (unsigned char x, unsigned char y, const unsigned char* s);
 
@@ -582,7 +643,7 @@ void cputsxy (unsigned char x, unsigned char y, const unsigned char* s);
     \m65libsyntax    {void cputcxy (unsigned char x, unsigned char y, unsigned char c)}
     \m65libparam     {x}{The X coordinate where character will be printed}
     \m65libparam     {y}{The Y coordinate where character will be printed}
-    \m65libparam     {c}{The character to print}
+    \m65libparam     {c}{The screen code of the character to print}
 */
 void cputcxy (unsigned char x, unsigned char y, unsigned char c);
 
@@ -591,9 +652,13 @@ void cputcxy (unsigned char x, unsigned char y, unsigned char c);
     \m65libparam     {x}{The X coordinate where character will be printed}
     \m65libparam     {y}{The Y coordinate where character will be printed}
     \m65libparam     {count}{The number of characters to output}
-    \m65libparam     {c}{The character to print}
+    \m65libparam     {c}{The screen code of the characters to print}
 */
 void cputncxy (unsigned char x, unsigned char y, unsigned char count, unsigned char c);
+
+// making raw _cprintf available here to be used by cprintf and pcprintf
+// don't use this call directly as it might go away in a future release  of the library
+unsigned char _cprintf(const unsigned char translateCodes, const unsigned char *fmt, ...);
 
 /** \m65libsummary{cprintf}{Prints formatted output. \\
     Escape strings can be used to modify attributes, move cursor, etc similar to PRINT in CBM BASIC. 
@@ -634,9 +699,19 @@ void cputncxy (unsigned char x, unsigned char y, unsigned char count, unsigned c
   
     %>}
     
-    \m65libremarks   {Currently no argument replacement is done with the variable arguments.}
+    \m65libremarks   {This function works with screen codes only! To output ordinary ASCII/PETSCII strings,
+    use the "pcprintf" macro. Currently no argument replacement is done with the variable arguments.}
 */
-unsigned char cprintf (const unsigned char* format, ...);
+
+#define cprintf(s) _cprintf(0,s)
+
+/** \m65libsummary{pcprintf}{Prints formatted petscii string output.}
+
+    \m65libsyntax    {see cprintf}
+
+*/
+
+#define pcprintf(s) _cprintf(1,s);
 
 /*------------------------------------------------------------------------
   Keyboard input 
