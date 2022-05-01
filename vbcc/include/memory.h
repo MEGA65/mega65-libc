@@ -37,12 +37,8 @@ void lfill(long destination_address, unsigned char value,
            unsigned int count);
 void lfill_skip(long destination_address, unsigned char value,
                 unsigned int count, unsigned char skip);
-#ifdef __CC65__
+
 #define POKE(X, Y) (*(unsigned char *)(X)) = Y
 #define PEEK(X) (*(unsigned char *)(X))
-#else
-#define POKE(X, Y)
-#define PEEK(X)
-#endif
 
 #endif
