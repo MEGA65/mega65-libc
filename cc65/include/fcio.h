@@ -315,6 +315,14 @@ void fc_scrollDown();
 // ----------------------------------------------------------------------------
 
 /**
+ * @brief swap nybl of a byte
+ *
+ * @param in colour byte
+ * @return in with swapped nybbels
+ */
+unsigned char fc_nyblswap(unsigned char in);
+
+/**
  * @brief set or reset the revers attribute
  * 
  * @param f reverse attribute flag

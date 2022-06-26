@@ -193,7 +193,7 @@ void fc_init(byte h640, byte v400, fcioConf *config, byte rows, char *reservedBi
 }
 
 static unsigned char swp;
-unsigned char nyblswap(unsigned char in) // oh why?!
+unsigned char fc_nyblswap(unsigned char in) // oh why?!
 {
     swp = in;
     __asm__("lda %v", swp);
@@ -604,9 +604,9 @@ void fc_loadPalette(himemPtr adr, byte size, byte reservedSysPalette)
         colAdr = i * 3;
         // fc_printf("\n%d (%lx) : %2x %2x %2x", i, adr + colAdr, lpeek(adr + colAdr), lpeek(adr + colAdr + 1), lpeek(adr + colAdr + 2));
         // fc_getkey();
-        POKE(0xd100u + i, nyblswap(lpeek(adr + colAdr)));     //  palette[colAdr];
-        POKE(0xd200u + i, nyblswap(lpeek(adr + colAdr + 1))); // palette[colAdr + 1];
-        POKE(0xd300u + i, nyblswap(lpeek(adr + colAdr + 2))); // palette[colAdr + 2];
+        POKE(0xd100u + i, fc_nyblswap(lpeek(adr + colAdr)));     //  palette[colAdr];
+        POKE(0xd200u + i, fc_nyblswap(lpeek(adr + colAdr + 1))); // palette[colAdr + 1];
+        POKE(0xd300u + i, fc_nyblswap(lpeek(adr + colAdr + 2))); // palette[colAdr + 2];
     }
 }
 
@@ -641,9 +641,9 @@ void fc_fadePalette(himemPtr adr, byte size, byte reservedSysPalette, byte steps
         entry = destPalette + (startReg * 3);
         for (cgi = startReg; cgi < size; ++cgi, entry += 3)
         {
-            POKE(0xd100u + cgi, nyblswap((*(entry)*i) / steps));
-            POKE(0xd200u + cgi, nyblswap((*(entry + 1) * i) / steps));
-            POKE(0xd300u + cgi, nyblswap((*(entry + 2) * i) / steps));
+            POKE(0xd100u + cgi, fc_nyblswap((*(entry)*i) / steps));
+            POKE(0xd200u + cgi, fc_nyblswap((*(entry + 1) * i) / steps));
+            POKE(0xd300u + cgi, fc_nyblswap((*(entry + 2) * i) / steps));
         }
     }
     free(destPalette);
@@ -1038,9 +1038,9 @@ void fc_center(byte x, byte y, byte width, char *text)
 
 void fc_setPalette(int num, byte red, byte green, byte blue)
 {
-    POKE(0xd100U + num, nyblswap(red));
-    POKE(0xd200U + num, nyblswap(green));
-    POKE(0xd300U + num, nyblswap(blue));
+    POKE(0xd100U + num, fc_nyblswap(red));
+    POKE(0xd200U + num, fc_nyblswap(green));
+    POKE(0xd300U + num, fc_nyblswap(blue));
 }
 
 char fc_getkeyP(byte x, byte y, const char *prompt)
