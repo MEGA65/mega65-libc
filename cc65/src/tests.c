@@ -2,14 +2,11 @@
 #include <string.h>
 #include <stdio.h>
 #include <stdint.h>
-
+#include <memory.h>
 
 unsigned char __tests_out;
 unsigned short __ut_issueNum;
 unsigned char __ut_subissue;
-
-#define POKE(a, v) *((uint8_t*)a) = (uint8_t)v
-#define PEEK(a) ((uint8_t)(*((uint8_t*)a)))
 
 void unit_test_report(unsigned short issue, unsigned char sub, unsigned char status)
 {
@@ -71,19 +68,23 @@ void unit_test_setup(char *testName, unsigned short issueNum)
   unit_test_report(__ut_issueNum, __ut_subissue, 0xf0);
 }
 
-void unit_test_ok(void)
+void unit_test_ok(char *msg)
 {
+  if (msg)
+  {
+    unit_test_log(msg);
+  }
   unit_test_report(__ut_issueNum, __ut_subissue, 0xf2);
   ++__ut_subissue;
 }
 
 void unit_test_fail(char *msg)
 {
-  unit_test_report(__ut_issueNum, __ut_subissue, 0xf3);
   if (msg)
   {
     unit_test_log(msg);
   }
+  unit_test_report(__ut_issueNum, __ut_subissue, 0xf3);
   ++__ut_subissue;
 }
 
