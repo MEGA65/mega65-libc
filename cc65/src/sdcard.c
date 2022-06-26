@@ -7,9 +7,6 @@
 
 uint8_t sector_buffer[512];
 
-#define POKE(X,Y) (*(unsigned char*)(X))=Y
-#define PEEK(X) (*(unsigned char*)(X))
-
 const long sd_sectorbuffer=0xffd6e00L;
 const uint16_t sd_ctl=0xd680L;
 const uint16_t sd_addr=0xd681L;
