@@ -112,7 +112,7 @@ void fc_screenmode(byte h640, byte v400, byte rows);
  * @brief fall back to 8 bit screen mode
  * 
  */
-void fc_go8bit();
+void fc_go8bit(void);
 
 /**
  * @brief display fatal error message and stop execution
@@ -185,7 +185,7 @@ int fc_getnum(byte maxlen);
  * @brief clears the current text window
  * 
  */
-void fc_clrscr();
+void fc_clrscr(void);
 
 /**
  * @brief put character at current cursor position
@@ -240,14 +240,14 @@ void fc_gotoxy(byte x, byte y);
  * 
  * @return byte cursor y position
  */
-byte fc_wherex();
+byte fc_wherex(void);
 
 /**
  * @brief get cursor y position
  * 
  * @return byte cursor y position
  */
-byte fc_wherey();
+byte fc_wherey(void);
 
 /**
  * @brief set auto CR
@@ -279,7 +279,7 @@ textwin *fc_makeWin(byte x0, byte y0, byte width, byte height);
  * @brief reset text window to whole screen
  * 
  */
-void fc_resetwin();
+void fc_resetwin(void);
 
 /**
  * @brief cursor control
@@ -302,13 +302,13 @@ void fc_center(byte x, byte y, byte width, char *text);
  * @brief scrolls the content of the current window up
  * 
  */
-void fc_scrollUp();
+void fc_scrollUp(void);
 
 /**
  * @brief scrolls the contents of the current window down
  * 
  */
-void fc_scrollDown();
+void fc_scrollDown(void);
 
 // ----------------------------------------------------------------------------
 // colour, attributes and palette handling
@@ -400,7 +400,7 @@ void fc_fadePalette(himemPtr adr, byte size, byte reservedSysPalette, byte steps
  * If a reserved FCI is used (see @a fc_loadReservedFCI), reset the current
  * palette to the reserved one.
  */
-void fc_resetPalette();
+void fc_resetPalette(void);
 
 /**
  * @brief set text colour of current window
