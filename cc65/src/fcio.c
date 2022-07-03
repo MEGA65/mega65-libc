@@ -430,7 +430,7 @@ void fc_screenmode(byte h640, byte v400, byte rows)
     fc_clrscr();
 }
 
-void fc__go8bit(void)
+void fc_go8bit(void)
 {
     mega65_io_enable();
     VIC3CTRL = 96;    // quit bitplane mode if set
@@ -679,7 +679,7 @@ fciInfo *fc_displayFCIFile(char *filename, byte x0, byte y0)
     return info;
 }
 
-void fc__scrollUp(void)
+void fc_scrollUp(void)
 {
     static byte y;
     long bas0, bas1;
@@ -695,7 +695,7 @@ void fc__scrollUp(void)
     fc_line(0, gCurrentWin->height - 1, gCurrentWin->width, 32, gCurrentWin->textcolor);
 }
 
-void fc__scrollDown(void)
+void fc_scrollDown(void)
 {
     signed char y;
     long bas0, bas1;
@@ -858,14 +858,14 @@ void fc_printf(const char *format, ...)
     fc_puts(buf);
 }
 
-void fc__clrscr(void)
+void fc_clrscr(void)
 {
     fc_block(0, 0, gCurrentWin->width, gCurrentWin->height, 32,
              gCurrentWin->textcolor);
     fc_gotoxy(0, 0);
 }
 
-void fc__resetwin(void)
+void fc_resetwin(void)
 {
     gCurrentWin = defaultWin;
     gCurrentWin->x0 = 0;
