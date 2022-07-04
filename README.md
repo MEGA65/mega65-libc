@@ -11,6 +11,12 @@ Simply include the .c and .s files from the cc65/src directory that you need
 
 KickC support will be coming soon (or sooner, if someone would like to port the routines ;)
 
+## With llvm-mos
+
+Include the .c and .h files from the `llvm` directory that you need. We are
+currently waiting for 65ce02 instructions to be merged in order to assemble
+the .s files (https://github.com/llvm-mos/llvm-mos/pull/192).
+
 # Function descriptions
 
 ## FAT32 File Access
