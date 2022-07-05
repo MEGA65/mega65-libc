@@ -1,10 +1,7 @@
-// Example usage
-#include <memory.h>
 #include <hal.h>
 
 int main()
 {
-  usleep(200);
-  lfill(0x40000, 0x00, 0x8000);
+  usleep(2000000); // wait 2 secs
   return 0;
 }

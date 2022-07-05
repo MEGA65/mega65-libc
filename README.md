@@ -16,8 +16,7 @@ KickC support will be coming soon (or sooner, if someone would like to port the 
 Include the .c and .h files from the `clang` directory that you need. We are
 currently waiting for 65ce02 instructions to be merged in order to assemble
 the .s files (https://github.com/llvm-mos/llvm-mos/pull/192). We also
-provide a simple `Makefile` that compiles the sources using `llvm-mos` with
-a rather pedantic warning level.
+provide a CMake setup to export the library.
 
 # Function descriptions
 
