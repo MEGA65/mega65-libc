@@ -16,16 +16,19 @@ make install
 
 ## Dependent projects
 
-A dependent project's `CMakeLists.txt` should look like this:
+A dependent project's `CMakeLists.txt` could look like this:
 ~~~ cmake
 cmake_minimum_required(VERSION 3.5)
-project(myproject VERSION 0.1.0 LANGUAGES C)
 set(LLVM_MOS_PLATFORM mega65)
 find_package(llvm-mos-sdk REQUIRED)
+project(myproject VERSION 0.1.0 LANGUAGES C)
 find_package(mega65libc REQUIRED)
+
+add_compile_options(-mcpu=mos65c02 -Os -Wall -Wextra -Wshadow -Wconversion -Wno-language-extension-token)
 
 add_executable(main main.c)
 target_link_libraries(main mega65libc::mega65libc)
+set_target_properties(main PROPERTIES OUTPUT_NAME main.prg)
 ~~~
 See more [here](https://github.com/llvm-mos/llvm-mos-sdk#developing-for-6502-with-cmake).
 
