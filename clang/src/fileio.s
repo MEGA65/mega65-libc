@@ -1,4 +1,4 @@
-	.global _closeall, _open, _close, _read512, _toggle_rom_write_protect, _chdir, _chdirroot
+	.global closeall, open, close, read512, toggle_rom_write_protect, chdir, chdirroot
 
 mega65_io_enable:
 	lda #$47
@@ -37,7 +37,7 @@ setname_ok:
 
 	
 	;; closeall
-_closeall:
+closeall:
 	jsr mega65_io_enable
 	LDA #$22
 	STA $D640
@@ -45,7 +45,7 @@ _closeall:
 	LDX #$00
 	RTS
 
-_toggle_rom_write_protect:
+toggle_rom_write_protect:
 	jsr mega65_io_enable
 	lda #$70
 	STA $d640
@@ -53,7 +53,7 @@ _toggle_rom_write_protect:
 	ldx #0
 	rts
 	
-_read512:
+read512:
 
 	;;  Get pointer to buffer
 	sta ptr1+0
@@ -122,7 +122,7 @@ copysectorbuffer_destaddr:
         .byte $00   ;; of bank $0
         .short $0000 ;; modulo (unused)
 	
-_open:
+open:
 
         ;; Get pointer to file name
 	sta ptr1+0
@@ -157,7 +157,7 @@ open_file_exists:
 	LDX #$00
 	RTS
 
-_close:
+close:
 	TAX
 	jsr mega65_io_enable
 	LDA #$20
@@ -166,7 +166,7 @@ _close:
 	LDX #$00
 	RTS
 
-_chdirroot:
+chdirroot:
 	;; Change to root directory of volume
 
 	lda #$3C
@@ -176,7 +176,7 @@ _chdirroot:
 	ldx #$00
 	rts
 	
-_chdir:
+chdir:
 
         ;; Get pointer to file name
 	sta ptr1+0

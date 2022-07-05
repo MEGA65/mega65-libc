@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.5)
 set(LLVM_MOS_PLATFORM mega65)
 find_package(llvm-mos-sdk REQUIRED)
-project(mega65libc VERSION 1.0.0 LANGUAGES C)
+project(mega65libc VERSION 1.0.0 LANGUAGES C ASM)
 
 # all source and header files
 set(assembler src/fileio.s src/dirent.s)
