@@ -55,8 +55,7 @@ unsigned char lpeek_debounced(long address)
 {
   db1 = 0;
   db2 = 1;
-  while (db1 != db2 || db1 != db3)
-  {
+  while (db1 != db2 || db1 != db3) {
     db1 = lpeek(address);
     db2 = lpeek(address);
     db3 = lpeek(address);
@@ -89,8 +88,7 @@ void lpoke(long address, unsigned char value)
   return;
 }
 
-void lcopy(long source_address, long destination_address,
-           unsigned int count)
+void lcopy(long source_address, long destination_address, unsigned int count)
 {
   dmalist.option_0b = 0x0b;
   dmalist.option_80 = 0x80;
@@ -122,8 +120,7 @@ void lcopy(long source_address, long destination_address,
   return;
 }
 
-void lfill(long destination_address, unsigned char value,
-           unsigned int count)
+void lfill(long destination_address, unsigned char value, unsigned int count)
 {
   dmalist.option_0b = 0x0b;
   dmalist.option_80 = 0x80;
@@ -149,8 +146,7 @@ void lfill(long destination_address, unsigned char value,
   return;
 }
 
-void lfill_skip(long destination_address, unsigned char value,
-                unsigned int count, unsigned char skip)
+void lfill_skip(long destination_address, unsigned char value, unsigned int count, unsigned char skip)
 {
   dmalist.option_0b = 0x0b;
   dmalist.option_80 = 0x80;

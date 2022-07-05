@@ -17,25 +17,24 @@
     \m65libparam     {testName}{Human readable name of the test}
     \m65libparam     {issueNum}{The mega65-core issue number that identifies the test issue}
 */
-void unit_test_setup(char *testName, unsigned short issueNum);
+void unit_test_setup(char* testName, unsigned short issueNum);
 
 /** \m65libsummary{unit_test_ok}{Report a successful test with a optional message}
     \m65libsyntax    {void unit_test_ok(char *msg);}
     \m65libparam     {msg}{Description of the successful test (NULL uses global testName)}
 */
-void unit_test_ok(char *msg);
+void unit_test_ok(char* msg);
 
 /** \m65libsummary{unit_test_fail}{Report a failed test with a optional message}
     \m65libsyntax    {void unit_test_fail(char *msg);}
     \m65libparam     {msg}{Description of the failed test (NULL uses global testName)}
 */
-void unit_test_fail(char *msg);
+void unit_test_fail(char* msg);
 
 /** \m65libsummary{unit_test_done}{Finish test procedure and tell m65 to exit}
     \m65libsyntax    {void unit_test_done(void);}
 */
 void unit_test_done(void);
-
 
 // low level functions
 
@@ -51,12 +50,12 @@ void unit_test_report(unsigned short issue, unsigned char sub, unsigned char sta
     \m65libsyntax    {void unit_test_set_current_name(char *name);}
     \m65libparam     {name}{The human-readable name of the current test}
 */
-void unit_test_set_current_name(char *name);
+void unit_test_set_current_name(char* name);
 
 /** \m65libsummary{unit_test_log}{Logs a message on the host machine}
     \m65libsyntax    {void unit_test_log(char *msg);}
     \m65libparam     {msg}{The message to be logged}
 */
-void unit_test_log(char *msg);
+void unit_test_log(char* msg);
 
 #endif

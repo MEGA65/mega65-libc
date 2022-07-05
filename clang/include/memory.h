@@ -1,8 +1,7 @@
 #ifndef __MEGA65_MEMORY_H
 #define __MEGA65_MEMORY_H
 
-struct dmagic_dmalist
-{
+struct dmagic_dmalist {
   // Enhanced DMA options
   unsigned char option_0b;
   unsigned char option_80;
@@ -31,12 +30,9 @@ void mega65_io_enable(void);
 unsigned char lpeek(long address);
 unsigned char lpeek_debounced(long address);
 void lpoke(long address, unsigned char value);
-void lcopy(long source_address, long destination_address,
-           unsigned int count);
-void lfill(long destination_address, unsigned char value,
-           unsigned int count);
-void lfill_skip(long destination_address, unsigned char value,
-                unsigned int count, unsigned char skip);
-#define POKE(X, Y) (*(volatile unsigned char *)(X)) = Y
-#define PEEK(X) (*(volatile unsigned char *)(X))
+void lcopy(long source_address, long destination_address, unsigned int count);
+void lfill(long destination_address, unsigned char value, unsigned int count);
+void lfill_skip(long destination_address, unsigned char value, unsigned int count, unsigned char skip);
+#define POKE(X, Y) (*(volatile unsigned char*)(X)) = Y
+#define PEEK(X) (*(volatile unsigned char*)(X))
 #endif
