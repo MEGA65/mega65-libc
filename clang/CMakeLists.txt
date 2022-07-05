@@ -44,4 +44,4 @@ install(EXPORT mega65libc-export
 # compile example prg file
 add_executable(example example.c)
 target_link_libraries(example mega65libc)
-set_target_properties(example PROPERTIES OUTPUT_NAME example.prg)
+set_target_properties(example PROPERTIES OUTPUT_NAME example.prg EXCLUDE_FROM_ALL true)
