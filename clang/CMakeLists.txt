@@ -1,25 +1,7 @@
-#
-# Build and export mega65libc target according to example given here:
-#
-#    https://pabloariasal.github.io/2018/02/19/its-time-to-do-cmake-right/
-#
-# To tell CMake where to find the llvm-mos compiler, either add it to your
-# path, or specify it's location using:
-#
-#    cmake -DCMAKE_PREFIX_PATH=<arbitrary-install-directory>
-#
-# (see more at https://github.com/llvm-mos/llvm-mos-sdk#developing-for-6502-with-cmake)
-#
-# After installation, dependent projects should locate mega65libc using:
-#
-#    find_package(mega65libc 0.1 REQUIRED)
-#    target_link_libraries(example mega65libc::mega65libc)
-#
-
 cmake_minimum_required(VERSION 3.5)
 set(LLVM_MOS_PLATFORM mega65)
 find_package(llvm-mos-sdk REQUIRED)
-project(mega65libc VERSION 0.1.0 LANGUAGES C)
+project(mega65libc VERSION 1.0.0 LANGUAGES C)
 
 # all source and header files
 set(objects src/conio.c src/debug.c src/fat32.c src/hal.c src/memory.c src/mouse.c src/random.c src/sdcard.c src/targets.c src/tests.c src/time.c)
@@ -36,7 +18,7 @@ target_include_directories(mega65libc
     PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/src
     )
-
+set_target_properties(mega65libc PROPERTIES PUBLIC_HEADER "${headers}")
 target_compile_options(mega65libc PRIVATE -mcpu=mos65c02 -Os -Wall -Wextra -Wshadow -Wconversion -Wno-language-extension-token)
 
 # install target
@@ -45,7 +27,9 @@ install(TARGETS mega65libc
     EXPORT mega65libc-export
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
     ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    PUBLIC_HEADER DESTINATION include
     )
+install(FILES cmake/mega65libcConfig.cmake DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/mega65libc)
 
 # export mega65libc
 install(EXPORT mega65libc-export

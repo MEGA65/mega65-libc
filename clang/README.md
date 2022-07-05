@@ -16,11 +16,11 @@ make install
 
 ## Dependent projects
 
-After installation, dependent projects should import the
-`mega65libc` target like this:
-
+The general CMake setup for llvm-mos projects should follow
+[these instructions](https://github.com/llvm-mos/llvm-mos-sdk#developing-for-6502-with-cmake).
+The mega65libc dependency is then added like this:
 ~~~ cmake
-find_package(mega65libc 0.1 REQUIRED)
+find_package(mega65libc REQUIRED)
 target_link_libraries(<your-target> mega65libc::mega65libc)
 ~~~
 
