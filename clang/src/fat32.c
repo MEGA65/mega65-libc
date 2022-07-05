@@ -1,6 +1,3 @@
-#include <stdio.h>
-#include <string.h>
-
 #include <sdcard.h>
 #include <hal.h>
 #include <memory.h>

@@ -1,4 +1,3 @@
-#include <stdio.h>
 #include <memory.h>
 
 struct dmagic_dmalist dmalist;

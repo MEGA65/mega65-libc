@@ -4,7 +4,6 @@
   The RTC varies between revisions of the MEGA65, though, so we have to take that into account.
 */
 
-#include <stdio.h>
 #include <memory.h>
 #include <time.h>
 #include <targets.h>
