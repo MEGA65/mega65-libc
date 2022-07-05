@@ -1,5 +1,7 @@
 	.global closeall, open, close, read512, toggle_rom_write_protect, chdir, chdirroot
 
+        .zp sp, ptr1, ptr2, tmp2, tmp3
+
 mega65_io_enable:
 	lda #$47
 	sta $d02f
