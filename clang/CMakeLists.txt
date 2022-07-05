@@ -4,8 +4,11 @@ find_package(llvm-mos-sdk REQUIRED)
 project(mega65libc VERSION 1.0.0 LANGUAGES C)
 
 # all source and header files
-set(objects src/conio.c src/debug.c src/fat32.c src/hal.c src/memory.c src/mouse.c src/random.c src/sdcard.c src/targets.c src/tests.c src/time.c)
-set(headers include/conio.h include/debug.h include/hal.h include/memory.h include/sdcard.h include/targets.h include/tests.h include/time.h)
+set(assembler src/fileio.s src/dirent.s)
+set(objects src/conio.c src/debug.c src/fat32.c src/hal.c src/memory.c src/mouse.c
+    src/random.c src/sdcard.c src/targets.c src/tests.c src/time.c)
+set(headers include/conio.h include/debug.h include/hal.h include/memory.h
+    include/sdcard.h include/targets.h include/tests.h include/time.h include/fileio.h include/dirent.h)
 set_source_files_properties(${objects} PROPERTIES LANGUAGE C)
 set_source_files_properties(${headers} PROPERTIES HEADER_FILE_ONLY ON)
 
