@@ -45,4 +45,3 @@ install(EXPORT mega65libc-export
 add_executable(example example.c)
 target_link_libraries(example mega65libc)
 set_target_properties(example PROPERTIES OUTPUT_NAME example.prg)
-
