@@ -1,5 +1,5 @@
 CC = ~/opt/bin/mos-mega65-clang
-CFLAGS = -mcpu=mos65c02 -Wall -Wpedantic -Wno-language-extension-token
+CFLAGS = -mcpu=mos65c02 -Wall -Wextra -Wshadow -Wconversion -Wno-language-extension-token
 INCLUDES = -I include/
 
 all:
