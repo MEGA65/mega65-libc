@@ -5,5 +5,10 @@ INCLUDES = -I include/
 all:
 	$(CC) $(CFLAGS) $(INCLUDES) -c src/*.c
 
+# Note that this will currently not assemble due to:
+#   missing opcode; zeropage handling
+fileio: src/fileio.s
+	$(CC) $(CFLAGS) $(INCLUDES) src/fileio.s
+
 clean:
 	rm -fR *.o *~
