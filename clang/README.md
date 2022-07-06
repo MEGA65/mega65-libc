@@ -16,7 +16,7 @@ make install
 
 ## Dependent CMake projects
 
-A dependent project's `CMakeLists.txt` could look like this:
+`CMakeLists.txt` of a dependent project could look like this:
 ~~~ cmake
 cmake_minimum_required(VERSION 3.5)
 set(LLVM_MOS_PLATFORM mega65)
@@ -32,9 +32,9 @@ set_target_properties(main PROPERTIES OUTPUT_NAME main.prg)
 ~~~
 See more [here](https://github.com/llvm-mos/llvm-mos-sdk#developing-for-6502-with-cmake).
 
-## CPM.cmake dependency manager
+### CPM.cmake dependency manager
 
-If you're using [CPM.cmake](https://github.com/cpm-cmake/CPM.cmake),
+If using [CPM.cmake](https://github.com/cpm-cmake/CPM.cmake),
 `mega65libc` can be automatically downloaded and built with:
 ~~~ cmake
 CPMAddPackage(NAME mega65libc GITHUB_REPOSITORY mega65/mega65-libc SOURCE_SUBDIR clang)

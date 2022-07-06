@@ -1,6 +1,17 @@
-	.global closeall, open, close, read512, toggle_rom_write_protect, chdir, chdirroot
+    .global closeall, open, close, read512, toggle_rom_write_protect, chdir, chdirroot
 
-        .zp sp, ptr1, ptr2, tmp2, tmp3
+    ;; allocate space in zeropage
+    .section .zeropage,"",@nobits
+ptr1:
+        .ds.b 1 ;; 1 byte
+ptr2:
+        .ds.b 1
+tmp2:
+        .ds.b 1
+tmp3:
+        .ds.b 1
+
+.section code
 
 mega65_io_enable:
 	lda #$47
@@ -36,7 +47,6 @@ setname_0100:
 	rts
 setname_ok:
 	RTS
-
 	
 	;; closeall
 closeall:
@@ -56,7 +66,6 @@ toggle_rom_write_protect:
 	rts
 	
 read512:
-
 	;;  Get pointer to buffer
 	sta ptr1+0
 	stx ptr1+1
@@ -125,7 +134,6 @@ copysectorbuffer_destaddr:
         .short $0000 ;; modulo (unused)
 	
 open:
-
         ;; Get pointer to file name
 	sta ptr1+0
 	stx ptr1+1
@@ -179,7 +187,6 @@ chdirroot:
 	rts
 	
 chdir:
-
         ;; Get pointer to file name
 	sta ptr1+0
 	stx ptr1+1
