@@ -17,7 +17,7 @@ set_source_files_properties(${headers} PROPERTIES HEADER_FILE_ONLY ON)
 
 # mega65libc target
 add_library(mega65libc ${objects} ${headers})
-#add_library(mega65libc ${objects} ${headers} ${assembler}) // enable when 65ce02 is available
+#add_library(mega65libc ${objects} ${headers} ${assembler}) # uncomment when 65ce02 is available
 target_include_directories(mega65libc
     PUBLIC 
     $<INSTALL_INTERFACE:include>    

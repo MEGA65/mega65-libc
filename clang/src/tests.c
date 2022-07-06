@@ -1,9 +1,9 @@
 #include <stdint.h>
 #include <memory.h>
 
-unsigned char __tests_out;
-unsigned short __ut_issueNum;
-unsigned char __ut_subissue;
+volatile unsigned char __tests_out;
+volatile unsigned short __ut_issueNum;
+volatile unsigned char __ut_subissue;
 
 void unit_test_report(unsigned short issue, unsigned char sub, unsigned char status)
 {
@@ -35,7 +35,7 @@ void _unit_test_msg(char* msg, char cmd)
   while (*current) {
     __tests_out = *current++;
     asm volatile("LDA __tests_out\n"
-                 "STA $D643"
+                 "STA $D643\n"
                  "NOP");
   }
 
