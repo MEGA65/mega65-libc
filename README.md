@@ -13,10 +13,9 @@ KickC support will be coming soon (or sooner, if someone would like to port the 
 
 ## With Clang
 
-Include the .c and .h files from the `clang` directory that you need. We are
-currently waiting for 65ce02 instructions to be merged in order to assemble
-the .s files (https://github.com/llvm-mos/llvm-mos/pull/192). We also
-provide a CMake setup to export the library.
+Either use the provided CMake setup (details in the Clang folder) or merely include the .c and .h
+files from the `clang` directory that you need. For the latter method, don't forget to include
+`-mcpu=mos65c02` when compiling.
 
 # Function descriptions
 
