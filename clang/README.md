@@ -35,7 +35,7 @@ See more [here](https://github.com/llvm-mos/llvm-mos-sdk#developing-for-6502-wit
 ### CPM.cmake dependency manager
 
 If using [CPM.cmake](https://github.com/cpm-cmake/CPM.cmake),
-`mega65libc` can be automatically downloaded and built with:
+`mega65libc` can be easily added to your project with:
 ~~~ cmake
 CPMAddPackage(NAME mega65libc GITHUB_REPOSITORY mega65/mega65-libc SOURCE_SUBDIR clang)
 target_link_libraries(<mytarget> mega65libc)
