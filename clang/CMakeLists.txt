@@ -13,11 +13,11 @@ set(headers include/conio.h include/debug.h include/hal.h include/memory.h inclu
     include/sdcard.h include/targets.h include/tests.h include/time.h include/fileio.h include/dirent.h)
 
 set_source_files_properties(${objects} PROPERTIES LANGUAGE C)
+set_source_files_properties(${assembler} PROPERTIES LANGUAGE ASM)
 set_source_files_properties(${headers} PROPERTIES HEADER_FILE_ONLY ON)
 
 # mega65libc target
-add_library(mega65libc ${objects} ${headers})
-#add_library(mega65libc ${objects} ${headers} ${assembler}) # uncomment when 65ce02 is available
+add_library(mega65libc ${objects} ${headers} ${assembler})
 target_include_directories(mega65libc
     PUBLIC 
     $<INSTALL_INTERFACE:include>    
