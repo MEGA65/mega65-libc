@@ -9,7 +9,7 @@ void debug_msg(char* m)
     the_char = *m;
     asm volatile("lda the_char\n"
                  "sta $d643\n"
-                 "nop");
+                 "nop" ::: "a");
     m++;
   }
   asm volatile("lda 0x0d\n"
@@ -17,5 +17,5 @@ void debug_msg(char* m)
                "nop\n"
                "lda 0x0a\n"
                "sta $d643\n"
-               "nop");
+               "nop" ::: "a");
 };

@@ -10,19 +10,19 @@ void unit_test_report(unsigned short issue, unsigned char sub, unsigned char sta
   __tests_out = issue & 0xff;
   asm volatile("LDA __tests_out\n"
                "STA $D643\n"
-               "NOP");
+               "NOP" ::: "a");
   __tests_out = issue >> 8;
   asm volatile("LDA __tests_out\n"
                "STA $D643\n"
-               "NOP");
+               "NOP" ::: "a");
   __tests_out = sub;
   asm volatile("LDA __tests_out\n"
                "STA $D643\n"
-               "NOP");
+               "NOP" ::: "a");
   __tests_out = status;
   asm volatile("LDA __tests_out\n"
                "STA $D643\n"
-               "NOP");
+               "NOP" ::: "a");
 }
 
 void _unit_test_msg(char* msg, char cmd)
@@ -36,12 +36,12 @@ void _unit_test_msg(char* msg, char cmd)
     __tests_out = *current++;
     asm volatile("LDA __tests_out\n"
                  "STA $D643\n"
-                 "NOP");
+                 "NOP" ::: "a");
   }
 
   asm volatile("LDA #92\n"
                "STA $D643\n"
-               "NOP");
+               "NOP" ::: "a");
 }
 
 void unit_test_set_current_name(char* name)
