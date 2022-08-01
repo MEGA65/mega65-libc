@@ -1,3 +1,5 @@
+#include <stdint.h>
+
 unsigned char opendir(void);
 struct m65_dirent *readdir(unsigned char);
 void closedir(unsigned char);

@@ -12,11 +12,15 @@
 
 // convenience methods
 
-/** \m65libsummary{unit_test_setup}{Setup of the unit test reporting to the host machine}
+/*  \m65libsummary{unit_test_setup}{Setup of the unit test reporting to the host machine}
     \m65libsyntax    {void unit_test_setup(char *testName, unsigned short issueNum);}
     \m65libparam     {testName}{Human readable name of the test}
     \m65libparam     {issueNum}{The mega65-core issue number that identifies the test issue}
 */
+/**
+ * \brief Hejsa
+ * \param testName some parameter
+ */
 void unit_test_setup(char* testName, unsigned short issueNum);
 
 /** \m65libsummary{unit_test_ok}{Report a successful test with a optional message}
