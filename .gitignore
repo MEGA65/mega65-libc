@@ -50,3 +50,9 @@ modules.order
 Module.symvers
 Mkfile.old
 dkms.conf
+
+# MacOS stuff
+.DS_Store
+
+# VIM backup files
+*~

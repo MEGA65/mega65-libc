@@ -11,6 +11,12 @@ Simply include the .c and .s files from the cc65/src directory that you need
 
 KickC support will be coming soon (or sooner, if someone would like to port the routines ;)
 
+## With Clang
+
+Either use the provided CMake setup (details in the Clang folder) or merely include the .c and .h
+files from the `clang` directory that you need. For the latter method, don't forget to include
+`-mcpu=mos65c02` when compiling.
+
 # Function descriptions
 
 ## FAT32 File Access
