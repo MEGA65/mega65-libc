@@ -24,7 +24,7 @@ find_package(llvm-mos-sdk REQUIRED)
 project(myproject VERSION 0.1.0 LANGUAGES C)
 find_package(mega65libc REQUIRED)
 
-add_compile_options(-mcpu=mos65c02 -Os -Wall -Wextra -Wshadow -Wconversion -Wno-language-extension-token)
+add_compile_options(-mcpu=mos65ce02 -Os -Wall -Wextra -Wshadow -Wconversion -Wno-language-extension-token)
 
 add_executable(main main.c)
 target_link_libraries(main mega65libc::mega65libc)
@@ -37,7 +37,6 @@ See more [here](https://github.com/llvm-mos/llvm-mos-sdk#developing-for-6502-wit
 If using [CPM.cmake](https://github.com/cpm-cmake/CPM.cmake),
 `mega65libc` can be easily added to your project with:
 ~~~ cmake
-CPMAddPackage(NAME mega65libc GITHUB_REPOSITORY mega65/mega65-libc SOURCE_SUBDIR clang)
+CPMAddPackage(NAME mega65libc GITHUB_REPOSITORY mega65/mega65-libc GIT_TAG master SOURCE_SUBDIR clang)
 target_link_libraries(<mytarget> mega65libc)
 ~~~
-
