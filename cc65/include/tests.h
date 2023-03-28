@@ -1,6 +1,8 @@
 #ifndef TESTS_H
 #define TESTS_H
 
+#include <stdint.h>
+
 #define TEST_START 0xf0
 #define TEST_SKIP 0xf1
 #define TEST_PASS 0xf2
@@ -58,5 +60,31 @@ void unit_test_set_current_name(char *name);
     \m65libparam     {msg}{The message to be logged}
 */
 void unit_test_log(char *msg);
+
+
+// VIC init functions
+typedef struct
+{
+  uint8_t pal;
+  uint8_t crt_emu;
+  uint8_t h640;
+  uint8_t v400;
+  uint16_t side_border_width;
+  uint8_t border_col;
+  uint8_t background_col;
+  uint8_t cols;
+  uint8_t rows;
+  uint8_t lower_case_charset;
+} vic_config;
+
+void unit_test_vic_get_default_pal(vic_config* conf);
+
+void unit_test_vic_get_default_ntsc(vic_config* conf);
+
+void unit_test_init_vic(vic_config* conf);
+
+void unit_test_print(uint8_t x, uint8_t y, uint8_t colour, char *msg);
+
+void unit_test_read_pixel(short x, short y, uint8_t *red, uint8_t *green, uint8_t *blue);
 
 #endif

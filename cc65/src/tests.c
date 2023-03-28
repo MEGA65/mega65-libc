@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <memory.h>
+#include <tests.h>
 
 unsigned char __tests_out;
 unsigned short __ut_issueNum;
@@ -90,4 +91,123 @@ void unit_test_fail(char *msg)
 
 void unit_test_done(void) {
     unit_test_report(__ut_issueNum, __ut_subissue, 0xff);
+}
+
+static void _unit_test_vic_get_default(vic_config* conf)
+{
+  conf->crt_emu = 0;
+  conf->h640 = 0;
+  conf->v400 = 0;
+  conf->side_border_width = 0x50;
+  conf->border_col = 14;
+  conf->background_col = 6;
+  conf->cols = 40;
+  conf->rows = 25;
+  conf->lower_case_charset = 1;
+}
+
+void unit_test_vic_get_default_pal(vic_config* conf)
+{
+  _unit_test_vic_get_default(conf);
+  conf->pal = 1;
+}
+
+void unit_test_vic_get_default_ntsc(vic_config* conf)
+{
+  _unit_test_vic_get_default(conf);
+  conf->pal = 0;
+}
+
+static uint32_t screen_ram_addr = 0xc000;
+
+void unit_test_init_vic(vic_config* conf)
+{
+  mega65_io_enable();
+
+  // disable vic-iii bug compatibility
+  POKE(0xD07A, PEEK(0xD07A) | 1<<5);
+  // enable hot registers and set side border width
+  POKE(0xD05C, conf->side_border_width & 0xFF);
+  POKE(0xD05D, 0xC0 | conf->side_border_width >> 8);
+  // configure pal/ntsc
+  POKE(0xD06F, (conf->pal ? 0 : 1<<7) | (PEEK(0xD06F) & 0x7F));
+  // normal chars, configure PALEMU 
+  POKE(0xD054, (conf->crt_emu ? 1<<5 : 0) | (0x40));
+  // H640 and V400
+  POKE(0xD031, (conf->h640 ? 1<<7 : 0) | (conf->v400 ? 1<<3 : 0) | 0x60);
+  // select charset
+  POKE(0xD018, conf->lower_case_charset ? 0x16 : 0x14);
+  // reset xscl
+  POKE(0xD016, 8);
+  // border and background
+  POKE(0xD020, conf->border_col);
+  POKE(0xD021, conf->background_col);
+  
+  // keep screen ram at 0x400 for 40x25 screen (0xc000 otherwise)
+  if (conf->cols == 40 && conf->rows == 25) {
+    screen_ram_addr = 0x0400;
+  }
+  else {
+    screen_ram_addr = 0xc000;
+  }
+  POKE(0xD060, (screen_ram_addr >>  0) & 0xff);
+  POKE(0xD061, (screen_ram_addr >>  8) & 0xff);
+  POKE(0xD062, (screen_ram_addr >> 16) & 0xff);
+
+  lfill(screen_ram_addr, 0x20, (uint16_t)conf->rows * conf->cols);
+  lfill(0xff80000L, 0x01, (uint16_t)conf->rows * conf->cols);
+}
+
+static uint16_t char_addr;
+static uint32_t col_addr;
+static uint8_t char_code;
+
+void unit_test_print(uint8_t x, uint8_t y, uint8_t colour, char *msg)
+{
+  uint16_t cnt = 0;
+
+  char_addr = x + y * (uint16_t)PEEK(0xD05E);
+  col_addr = 0xff80000L + char_addr;
+  char_addr += (uint16_t) screen_ram_addr;
+  while (*msg) {
+    char_code = *msg;
+    if (*msg >= 0xc0 && *msg <= 0xe0)
+      char_code = *msg - 0x80;
+    else if (*msg >= 0x40 && *msg <= 0x60)
+      char_code = *msg - 0x40;
+    else if (*msg >= 0x60 && *msg <= 0x7A)
+      char_code = *msg - 0x20;
+    POKE(char_addr++, char_code);
+    lpoke(col_addr++, colour);
+    ++msg;
+    ++cnt;
+  }
+  lfill(col_addr, colour, cnt);
+}
+
+static uint8_t frame_num;
+
+void unit_test_read_pixel(short x, short y, uint8_t *red, uint8_t *green, uint8_t *blue)
+{
+  POKE(0xD07D, x);
+  POKE(0xD07E, y);
+  POKE(0xD07F, (x >> 8) + ((y >> 8) << 4));
+
+  // Wait at least two whole frames
+  frame_num = PEEK(0xD7FA);
+  while (PEEK(0xD7FA) == frame_num)
+    continue;
+  frame_num = PEEK(0xD7FA);
+  while (PEEK(0xD7FA) == frame_num)
+    continue;
+  frame_num = PEEK(0xD7FA);
+  while (PEEK(0xD7FA) == frame_num)
+    continue;
+
+  POKE(0xD07C, 0x52);
+  *red = PEEK(0xD07D);
+  POKE(0xD07C, 0x92);
+  *green = PEEK(0xD07D);
+  POKE(0xD07C, 0xD2);
+  *blue = PEEK(0xD07D);
 }
