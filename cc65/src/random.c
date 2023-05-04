@@ -33,7 +33,6 @@ void generate_random_byte(void)
 
 uint32_t random32(uint32_t range)
 {
-#if 1
   generate_random_byte();
   POKE(0xD770,random_byte);
   generate_random_byte();
@@ -48,7 +47,6 @@ uint32_t random32(uint32_t range)
   *(uint32_t *)0xD774 = range;
 
   return *(uint32_t *)0xD77C;
-
 }
 
 uint16_t random16(uint16_t range)
