@@ -56,3 +56,6 @@ dkms.conf
 
 # VIM backup files
 *~
+
+# subdir work paths
+*/work
