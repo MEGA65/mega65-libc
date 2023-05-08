@@ -2,12 +2,12 @@
 SUBDIRS= \
 		 cc65
 
-.PHONY: all clean cleanall
+.PHONY: all clean cleanall cc65
 
-all:
-	@for path in $(SUBDIRS); do \
-		make -C $$path all; \
-	done
+all: $(SUBDIRS)
+
+cc65:
+	make -C cc65 all
 
 clean:
 	@for path in $(SUBDIRS); do \
