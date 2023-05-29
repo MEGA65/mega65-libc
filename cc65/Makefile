@@ -13,7 +13,7 @@ CC65=$(CC65_PREFIX)cc65
 CA65=$(CC65_PREFIX)ca65 --cpu 4510
 AR65=$(CC65_PREFIX)ar65
 
-CFLAGS=-t c64 -I include/
+CFLAGS=-O -t c64 -I include/
 
 LIB_OBJECTS = \
 	src/dirent.o \
