@@ -24,6 +24,7 @@ LIB_OBJECTS = \
 	src/fcio.o \
 	src/hal.o \
 	src/memory.o \
+	src/memory_asm.o \
 	src/mouse.o \
 	src/random.o \
 	src/sdcard.o \

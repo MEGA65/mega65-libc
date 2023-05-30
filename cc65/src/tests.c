@@ -104,6 +104,8 @@ static void _unit_test_vic_get_default(vic_config* conf)
   conf->cols = 40;
   conf->rows = 25;
   conf->lower_case_charset = 1;
+  conf->disable_viciii_bug_compatibility = 1;
+  conf->xscl = 0;
 }
 
 void unit_test_vic_get_default_pal(vic_config* conf)
@@ -124,8 +126,8 @@ void unit_test_init_vic(vic_config* conf)
 {
   mega65_io_enable();
 
-  // disable vic-iii bug compatibility
-  POKE(0xD07A, PEEK(0xD07A) | 1<<5);
+  // set vic-iii bug compatibility
+  POKE(0xD07A, (PEEK(0xD07A) & 0xDF) | (conf->disable_viciii_bug_compatibility ? 1<<5 : 0));
   // enable hot registers and set side border width
   POKE(0xD05C, conf->side_border_width & 0xFF);
   POKE(0xD05D, 0xC0 | conf->side_border_width >> 8);
@@ -137,8 +139,8 @@ void unit_test_init_vic(vic_config* conf)
   POKE(0xD031, (conf->h640 ? 1<<7 : 0) | (conf->v400 ? 1<<3 : 0) | 0x60);
   // select charset
   POKE(0xD018, conf->lower_case_charset ? 0x16 : 0x14);
-  // reset xscl
-  POKE(0xD016, 8);
+  // set xscl (will trigger a final hot register update)
+  POKE(0xD016, 8 | (conf->xscl & 0x07));
   // border and background
   POKE(0xD020, conf->border_col);
   POKE(0xD021, conf->background_col);
