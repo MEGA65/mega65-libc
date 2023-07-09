@@ -4,18 +4,19 @@
 
         .importzp sp,sreg,tmp1,tmp2,tmp3,tmp4
         .import incsp4
+        sp4510 = sp
 
         .p4510
+        
 
 .segment	"CODE"
 
 .proc	_lpoke: near
         pha
+        ldz #$00
         neg
         neg
-        .p02
-        lda sp
-        .p4510
+        lda (sp4510),z
         neg
         neg
         sta tmp1
