@@ -54,10 +54,10 @@ void lfill_skip(long destination_address, unsigned char value,
 #define PEEK16(X) (*(uint16_t *)(X))
 #define PEEK32(X) (*(uint32_t *)(X))
 #elif defined(__clang__)
-#define POKE(X, Y) (*(volatile unsigned char*)(X)) = Y
+#define POKE(X, Y) (*(volatile uint8_t *)(X)) = Y
 #define POKE16(X, Y) (*(volatile uint16_t *)(X)) = Y
 #define POKE32(X, Y) (*(volatile uint32_t *)(X)) = Y
-#define PEEK(X) (*(volatile unsigned char*)(X))
+#define PEEK(X) (*(volatile uint8_t *)(X))
 #define PEEK16(X) (*(volatile uint16_t *)(X))
 #define PEEK32(X) (*(volatile uint32_t *)(X))
 #else
