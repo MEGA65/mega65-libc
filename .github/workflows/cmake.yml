@@ -24,7 +24,7 @@ jobs:
       run: wget https://github.com/llvm-mos/llvm-mos-sdk/releases/latest/download/llvm-mos-linux.tar.xz
       
     - name: Unpack llvm-mos-sdk
-      run: tar zxf llvm-mos-linux.tar.xz
+      run: tar xf llvm-mos-linux.tar.xz
       
     - name: Go to project clang/ directory
       run: cd clang/
