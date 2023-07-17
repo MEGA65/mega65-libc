@@ -1,6 +1,8 @@
 #ifndef __MEGA65_MEMORY_H
 #define __MEGA65_MEMORY_H
 
+#include <stdint.h>
+
 struct dmagic_dmalist
 {
   // Enhanced DMA options
@@ -45,14 +47,26 @@ void lfill(long destination_address, unsigned char value,
 void lfill_skip(long destination_address, unsigned char value,
                 unsigned int count, unsigned char skip);
 #if defined(__CC65__)
-#define POKE(X, Y) (*(unsigned char *)(X)) = Y
-#define PEEK(X) (*(unsigned char *)(X))
+#define POKE(X, Y) (*(uint8_t *)(X)) = Y
+#define POKE16(X, Y) (*(uint16_t *)(X)) = Y
+#define POKE32(X, Y) (*(uint32_t *)(X)) = Y
+#define PEEK(X) (*(uint8_t *)(X))
+#define PEEK16(X) (*(uint16_t *)(X))
+#define PEEK32(X) (*(uint32_t *)(X))
 #elif defined(__clang__)
 #define POKE(X, Y) (*(volatile unsigned char*)(X)) = Y
+#define POKE16(X, Y) (*(volatile uint16_t *)(X)) = Y
+#define POKE32(X, Y) (*(volatile uint32_t *)(X)) = Y
 #define PEEK(X) (*(volatile unsigned char*)(X))
+#define PEEK16(X) (*(volatile uint16_t *)(X))
+#define PEEK32(X) (*(volatile uint32_t *)(X))
 #else
 #define POKE(X, Y)
+#define POKE16(X, Y)
+#define POKE32(X, Y)
 #define PEEK(X)
+#define PEEK16(X)
+#define PEEK32(X)
 #endif
 
 #endif

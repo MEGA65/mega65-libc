@@ -42,11 +42,9 @@ uint32_t random32(uint32_t range)
   generate_random_byte();
   POKE(0xD773,random_byte);
 
-  if (!range) return *(uint32_t *)0xD770;
-
-  *(uint32_t *)0xD774 = range;
-
-  return *(uint32_t *)0xD77C;
+  if (!range) return PEEK32(0xD770);
+  POKE32(0xD774, range);
+  return PEEK32(0xD77C);
 }
 
 uint16_t random16(uint16_t range)
@@ -61,11 +59,9 @@ uint16_t random16(uint16_t range)
   POKE(0xD776,0);
   POKE(0xD777,0);
   
-  if (!range) return *(uint16_t *)0xD770;
-
-  *(uint16_t *)0xD774 = range;
-
-  return *(uint16_t *)0xD77A;  
+  if (!range) return PEEK16(0xD770);
+  POKE16(0xD774, range);
+  return PEEK16(0xD77A);
 }
 
 uint8_t random8(uint8_t range)
@@ -114,18 +110,18 @@ uint32_t rand32(uint32_t range)
 {
   xorshift32();
   if (!range) return xorshift32_state;
-  *(uint32_t *)0xD770 = xorshift32_state;
-  *(uint32_t *)0xD774 = range;
-  return *(uint32_t *)0xD77C;
+  POKE32(0xD770, xorshift32_state);
+  POKE32(0xD774, range);
+  return PEEK32(0xD77C);
 }
 
 uint16_t rand16(uint16_t range)
 {
   xorshift32();
   if (!range) return (uint16_t)xorshift32_state;
-  *(uint32_t *)0xD770 = xorshift32_state;
-  *(uint32_t *)0xD774 = range;
-  return *(uint16_t *)0xD77C;
+  POKE32(0xD770, xorshift32_state);
+  POKE32(0xD774, range); // @todo Is this correct? range is 16-bit, but POKE32 writes 32-bit
+  return PEEK16(0xD77C);
 }
 
 #ifdef DEBUG
