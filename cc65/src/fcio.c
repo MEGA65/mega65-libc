@@ -20,6 +20,11 @@
 
 #define __fastcall__ // to silence stupid vscode warning
 
+#ifdef __clang__
+// C64 needs to be defined to include the <c64.h> header below
+#define __C64__ 1
+#endif
+
 #include <fcio.h>
 #include <memory.h>
 #include <c64.h>

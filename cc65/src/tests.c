@@ -12,21 +12,45 @@ unsigned char __ut_subissue;
 void unit_test_report(unsigned short issue, unsigned char sub, unsigned char status)
 {
   __tests_out = issue & 0xff;
+#ifdef __CC65__
   __asm__("LDA %v", __tests_out);
   __asm__("STA $D643");
   __asm__("NOP");
+#else
+    asm volatile("LDA __tests_out\n"
+               "STA $D643\n"
+               "NOP" ::: "a");
+#endif
   __tests_out = issue >> 8;
+#ifdef __CC65__
   __asm__("LDA %v", __tests_out);
   __asm__("STA $D643");
   __asm__("NOP");
+#else
+    asm volatile("LDA __tests_out\n"
+               "STA $D643\n"
+               "NOP" ::: "a");
+#endif
   __tests_out = sub;
+#ifdef __CC65__
   __asm__("LDA %v", __tests_out);
   __asm__("STA $D643");
   __asm__("NOP");
+#else
+    asm volatile("LDA __tests_out\n"
+               "STA $D643\n"
+               "NOP" ::: "a");
+#endif
   __tests_out = status;
+#ifdef __CC65__
   __asm__("LDA %v", __tests_out);
   __asm__("STA $D643");
   __asm__("NOP");
+#else
+    asm volatile("LDA __tests_out\n"
+               "STA $D643\n"
+               "NOP" ::: "a");
+#endif
 }
 
 void _unit_test_msg(char *msg, char cmd)
@@ -39,14 +63,26 @@ void _unit_test_msg(char *msg, char cmd)
   while (*current)
   {
     __tests_out = *current++;
-    __asm__("LDA %v", __tests_out);
-    __asm__("STA $D643");
-    __asm__("NOP");
+#ifdef __CC65__
+  __asm__("LDA %v", __tests_out);
+  __asm__("STA $D643");
+  __asm__("NOP");
+#else
+    asm volatile("LDA __tests_out\n"
+               "STA $D643\n"
+               "NOP" ::: "a");
+#endif
   }
 
+#ifdef __CC65__
   __asm__("LDA #92");
   __asm__("STA $D643");
   __asm__("NOP");
+#else
+  asm volatile("LDA #92\n"
+               "STA $D643\n"
+               "NOP" ::: "a");
+#endif
 }
 
 void unit_test_set_current_name(char *name)

@@ -52,6 +52,10 @@
 
 */
 
+#ifndef __CC65__
+#define fastcall
+#endif
+
 #ifndef M65LIBC_CONIO_H
 #define M65LIBC_CONIO_H
 
