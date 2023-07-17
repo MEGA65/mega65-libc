@@ -1,8 +1,13 @@
 #include <stdio.h>
 #include <memory.h>
 
+#ifdef __clang__
+volatile struct dmagic_dmalist dmalist;
+volatile unsigned char dma_byte;
+#else
 struct dmagic_dmalist dmalist;
 unsigned char dma_byte;
+#endif
 
 void do_dma(void)
 {

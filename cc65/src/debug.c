@@ -1,4 +1,4 @@
-#include "memory.h"
+#include <memory.h>
 
 unsigned char the_char;
 void debug_msg(char *m)

@@ -24,8 +24,13 @@ struct dmagic_dmalist
   unsigned int modulo;
 };
 
+#ifdef __clang__
+extern volatile struct dmagic_dmalist dmalist;
+extern volatile unsigned char dma_byte;
+#else
 extern struct dmagic_dmalist dmalist;
 extern unsigned char dma_byte;
+#endif
 
 void mega65_io_enable(void);
 unsigned char lpeek(long address);
