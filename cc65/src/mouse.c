@@ -79,20 +79,21 @@ void mouse_update_pointer(void)
   }
 }
 
+unsigned char inspect=0;
 void mouse_update_position(unsigned short *mx,unsigned short *my)
 {
-  unsigned char delta;
-  delta=PEEK(0xD620)-mouse_pot_x;
-  mouse_pot_x=PEEK(0xD620);
-  if (delta>=0x01&&delta<=0x3f) mouse_x+=delta;
-  delta=-delta;
-  if (delta>=0x01&&delta<=0x3f) mouse_x-=delta;
-
-  delta=PEEK(0xD621)-mouse_pot_y;
-  mouse_pot_y=PEEK(0xD621);
-  if (delta>=0x01&&delta<=0x3f) mouse_y-=delta;
-  delta=-delta;
-  if (delta>=0x01&&delta<=0x3f) mouse_y+=delta;
+  unsigned char delta, v;
+  v=(PEEK(0xD620)>>1)&0x3f;
+  delta=v-mouse_pot_x;
+  mouse_pot_x=v;
+  if (delta<0x10) mouse_x+=delta;
+  if (delta>0xf0) mouse_x-=0x100-delta;
+  
+  v=(PEEK(0xD621)>>1)&0x3f;
+  delta=v-mouse_pot_y;
+  mouse_pot_y=v;
+  if (delta<0x10) mouse_y-=delta;
+  if (delta>0xf0) mouse_y+=0x100-delta;
   
   mouse_clip_position();
   mouse_update_pointer();
@@ -111,6 +112,6 @@ void mouse_warp_to(unsigned short x,unsigned short y)
   mouse_update_pointer();
 
   // Mark POT position as read
-  mouse_pot_x=PEEK(0xD620);
-  mouse_pot_y=PEEK(0xD621);
+  mouse_pot_x=(PEEK(0xD620)>>1)&0x3f;
+  mouse_pot_y=(PEEK(0xD621)>>1)&0x3f;
 }

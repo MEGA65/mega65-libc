@@ -21,7 +21,7 @@ void do_dma(void)
   POKE(0xd705U, ((unsigned int)&dmalist) & 0xff); // triggers enhanced DMA
 }
 
-unsigned char lpeek(long address)
+unsigned char dma_peek(long address)
 {
   // Read the byte at <address> in 28-bit address space
   // XXX - Optimise out repeated setup etc
@@ -65,7 +65,7 @@ unsigned char lpeek_debounced(long address)
   return db1;
 }
 
-void lpoke(long address, unsigned char value)
+void dma_poke(long address, unsigned char value)
 {
 
   dmalist.option_0b = 0x0b;
