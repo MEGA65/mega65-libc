@@ -58,9 +58,19 @@ dkms.conf
 *~
 
 # subdir work paths
-*/work
-
+work
 build
 
 # Visual studio code
 .vscode
+
+# CMake
+CMakeCache.txt
+CMakeFiles
+Makefile
+cmake_install.cmake
+install_manifest.txt
+DartConfiguration.tcl
+Testing
+CTestTestfile.cmake
+.swp
