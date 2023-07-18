@@ -33,9 +33,9 @@ jobs:
       run: ls -l
       
     - name: Configure CMake
-      working-directory: ${{github.workspace}}/clang/
-      run: cmake -DCMAKE_PREFIX_PATH=${{github.workspace}}/llvm-mos .
+      working-directory: ${{github.workspace}}
+      run: cmake -DCMAKE_PREFIX_PATH=llvm-mos -B build/ .
 
     - name: Build
-      working-directory: ${{github.workspace}}/clang/
+      working-directory: ${{github.workspace}}/build
       run: make
