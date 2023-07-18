@@ -1,21 +1,54 @@
-# mega65-libc
+# MEGA65-libc
+
 Simple C library for the MEGA65
 
 # Using the library
 
-## With CC65
+- **CC65**: Include the `.c` and `.s` files from the `src/` directory that you need.
+- **Clang**: Either use the provided CMake setup as detailed below, or include the `.c` and `.h` files you need.
+- **KickC**: Support will be coming soon (or sooner, if someone would like to port the routines :-)
 
-Simply include the .c and .s files from the cc65/src directory that you need 
+# Building
 
-## With KickC
+## CC65
 
-KickC support will be coming soon (or sooner, if someone would like to port the routines ;)
+1. Install [CC65](https://cc65.github.io) with e.g. `brew install cc65` or `apt install cc65`.
+2. Build by running `make` inside the `mega65-libc/` directory.
 
-## With Clang
+## Clang
 
-Either use the provided CMake setup (details in the Clang folder) or merely include the .c and .h
-files from the `clang` directory that you need. For the latter method, don't forget to include
-`-mcpu=mos65c02` when compiling.
+1. Install [llvm-mos-sdk](https://github.com/llvm-mos/llvm-mos-sdk#getting-started).
+2. Configure and make with:
+~~~ sh
+cmake -DCMAKE_PREFIX_PATH=<llvm-mos-sdk-install-prefix> -B build/ mega65-libc/
+cd build/
+make
+~~~
+
+### Dependent CMake projects
+
+`CMakeLists.txt` of a dependent project could look like this:
+~~~ cmake
+cmake_minimum_required(VERSION 3.5)
+set(LLVM_MOS_PLATFORM mega65)
+find_package(llvm-mos-sdk REQUIRED)
+project(myproject VERSION 0.1.0 LANGUAGES C)
+find_package(mega65libc REQUIRED)
+add_compile_options(-mcpu=mos65ce02 -Os -Wall -Wextra -Wshadow -Wconversion -Wno-language-extension-token)
+add_executable(main main.c)
+target_link_libraries(main mega65libc::mega65libc)
+set_target_properties(main PROPERTIES OUTPUT_NAME main.prg)
+~~~
+See more [here](https://github.com/llvm-mos/llvm-mos-sdk#developing-for-6502-with-cmake).
+
+### CPM.cmake dependency manager
+
+If using [CPM.cmake](https://github.com/cpm-cmake/CPM.cmake),
+`mega65libc` can be easily added and automatically downloaded to your project with:
+~~~ cmake
+CPMAddPackage(NAME mega65libc GITHUB_REPOSITORY mega65/mega65-libc GIT_TAG master)
+target_link_libraries(<mytarget> mega65libc)
+~~~
 
 # Function descriptions
 

@@ -1,18 +1,38 @@
 cmake_minimum_required(VERSION 3.5)
 set(LLVM_MOS_PLATFORM mega65)
 find_package(llvm-mos-sdk REQUIRED)
-project(mega65libc VERSION 1.0.0 LANGUAGES C ASM)
+project(mega65libc VERSION 0.3.0 LANGUAGES C ASM)
 
-# all source and header files
-set(assembler src/fileio.s src/dirent.s)
+set(assembler
+    src/llvm/fileio.s
+    src/llvm/dirent.s)
 
-set(objects ../cc65/src/conio.c ../cc65/src/debug.c ../cc65/src/fat32.c
-    ../cc65/src/hal.c ../cc65/src/memory.c ../cc65/src/mouse.c ../cc65/src/random.c
-    ../cc65/src/sdcard.c ../cc65/src/targets.c ../cc65/src/tests.c ../cc65/src/time.c)
+set(objects
+    src/conio.c
+    src/debug.c
+    src/fat32.c
+    src/hal.c
+    src/memory.c
+    src/mouse.c
+    src/random.c
+    src/sdcard.c
+    src/targets.c
+    src/tests.c
+    src/time.c)
 
-set(headers ../cc65/include/conio.h ../cc65/include/debug.h ../cc65/include/hal.h
-    ../cc65/include/memory.h ../cc65/include/mouse.h ../cc65/include/random.h ../cc65/include/sdcard.h ../cc65/include/targets.h
-    ../cc65/include/tests.h ../cc65/include/time.h ../cc65/include/fileio.h ../cc65/include/dirent.h)
+set(headers
+    include/conio.h
+    include/debug.h
+    include/dirent.h
+    include/fileio.h
+    include/hal.h
+    include/memory.h
+    include/mouse.h
+    include/random.h
+    include/sdcard.h
+    include/targets.h
+    include/tests.h
+    include/time.h)
 
 set_source_files_properties(${objects} PROPERTIES LANGUAGE C)
 set_source_files_properties(${assembler} PROPERTIES LANGUAGE ASM)
@@ -23,12 +43,12 @@ add_library(mega65libc ${objects} ${headers} ${assembler})
 target_include_directories(mega65libc
     PUBLIC 
     $<INSTALL_INTERFACE:include>    
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../cc65/include>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
     PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/src
     )
 set_target_properties(mega65libc PROPERTIES PUBLIC_HEADER "${headers}")
-target_compile_options(mega65libc PRIVATE -mcpu=mos65c02 -Os -Wall -Wextra -Wshadow -Wconversion -Wno-language-extension-token)
+target_compile_options(mega65libc PRIVATE -mcpu=mos65c02 -Os -Wall -Wextra -Wshadow -Wconversion -Wno-language-extension-token -Wpedantic)
 
 # install target
 include(GNUInstallDirs)
@@ -51,7 +71,7 @@ install(EXPORT mega65libc-export
     )
 
 # compile example prg file
-add_executable(example src/example.c)
-target_link_libraries(example mega65libc)
-set_target_properties(example PROPERTIES OUTPUT_NAME example.prg EXCLUDE_FROM_ALL true)
+add_executable(time-test tests/time.c)
+target_link_libraries(time-test mega65libc)
+set_target_properties(time-test PROPERTIES OUTPUT_NAME time.prg EXCLUDE_FROM_ALL true)
 
