@@ -2,7 +2,7 @@
 Language:         Cpp
 BasedOnStyle:     Webkit
 ColumnLimit:      80
-IndentWidth:      2
+IndentWidth:      4
 AlignTrailingComments: true
 BreakBeforeBraces: Stroustrup
 SortIncludes: false
