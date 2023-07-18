@@ -14,22 +14,16 @@
 
     You should have received a copy of the GNU Lesser General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
- 
+
     Version   0.1
     Date      2020-07-01
 */
 
-
-void mouse_warp_to(unsigned short x,unsigned short y);
-void mouse_update_position(unsigned short *mx,unsigned short *my);
+void mouse_warp_to(unsigned short x, unsigned short y);
+void mouse_update_position(unsigned short* mx, unsigned short* my);
 void mouse_update_pointer(void);
 char mouse_clicked(void);
 void mouse_clip_position(void);
 void mouse_bind_to_sprite(unsigned char sprite_num);
-void mouse_set_bounding_box(unsigned short x1, unsigned short y1,unsigned short x2,unsigned short y2);
-
-
-
-
-
-
+void mouse_set_bounding_box(
+    unsigned short x1, unsigned short y1, unsigned short x2, unsigned short y2);

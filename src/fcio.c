@@ -46,12 +46,12 @@
 #define TOPBORDER_NTSC 0x27
 #define BOTTOMBORDER_NTSC 0x1b7
 
-char *fcbuf = (char *)0x0400; // general purpose buffer
+char* fcbuf = (char*)0x0400; // general purpose buffer
 // DMAlist is at 0x500
-fciInfo **infoBlocks = (fciInfo **)0x0600; // pointers to fci info blocks
-textwin *defaultWin = (textwin *)0x0700;
-textwin *gCurrentWin;
-fcioConf *gFcioConfig;
+fciInfo** infoBlocks = (fciInfo**)0x0600; // pointers to fci info blocks
+textwin* defaultWin = (textwin*)0x0700;
+textwin* gCurrentWin;
+fcioConf* gFcioConfig;
 byte winCount = MAX_WINDOWS;
 
 fcioConf stdConfig = {
@@ -65,18 +65,18 @@ fcioConf stdConfig = {
 
 #define VIC_BASE 0xD000UL
 
-#define VIC2CTRL (*(unsigned char *)(0xd016))
-#define VIC4CTRL (*(unsigned char *)(0xd054))
-#define VIC3CTRL (*(unsigned char *)(0xd031))
-#define LINESTEP_LO (*(unsigned char *)(0xd058))
-#define LINESTEP_HI (*(unsigned char *)(0xd059))
-#define CHRCOUNT (*(unsigned char *)(0xd05e))
-#define HOTREG (*(unsigned char *)(0xd05d))
+#define VIC2CTRL (*(unsigned char*)(0xd016))
+#define VIC4CTRL (*(unsigned char*)(0xd054))
+#define VIC3CTRL (*(unsigned char*)(0xd031))
+#define LINESTEP_LO (*(unsigned char*)(0xd058))
+#define LINESTEP_HI (*(unsigned char*)(0xd059))
+#define CHRCOUNT (*(unsigned char*)(0xd05e))
+#define HOTREG (*(unsigned char*)(0xd05d))
 
-#define SCNPTR_0 (*(unsigned char *)(0xd060))
-#define SCNPTR_1 (*(unsigned char *)(0xd061))
-#define SCNPTR_2 (*(unsigned char *)(0xd062))
-#define SCNPTR_3 (*(unsigned char *)(0xd063))
+#define SCNPTR_0 (*(unsigned char*)(0xd060))
+#define SCNPTR_1 (*(unsigned char*)(0xd061))
+#define SCNPTR_2 (*(unsigned char*)(0xd062))
+#define SCNPTR_3 (*(unsigned char*)(0xd063))
 
 // special graphics characters
 #define H_COLUMN_END 4
@@ -93,7 +93,8 @@ fcioConf stdConfig = {
 word gScreenSize;          // screen size (in characters)
 byte gScreenColumns;       // number of screen columns (in characters)
 byte gScreenRows;          // number of screen rows (in characters)
-himemPtr nextFreeGraphMem; // location of next free graphics block in banks 4 & 5
+himemPtr nextFreeGraphMem; // location of next free graphics block in banks 4 &
+                           // 5
 himemPtr nextFreePalMem;   // location of next free palette memory block
 byte infoBlockCount;       // number of info blocks
 byte cgi;                  // universal loop var
@@ -105,7 +106,7 @@ int gBottomBorder;
 bool csrflag; // cursor on/off
 bool autoCR;
 
-unsigned int readExt(FILE *inFile, himemPtr addr, byte skipCBMAddressBytes)
+unsigned int readExt(FILE* inFile, himemPtr addr, byte skipCBMAddressBytes)
 {
 
     unsigned int readBytes;
@@ -115,16 +116,13 @@ unsigned int readExt(FILE *inFile, himemPtr addr, byte skipCBMAddressBytes)
     insertPos = addr;
     overallRead = 0;
 
-    if (skipCBMAddressBytes)
-    {
+    if (skipCBMAddressBytes) {
         fread(fcbuf, 1, 2, inFile);
     }
 
-    do
-    {
+    do {
         readBytes = fread(fcbuf, 1, FCBUFSIZE, inFile);
-        if (readBytes)
-        {
+        if (readBytes) {
             overallRead += readBytes;
             lcopy((long)fcbuf, insertPos, readBytes);
             insertPos += readBytes;
@@ -134,31 +132,32 @@ unsigned int readExt(FILE *inFile, himemPtr addr, byte skipCBMAddressBytes)
     return overallRead;
 }
 
-unsigned int loadExt(char *filename, himemPtr addr, byte skipCBMAddressBytes)
+unsigned int loadExt(char* filename, himemPtr addr, byte skipCBMAddressBytes)
 {
 
-    FILE *inFile;
+    FILE* inFile;
     word readBytes;
 
     inFile = fopen(filename, "r");
     readBytes = readExt(inFile, addr, skipCBMAddressBytes);
     fclose(inFile);
 
-    if (readBytes == 0)
-    {
+    if (readBytes == 0) {
         fc_fatal("0 bytes from %s", filename);
     }
 
     return readBytes;
 }
 
-void fc_loadReservedBitmap(char *name)
+void fc_loadReservedBitmap(char* name)
 {
-    fc_loadFCI(name, gFcioConfig->reservedBitmapBase, gFcioConfig->reservedPaletteBase);
+    fc_loadFCI(name, gFcioConfig->reservedBitmapBase,
+        gFcioConfig->reservedPaletteBase);
     fc_resetPalette();
 }
 
-void fc_init(byte h640, byte v400, fcioConf *config, byte rows, char *reservedBitmapFile)
+void fc_init(
+    byte h640, byte v400, fcioConf* config, byte rows, char* reservedBitmapFile)
 {
     mega65_io_enable();
 
@@ -168,19 +167,16 @@ void fc_init(byte h640, byte v400, fcioConf *config, byte rows, char *reservedBi
 
     gFcioConfig = config ? config : &stdConfig;
 
-    if ((PEEK(53359U) & 128) == 0)
-    {
+    if ((PEEK(53359U) & 128) == 0) {
         gTopBorder = TOPBORDER_PAL;
         gBottomBorder = BOTTOMBORDER_PAL;
     }
-    else
-    {
+    else {
         gTopBorder = TOPBORDER_NTSC;
         gBottomBorder = BOTTOMBORDER_NTSC;
     }
     infoBlockCount = 0;
-    for (cgi = 0; cgi < MAX_FCI_BLOCKS; ++cgi)
-    {
+    for (cgi = 0; cgi < MAX_FCI_BLOCKS; ++cgi) {
         infoBlocks[cgi] = NULL;
     }
     fc_freeGraphAreas();
@@ -190,8 +186,7 @@ void fc_init(byte h640, byte v400, fcioConf *config, byte rows, char *reservedBi
     fc_screenmode(h640, v400, rows);
     autoCR = true;
 
-    if (reservedBitmapFile)
-    {
+    if (reservedBitmapFile) {
         fc_loadReservedBitmap(reservedBitmapFile);
     }
     fc_textcolor(COLOR_GREEN);
@@ -214,34 +209,42 @@ unsigned char fc_nyblswap(unsigned char in) // oh why?!
 
 void fc_flash(byte f)
 {
-    if (f)
+    if (f) {
         bitset(gCurrentWin->extAttributes, 4);
-    else
+    }
+    else {
         bitclear(gCurrentWin->extAttributes, 4);
+    }
 }
 
 void fc_revers(byte f)
 {
-    if (f)
+    if (f) {
         bitset(gCurrentWin->extAttributes, 5);
-    else
+    }
+    else {
         bitclear(gCurrentWin->extAttributes, 5);
+    }
 }
 
 void fc_bold(byte f)
 {
-    if (f)
+    if (f) {
         bitset(gCurrentWin->extAttributes, 6);
-    else
+    }
+    else {
         bitclear(gCurrentWin->extAttributes, 6);
+    }
 }
 
 void fc_underline(byte f)
 {
-    if (f)
+    if (f) {
         bitset(gCurrentWin->extAttributes, 7);
-    else
+    }
+    else {
         bitclear(gCurrentWin->extAttributes, 7);
+    }
 }
 
 void fc_resetPalette(void)
@@ -250,7 +253,7 @@ void fc_resetPalette(void)
     fc_loadPalette(gFcioConfig->reservedPaletteBase, 255, false);
 }
 
-void fc_fatal(const char *format, ...)
+void fc_fatal(const char* format, ...)
 {
     char buf[160];
     va_list args;
@@ -270,10 +273,8 @@ void fc_fatal(const char *format, ...)
 
 void fc_freeGraphAreas(void)
 {
-    for (cgi = 0; cgi < infoBlockCount; ++cgi)
-    {
-        if (infoBlocks[cgi] != NULL)
-        {
+    for (cgi = 0; cgi < infoBlockCount; ++cgi) {
+        if (infoBlocks[cgi] != NULL) {
             free(infoBlocks[cgi]);
             infoBlocks[cgi] = NULL;
         }
@@ -293,18 +294,15 @@ himemPtr fc_allocGraphMem(word size)
 {
     himemPtr adr = nextFreeGraphMem;
 
-    if (nextFreeGraphMem + size < gFcioConfig->dynamicBitmapBase + 0x10000)
-    {
+    if (nextFreeGraphMem + size < gFcioConfig->dynamicBitmapBase + 0x10000) {
         nextFreeGraphMem += size;
         return adr;
     }
-    if (nextFreeGraphMem < gFcioConfig->dynamicBitmapBase + 0x10000)
-    {
+    if (nextFreeGraphMem < gFcioConfig->dynamicBitmapBase + 0x10000) {
         nextFreeGraphMem = gFcioConfig->dynamicBitmapBase + 0x10000;
         adr = nextFreeGraphMem;
     }
-    if (nextFreeGraphMem + size < gFcioConfig->dynamicBitmapBase + 0x20000)
-    {
+    if (nextFreeGraphMem + size < gFcioConfig->dynamicBitmapBase + 0x20000) {
         nextFreeGraphMem += size;
         return adr;
     }
@@ -325,20 +323,16 @@ himemPtr fc_allocPalMem(word size)
 char asciiToPetscii(byte c)
 {
     // TODO: could be made much faster with translation table
-    if (c == '_')
-    {
+    if (c == '_') {
         return 100;
     }
-    if (c >= 64 && c <= 95)
-    {
+    if (c >= 64 && c <= 95) {
         return c - 64;
     }
-    if (c >= 96 && c < 192)
-    {
+    if (c >= 96 && c < 192) {
         return c - 32;
     }
-    if (c >= 192)
-    {
+    if (c >= 192) {
         return c - 128;
     }
     return c;
@@ -371,12 +365,10 @@ void fc_screenmode(byte h640, byte v400, byte rows)
     int extraRows = 0;
 
     mega65_io_enable();
-    if (rows == 0)
-    {
+    if (rows == 0) {
         gScreenRows = v400 ? 50 : 25;
     }
-    else
-    {
+    else {
         gScreenRows = rows;
     }
 
@@ -384,25 +376,21 @@ void fc_screenmode(byte h640, byte v400, byte rows)
     VIC4CTRL |= 0x04; // enable full colour for characters with high byte set
     VIC4CTRL |= 0x01; // enable 16 bit characters
 
-    if (h640)
-    {
+    if (h640) {
         VIC3CTRL |= 0x80; // enable H640
         VIC2CTRL |= 0x01; // shift one pixel to the right (VIC-III bug)
         gScreenColumns = 80;
     }
-    else
-    {
+    else {
         VIC3CTRL &= 0x7f; // disable H640
         gScreenColumns = 40;
     }
 
-    if (v400)
-    {
+    if (v400) {
         VIC3CTRL |= 0x08;
         extraRows = gScreenRows - 50;
     }
-    else
-    {
+    else {
         VIC3CTRL &= 0xf7;
         extraRows = (gScreenRows - 25) * 2;
     }
@@ -413,8 +401,7 @@ void fc_screenmode(byte h640, byte v400, byte rows)
 
     HOTREG &= 127; // disable hotreg
 
-    if (extraRows > 0)
-    {
+    if (extraRows > 0) {
         adjustBorders(extraRows, 0);
     }
 
@@ -423,7 +410,8 @@ void fc_screenmode(byte h640, byte v400, byte rows)
     POKE(53349u, (COLOUR_RAM_OFFSET >> 8) & 0xff);
 
     CHRCOUNT = gScreenColumns;
-    LINESTEP_LO = gScreenColumns * 2; // *2 to have 2 screen bytes == 1 character
+    LINESTEP_LO
+        = gScreenColumns * 2; // *2 to have 2 screen bytes == 1 character
     LINESTEP_HI = 0;
 
     SCNPTR_0 = gFcioConfig->screenBase & 0xff; // screen to 0x12000
@@ -467,8 +455,8 @@ void fc_plotExtChar(byte x, byte y, byte c)
     lpoke(gFcioConfig->screenBase + adr + 1, charIdx / 256);
 }
 
-void fc_addGraphicsRect(byte x0, byte y0, byte width, byte height,
-                        himemPtr bitmapData)
+void fc_addGraphicsRect(
+    byte x0, byte y0, byte width, byte height, himemPtr bitmapData)
 {
     static byte x, y;
     long adr;
@@ -476,45 +464,42 @@ void fc_addGraphicsRect(byte x0, byte y0, byte width, byte height,
 
     currentCharIdx = bitmapData / 64;
 
-    for (y = y0; y < y0 + height; ++y)
-    {
-        for (x = x0; x < x0 + width; ++x)
-        {
+    for (y = y0; y < y0 + height; ++y) {
+        for (x = x0; x < x0 + width; ++x) {
             adr = gFcioConfig->screenBase + (x * 2) + (y * gScreenColumns * 2);
-            lpoke(adr + 1, currentCharIdx / 256); // set highbyte first to avoid blinking
-            lpoke(adr, currentCharIdx % 256);     // while setting up the screeen
+            lpoke(adr + 1,
+                currentCharIdx / 256); // set highbyte first to avoid blinking
+            lpoke(adr, currentCharIdx % 256); // while setting up the screeen
             currentCharIdx++;
         }
     }
 }
 
-fciInfo *fc_loadFCI(char *filename, himemPtr address, himemPtr paletteAddress)
+fciInfo* fc_loadFCI(char* filename, himemPtr address, himemPtr paletteAddress)
 {
     static byte numColumns, numRows, lastColourIndex;
     static byte fciOptions;
     static byte reservedSysPalette;
 
-    FILE *fcifile;
-    byte *palette;
+    FILE* fcifile;
+    byte* palette;
     word palsize;
     word imgsize;
     word bytesRead;
     himemPtr bitmampAdr;
     himemPtr palAdr;
-    fciInfo *info;
+    fciInfo* info;
 
     info = NULL;
 
-    if (!address)
-    {
-        info = (fciInfo *)malloc(sizeof(fciInfo));
+    if (!address) {
+        info = (fciInfo*)malloc(sizeof(fciInfo));
         infoBlocks[infoBlockCount++] = info;
     }
 
     fcifile = fopen(filename, "rb");
 
-    if (!fcifile)
-    {
+    if (!fcifile) {
         fc_fatal("fci not found %s", filename);
     }
     fread(fcbuf, 1, 9, fcifile);
@@ -526,19 +511,16 @@ fciInfo *fc_loadFCI(char *filename, himemPtr address, himemPtr paletteAddress)
     reservedSysPalette = fciOptions & 2;
 
     palsize = (lastColourIndex + 1) * 3;
-    palette = (byte *)malloc(palsize);
+    palette = (byte*)malloc(palsize);
     fread(palette, 3, lastColourIndex + 1, fcifile);
 
-    if (!paletteAddress)
-    {
+    if (!paletteAddress) {
         palAdr = fc_allocPalMem(palsize);
-        if (palAdr == 0)
-        {
+        if (palAdr == 0) {
             fc_fatal("no room for palette");
         }
     }
-    else
-    {
+    else {
         palAdr = paletteAddress;
     }
     lcopy((long)palette, palAdr, palsize);
@@ -546,29 +528,24 @@ fciInfo *fc_loadFCI(char *filename, himemPtr address, himemPtr paletteAddress)
     imgsize = numColumns * numRows * 64;
 
     fread(fcbuf, 1, 3, fcifile);
-    if (0 != memcmp(fcbuf, "img", 3))
-    {
+    if (0 != memcmp(fcbuf, "img", 3)) {
         fc_fatal("image marker not found in %s", filename);
     }
 
-    if (!address)
-    {
+    if (!address) {
         bitmampAdr = fc_allocGraphMem(imgsize);
-        if (bitmampAdr == 0)
-        {
+        if (bitmampAdr == 0) {
             fc_fatal("no memory for %s", filename);
         }
     }
-    else
-    {
+    else {
         bitmampAdr = address;
     }
 
     bytesRead = readExt(fcifile, bitmampAdr, false);
     fclose(fcifile);
 
-    if (info != NULL)
-    {
+    if (info != NULL) {
         info->columns = numColumns;
         info->rows = numRows;
         info->size = bytesRead;
@@ -578,7 +555,8 @@ fciInfo *fc_loadFCI(char *filename, himemPtr address, himemPtr paletteAddress)
         info->reservedSysPalette = reservedSysPalette;
     }
 
-    mega65_io_enable(); // kernal has the disgusting habit of resetting vic personality
+    mega65_io_enable(); // kernal has the disgusting habit of resetting vic
+                        // personality
 
     return info;
 }
@@ -589,8 +567,7 @@ void fc_zeroPalette(byte reservedSysPalette)
 
     mega65_io_enable();
     start = reservedSysPalette ? 16 : 0;
-    for (cgi = start; cgi < 255; ++cgi)
-    {
+    for (cgi = start; cgi < 255; ++cgi) {
         POKE(0xd100u + cgi, 0); // palette[colAdr];
         POKE(0xd200u + cgi, 0); // palette[colAdr + 1];
         POKE(0xd300u + cgi, 0); // palette[colAdr + 2];
@@ -604,23 +581,27 @@ void fc_loadPalette(himemPtr adr, byte size, byte reservedSysPalette)
     int i;
     start = reservedSysPalette ? 16 : 0;
 
-    for (i = start; i <= size; ++i)
-    {
+    for (i = start; i <= size; ++i) {
         colAdr = i * 3;
-        // fc_printf("\n%d (%lx) : %2x %2x %2x", i, adr + colAdr, lpeek(adr + colAdr), lpeek(adr + colAdr + 1), lpeek(adr + colAdr + 2));
+        // fc_printf("\n%d (%lx) : %2x %2x %2x", i, adr + colAdr, lpeek(adr +
+        // colAdr), lpeek(adr + colAdr + 1), lpeek(adr + colAdr + 2));
         // fc_getkey();
-        POKE(0xd100u + i, fc_nyblswap(lpeek(adr + colAdr)));     //  palette[colAdr];
-        POKE(0xd200u + i, fc_nyblswap(lpeek(adr + colAdr + 1))); // palette[colAdr + 1];
-        POKE(0xd300u + i, fc_nyblswap(lpeek(adr + colAdr + 2))); // palette[colAdr + 2];
+        POKE(
+            0xd100u + i, fc_nyblswap(lpeek(adr + colAdr))); //  palette[colAdr];
+        POKE(0xd200u + i,
+            fc_nyblswap(lpeek(adr + colAdr + 1))); // palette[colAdr + 1];
+        POKE(0xd300u + i,
+            fc_nyblswap(lpeek(adr + colAdr + 2))); // palette[colAdr + 2];
     }
 }
 
-void fc_fadePalette(himemPtr adr, byte size, byte reservedSysPalette, byte steps, bool fadeOut)
+void fc_fadePalette(
+    himemPtr adr, byte size, byte reservedSysPalette, byte steps, bool fadeOut)
 {
     byte i;
     byte startReg;
-    byte *destPalette;
-    byte *entry;
+    byte* destPalette;
+    byte* entry;
 
     byte start, end, step;
 
@@ -628,24 +609,20 @@ void fc_fadePalette(himemPtr adr, byte size, byte reservedSysPalette, byte steps
     destPalette = malloc(size * 3);
     lcopy(adr, (long)destPalette, size * 3);
 
-    if (fadeOut)
-    {
+    if (fadeOut) {
         start = steps;
         end = 0;
         step = -1;
     }
-    else
-    {
+    else {
         start = 0;
         end = steps;
         step = 1;
     }
 
-    for (i = start; i != end; i += step)
-    {
+    for (i = start; i != end; i += step) {
         entry = destPalette + (startReg * 3);
-        for (cgi = startReg; cgi < size; ++cgi, entry += 3)
-        {
+        for (cgi = startReg; cgi < size; ++cgi, entry += 3) {
             POKE(0xd100u + cgi, fc_nyblswap((*(entry)*i) / steps));
             POKE(0xd200u + cgi, fc_nyblswap((*(entry + 1) * i) / steps));
             POKE(0xd300u + cgi, fc_nyblswap((*(entry + 2) * i) / steps));
@@ -654,31 +631,31 @@ void fc_fadePalette(himemPtr adr, byte size, byte reservedSysPalette, byte steps
     free(destPalette);
 }
 
-void fc_fadeFCI(fciInfo *info, byte x0, byte y0, byte steps)
+void fc_fadeFCI(fciInfo* info, byte x0, byte y0, byte steps)
 {
     fc_zeroPalette(info->reservedSysPalette);
     fc_addGraphicsRect(x0, y0, info->columns, info->rows, info->baseAdr);
-    fc_fadePalette(info->paletteAdr, info->paletteSize, info->reservedSysPalette, steps, false);
+    fc_fadePalette(info->paletteAdr, info->paletteSize,
+        info->reservedSysPalette, steps, false);
 }
 
-void fc_displayFCI(fciInfo *info, byte x0, byte y0, bool setPalette)
+void fc_displayFCI(fciInfo* info, byte x0, byte y0, bool setPalette)
 {
     fc_addGraphicsRect(x0, y0, info->columns, info->rows, info->baseAdr);
-    if (setPalette)
-    {
+    if (setPalette) {
         fc_loadFCIPalette(info);
     }
 }
 
-void fc_loadFCIPalette(fciInfo *info)
+void fc_loadFCIPalette(fciInfo* info)
 {
-    fc_loadPalette(info->paletteAdr, info->paletteSize,
-                   info->reservedSysPalette);
+    fc_loadPalette(
+        info->paletteAdr, info->paletteSize, info->reservedSysPalette);
 }
 
-fciInfo *fc_displayFCIFile(char *filename, byte x0, byte y0)
+fciInfo* fc_displayFCIFile(char* filename, byte x0, byte y0)
 {
-    fciInfo *info;
+    fciInfo* info;
     info = fc_loadFCI(filename, 0, 0);
     fc_displayFCI(info, x0, y0, true);
     return info;
@@ -688,30 +665,38 @@ void fc_scrollUp(void)
 {
     static byte y;
     long bas0, bas1;
-    for (y = gCurrentWin->y0; y < gCurrentWin->y0 + gCurrentWin->height - 1; y++)
-    {
-        bas0 = gFcioConfig->screenBase + (gCurrentWin->x0 * 2 + (y * gScreenColumns * 2));
-        bas1 = gFcioConfig->screenBase + (gCurrentWin->x0 * 2 + ((y + 1) * gScreenColumns * 2));
+    for (y = gCurrentWin->y0; y < gCurrentWin->y0 + gCurrentWin->height - 1;
+         y++) {
+        bas0 = gFcioConfig->screenBase
+             + (gCurrentWin->x0 * 2 + (y * gScreenColumns * 2));
+        bas1 = gFcioConfig->screenBase
+             + (gCurrentWin->x0 * 2 + ((y + 1) * gScreenColumns * 2));
         lcopy(bas1, bas0, gCurrentWin->width * 2);
-        bas0 = gFcioConfig->colourBase + (gCurrentWin->x0 * 2 + (y * gScreenColumns * 2));
-        bas1 = gFcioConfig->colourBase + (gCurrentWin->x0 * 2 + ((y + 1) * gScreenColumns * 2));
+        bas0 = gFcioConfig->colourBase
+             + (gCurrentWin->x0 * 2 + (y * gScreenColumns * 2));
+        bas1 = gFcioConfig->colourBase
+             + (gCurrentWin->x0 * 2 + ((y + 1) * gScreenColumns * 2));
         lcopy(bas1, bas0, gCurrentWin->width * 2);
     }
-    fc_line(0, gCurrentWin->height - 1, gCurrentWin->width, 32, gCurrentWin->textcolor);
+    fc_line(0, gCurrentWin->height - 1, gCurrentWin->width, 32,
+        gCurrentWin->textcolor);
 }
 
 void fc_scrollDown(void)
 {
     signed char y;
     long bas0, bas1;
-    for (y = gCurrentWin->y0 + gCurrentWin->height - 2;
-         y >= gCurrentWin->y0; y--)
-    {
-        bas0 = gFcioConfig->screenBase + (gCurrentWin->x0 * 2 + (y * gScreenColumns * 2));
-        bas1 = gFcioConfig->screenBase + (gCurrentWin->x0 * 2 + ((y + 1) * gScreenColumns * 2));
+    for (y = gCurrentWin->y0 + gCurrentWin->height - 2; y >= gCurrentWin->y0;
+         y--) {
+        bas0 = gFcioConfig->screenBase
+             + (gCurrentWin->x0 * 2 + (y * gScreenColumns * 2));
+        bas1 = gFcioConfig->screenBase
+             + (gCurrentWin->x0 * 2 + ((y + 1) * gScreenColumns * 2));
         lcopy(bas0, bas1, gCurrentWin->width * 2);
-        bas0 = gFcioConfig->colourBase + (gCurrentWin->x0 * 2 + (y * gScreenColumns * 2));
-        bas1 = gFcioConfig->colourBase + (gCurrentWin->x0 * 2 + ((y + 1) * gScreenColumns * 2));
+        bas0 = gFcioConfig->colourBase
+             + (gCurrentWin->x0 * 2 + (y * gScreenColumns * 2));
+        bas1 = gFcioConfig->colourBase
+             + (gCurrentWin->x0 * 2 + ((y + 1) * gScreenColumns * 2));
         lcopy(bas0, bas1, gCurrentWin->width * 2);
     }
 
@@ -722,8 +707,7 @@ void cr()
 {
     gCurrentWin->xc = 0;
     gCurrentWin->yc++;
-    if (gCurrentWin->yc > gCurrentWin->height - 1)
-    {
+    if (gCurrentWin->yc > gCurrentWin->height - 1) {
         fc_scrollUp();
         gCurrentWin->yc = gCurrentWin->height - 1;
     }
@@ -739,9 +723,15 @@ void fc_plotPetsciiChar(byte x, byte y, byte c, byte color, byte exAttr)
     lpoke(gFcioConfig->colourBase + adrOffset, 0);
 }
 
-byte fc_wherex() { return gCurrentWin->xc; }
+byte fc_wherex()
+{
+    return gCurrentWin->xc;
+}
 
-byte fc_wherey() { return gCurrentWin->yc; }
+byte fc_wherey()
+{
+    return gCurrentWin->yc;
+}
 
 void fc_setAutoCR(bool a)
 {
@@ -751,65 +741,58 @@ void fc_setAutoCR(bool a)
 void fc_putc(char c)
 {
     static char out;
-    if (!c)
-    {
+    if (!c) {
         return;
     }
-    if (c == '\n')
-    {
+    if (c == '\n') {
         cr();
         return;
     }
 
-    if (gCurrentWin->xc >= gCurrentWin->width)
-    {
+    if (gCurrentWin->xc >= gCurrentWin->width) {
         return;
     }
 
     out = asciiToPetscii(c);
 
-    fc_plotPetsciiChar(gCurrentWin->xc + gCurrentWin->x0, gCurrentWin->yc + gCurrentWin->y0, out,
-                       gCurrentWin->textcolor, gCurrentWin->extAttributes);
+    fc_plotPetsciiChar(gCurrentWin->xc + gCurrentWin->x0,
+        gCurrentWin->yc + gCurrentWin->y0, out, gCurrentWin->textcolor,
+        gCurrentWin->extAttributes);
     gCurrentWin->xc++;
 
-    if (autoCR)
-    {
-        if (gCurrentWin->xc >= gCurrentWin->width)
-        {
+    if (autoCR) {
+        if (gCurrentWin->xc >= gCurrentWin->width) {
             gCurrentWin->yc++;
             gCurrentWin->xc = 0;
-            if (gCurrentWin->yc >= gCurrentWin->height)
-            {
+            if (gCurrentWin->yc >= gCurrentWin->height) {
                 gCurrentWin->yc = gCurrentWin->height - 1;
                 fc_scrollUp();
             }
         }
     }
 
-    if (csrflag)
-    {
-        fc_plotPetsciiChar(gCurrentWin->xc + gCurrentWin->x0, gCurrentWin->yc + gCurrentWin->y0,
-                           CURSOR_CHARACTER, gCurrentWin->textcolor, 16);
+    if (csrflag) {
+        fc_plotPetsciiChar(gCurrentWin->xc + gCurrentWin->x0,
+            gCurrentWin->yc + gCurrentWin->y0, CURSOR_CHARACTER,
+            gCurrentWin->textcolor, 16);
     }
 }
 
-void _debug_fc_puts(const char *s)
+void _debug_fc_puts(const char* s)
 {
-    const char *current = s;
-    while (*current)
-    {
+    const char* current = s;
+    while (*current) {
         fc_putc(*current++);
     }
 }
 
-void fc_puts(const char *s)
+void fc_puts(const char* s)
 {
     /* #ifdef DEBUG
     char out[16];
 #endif */
-    const char *current = s;
-    while (*current)
-    {
+    const char* current = s;
+    while (*current) {
         fc_putc(*current++);
     }
     /* #ifdef DEBUG
@@ -822,7 +805,7 @@ void fc_puts(const char *s)
 #endif */
 }
 
-void fc_putsxy(byte x, byte y, char *s)
+void fc_putsxy(byte x, byte y, char* s)
 {
     fc_gotoxy(x, y);
     fc_puts(s);
@@ -839,13 +822,14 @@ void fc_cursor(byte onoff)
     csrflag = onoff;
 
     fc_plotPetsciiChar(gCurrentWin->xc + gCurrentWin->x0,
-                       gCurrentWin->yc + gCurrentWin->y0,
-                       (csrflag ? CURSOR_CHARACTER : 32),
-                       gCurrentWin->textcolor,
-                       (csrflag ? 16 : 0));
+        gCurrentWin->yc + gCurrentWin->y0, (csrflag ? CURSOR_CHARACTER : 32),
+        gCurrentWin->textcolor, (csrflag ? 16 : 0));
 }
 
-void fc_textcolor(byte c) { gCurrentWin->textcolor = c; }
+void fc_textcolor(byte c)
+{
+    gCurrentWin->textcolor = c;
+}
 
 void fc_gotoxy(byte x, byte y)
 {
@@ -853,7 +837,7 @@ void fc_gotoxy(byte x, byte y)
     gCurrentWin->yc = y;
 }
 
-void fc_printf(const char *format, ...)
+void fc_printf(const char* format, ...)
 {
     char buf[160];
     va_list args;
@@ -866,7 +850,7 @@ void fc_printf(const char *format, ...)
 void fc_clrscr(void)
 {
     fc_block(0, 0, gCurrentWin->width, gCurrentWin->height, 32,
-             gCurrentWin->textcolor);
+        gCurrentWin->textcolor);
     fc_gotoxy(0, 0);
 }
 
@@ -883,14 +867,14 @@ void fc_resetwin(void)
     gCurrentWin->textcolor = 5;
 }
 
-void fc_setwin(textwin *aWin)
+void fc_setwin(textwin* aWin)
 {
     gCurrentWin = aWin;
 }
 
-textwin *fc_makeWin(byte x0, byte y0, byte width, byte height)
+textwin* fc_makeWin(byte x0, byte y0, byte width, byte height)
 {
-    textwin *aWin;
+    textwin* aWin;
     aWin = malloc(sizeof(textwin));
     aWin->x0 = x0;
     aWin->y0 = y0;
@@ -911,19 +895,18 @@ byte fc_kbhit()
 byte fc_cgetc()
 {
     byte k;
-    while ((k = PEEK(0xD610U)) == 0);
+    while ((k = PEEK(0xD610U)) == 0)
+        ;
     POKE(0xD610U, 0);
     return k;
 }
 
 void fc_emptyBuffer(void)
 {
-    while (fc_kbhit())
-    {
+    while (fc_kbhit()) {
         fc_cgetc();
     }
 }
-
 
 char fc_getkey(void)
 {
@@ -934,37 +917,31 @@ char fc_getkey(void)
 int fc_getnum(byte maxlen)
 {
     int res;
-    char *inptr;
+    char* inptr;
     inptr = fc_input(maxlen);
     res = atoi(inptr);
     free(inptr);
     return res;
 }
 
-char *fc_input(byte maxlen)
+char* fc_input(byte maxlen)
 {
     static byte len, ct;
     char current;
-    char *ret;
+    char* ret;
     len = 0;
     ct = csrflag;
     fc_cursor(1);
-    do
-    {
+    do {
         current = fc_cgetc();
-        if (current != '\n')
-        {
-            if (current >= 32)
-            {
-                if (len < maxlen)
-                {
+        if (current != '\n') {
+            if (current >= 32) {
+                if (len < maxlen) {
                     // fix upper/lowercase
-                    if (current >= 97)
-                    {
+                    if (current >= 97) {
                         current -= 32;
                     }
-                    else if (current >= 65)
-                    {
+                    else if (current >= 65) {
                         current += 32;
                     }
                     fcbuf[len] = current;
@@ -973,11 +950,9 @@ char *fc_input(byte maxlen)
                     ++len;
                 }
             }
-            else if (current == 20)
-            {
+            else if (current == 20) {
                 // del pressed
-                if (len > 0)
-                {
+                if (len > 0) {
                     fc_cursor(0);
                     fc_gotoxy(gCurrentWin->xc - 1, gCurrentWin->yc);
                     fc_putc(' ');
@@ -989,13 +964,11 @@ char *fc_input(byte maxlen)
             }
         }
     } while (current != '\n');
-    ret = (char *)malloc(++len);
-    if (len == 1)
-    {
+    ret = (char*)malloc(++len);
+    if (len == 1) {
         *ret = 0;
     }
-    else
-    {
+    else {
         strncpy(ret, fcbuf, len);
     }
     fc_cursor(ct);
@@ -1006,7 +979,8 @@ void fc_line(byte x, byte y, byte width, byte character, byte col)
 {
     word bas;
 
-    bas = (gCurrentWin->x0 + x) * 2 + ((gCurrentWin->y0 + y) * gScreenColumns * 2);
+    bas = (gCurrentWin->x0 + x) * 2
+        + ((gCurrentWin->y0 + y) * gScreenColumns * 2);
 
     // use DMAgic to fill FCM screens with skip byte... PGS, I love you!
     lfill_skip(gFcioConfig->screenBase + bas, character, width, 2);
@@ -1017,22 +991,20 @@ void fc_line(byte x, byte y, byte width, byte character, byte col)
     return;
 }
 
-void fc_block(byte x0, byte y0, byte width, byte height, byte character,
-              byte col)
+void fc_block(
+    byte x0, byte y0, byte width, byte height, byte character, byte col)
 {
     static byte y;
-    for (y = 0; y < height; ++y)
-    {
+    for (y = 0; y < height; ++y) {
         fc_line(x0, y0 + y, width, character, col);
     }
 }
 
-void fc_center(byte x, byte y, byte width, char *text)
+void fc_center(byte x, byte y, byte width, char* text)
 {
     static byte l;
     l = strlen(text);
-    if (l >= width - 2)
-    {
+    if (l >= width - 2) {
         fc_gotoxy(x, y);
         fc_puts(text);
         return;
@@ -1048,7 +1020,7 @@ void fc_setPalette(int num, byte red, byte green, byte blue)
     POKE(0xd300U + num, fc_nyblswap(blue));
 }
 
-char fc_getkeyP(byte x, byte y, const char *prompt)
+char fc_getkeyP(byte x, byte y, const char* prompt)
 {
     fc_emptyBuffer();
     fc_gotoxy(x, y);
@@ -1059,16 +1031,16 @@ char fc_getkeyP(byte x, byte y, const char *prompt)
 
 void fc_hlinexy(byte x, byte y, byte width, byte lineChar)
 {
-    for (cgi = x; cgi < x + width; cgi++)
-    {
-        fc_plotExtChar(gCurrentWin->x0 + x + cgi, gCurrentWin->y0 + y, lineChar);
+    for (cgi = x; cgi < x + width; cgi++) {
+        fc_plotExtChar(
+            gCurrentWin->x0 + x + cgi, gCurrentWin->y0 + y, lineChar);
     }
 }
 
 void fc_vlinexy(byte x, byte y, byte height, byte lineChar)
 {
-    for (cgi = y; cgi < y + height; cgi++)
-    {
-        fc_plotExtChar(gCurrentWin->x0 + x, gCurrentWin->y0 + y + cgi, lineChar);
+    for (cgi = y; cgi < y + height; cgi++) {
+        fc_plotExtChar(
+            gCurrentWin->x0 + x, gCurrentWin->y0 + y + cgi, lineChar);
     }
 }
