@@ -3,6 +3,8 @@ set(LLVM_MOS_PLATFORM mega65)
 find_package(llvm-mos-sdk REQUIRED)
 project(mega65libc VERSION 0.3.0 LANGUAGES C ASM)
 
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
 set(assembler
     src/llvm/fileio.s
     src/llvm/dirent.s)

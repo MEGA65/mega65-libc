@@ -1,0 +1,7 @@
+{
+    "recommendations": [
+        "xaver.clang-format",
+        "ms-vscode.cmake-tools",
+        "tlgkccampbell.code-ca65"
+    ]
+}
