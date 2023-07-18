@@ -1,3 +1,6 @@
+#ifndef __MEGA65_FILEIO_H
+#define __MEGA65_FILEIO_H
+
 void toggle_rom_write_protect();
 void closeall(void);
 void close(unsigned char fd);
@@ -15,3 +18,5 @@ unsigned char chdir(char* filename);
 
 // Change working directory to the root directory
 unsigned char chdirroot(void);
+
+#endif

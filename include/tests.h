@@ -1,5 +1,5 @@
-#ifndef TESTS_H
-#define TESTS_H
+#ifndef __MEGA65_TESTS_H
+#define __MEGA65_TESTS_H
 
 #include <stdint.h>
 

@@ -1,5 +1,5 @@
-#ifndef _TARGETS_H_
-#define _TARGETS_H_
+#ifndef __MEGA65_TARGETS_H
+#define __MEGA65_TARGETS_H
 
 #define TARGET_UNKNOWN 0
 #define TARGET_MEGA65R1 1

@@ -5,8 +5,8 @@
     Details.
 */
 
-#ifndef __FCIO
-#define __FCIO
+#ifndef __MEGA65_FCIO_H
+#define __MEGA65_FCIO_H
 
 #include <memory.h>
 #include <stdbool.h>
