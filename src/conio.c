@@ -16,8 +16,8 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#include "../include/conio.h"
-#include "../include/memory.h"
+#include <conio.h>
+#include <memory.h>
 #include <string.h>
 
 #define VIC_BASE 0xD000UL
