@@ -259,8 +259,8 @@ void setscreensize(unsigned char w, unsigned char h)
 {
     if (w == 80) {
         SET_H640();
-        POKE(0xd04c,
-            0x50); // compensate for vic-iii h640 horizontal positioning bug
+        // compensate for vic-iii h640 horizontal positioning bug
+        POKE(0xd04c, 0x50);
     }
     else if (w == 40) {
         CLEAR_H640();

@@ -93,8 +93,7 @@ fcioConf stdConfig = {
 word gScreenSize;          // screen size (in characters)
 byte gScreenColumns;       // number of screen columns (in characters)
 byte gScreenRows;          // number of screen rows (in characters)
-himemPtr nextFreeGraphMem; // location of next free graphics block in banks 4 &
-                           // 5
+himemPtr nextFreeGraphMem; // next free graphics block in banks 4 & 5
 himemPtr nextFreePalMem;   // location of next free palette memory block
 byte infoBlockCount;       // number of info blocks
 byte cgi;                  // universal loop var
@@ -586,12 +585,12 @@ void fc_loadPalette(himemPtr adr, byte size, byte reservedSysPalette)
         // fc_printf("\n%d (%lx) : %2x %2x %2x", i, adr + colAdr, lpeek(adr +
         // colAdr), lpeek(adr + colAdr + 1), lpeek(adr + colAdr + 2));
         // fc_getkey();
-        POKE(
-            0xd100u + i, fc_nyblswap(lpeek(adr + colAdr))); //  palette[colAdr];
-        POKE(0xd200u + i,
-            fc_nyblswap(lpeek(adr + colAdr + 1))); // palette[colAdr + 1];
-        POKE(0xd300u + i,
-            fc_nyblswap(lpeek(adr + colAdr + 2))); // palette[colAdr + 2];
+        // palette[colAdr];
+        POKE(0xd100u + i, fc_nyblswap(lpeek(adr + colAdr)));
+        // palette[colAdr + 1];
+        POKE(0xd200u + i, fc_nyblswap(lpeek(adr + colAdr + 1)));
+        // palette[colAdr + 2];
+        POKE(0xd300u + i, fc_nyblswap(lpeek(adr + colAdr + 2)));
     }
 }
 

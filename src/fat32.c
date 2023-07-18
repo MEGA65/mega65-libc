@@ -81,8 +81,8 @@ long mega65_fat32_create_contiguous_file(char* name, long size,
             else {
                 if (start_cluster) {
                     // write_line("ERROR: Disk space is fragmented. File not
-                    // created.",0); 	    return 0; Not enough contiguous space in
-                    // this FAT sector, so try the next
+                    // created.",0); 	    return 0; Not enough contiguous
+                    // space in this FAT sector, so try the next
                     break;
                 }
             }
