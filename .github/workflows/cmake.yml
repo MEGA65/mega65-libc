@@ -19,23 +19,25 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
-    
-    - name: Download llvm-mos-sdk
-      working-directory: ${{github.workspace}}
-      run: wget https://github.com/llvm-mos/llvm-mos-sdk/releases/latest/download/llvm-mos-linux.tar.xz
-        
-    - name: Unpack llvm-mos-sdk
-      working-directory: ${{github.workspace}}
-      run: tar xf llvm-mos-linux.tar.xz
-      
-    - name: List working directory
-      working-directory: ${{github.workspace}}
-      run: ls -l
-      
-    - name: Configure CMake
-      working-directory: ${{github.workspace}}/clang/
-      run: cmake -DCMAKE_PREFIX_PATH=${{github.workspace}}/llvm-mos .
 
-    - name: Build
-      working-directory: ${{github.workspace}}/clang/
-      run: make
+    - name: Install cc65
+      run: |
+        sudo apt-get update
+        sudo apt-get install cc65
+
+    - name: Build using cc65
+      working-directory: ${{github.workspace}}
+      run: USE_LOCAL_CC65=1 make -f Makefile_cc65
+    
+    - name: Install llvm-mos-sdk
+      working-directory: ${{github.workspace}}
+      run: |
+        wget https://github.com/llvm-mos/llvm-mos-sdk/releases/latest/download/llvm-mos-linux.tar.xz
+        tar xf llvm-mos-linux.tar.xz
+        
+    - name: Build using clang
+      working-directory: ${{github.workspace}}
+      run: |
+        cmake -DCMAKE_PREFIX_PATH=llvm-mos -B build/ .
+        cd build/
+        make
