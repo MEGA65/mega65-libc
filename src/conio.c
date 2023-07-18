@@ -94,7 +94,7 @@ static unsigned char hash(const unsigned char* str, const unsigned char maxLen)
         len++;
         hash = ((hash << 5) + hash) + c;
     }
-    return hash;
+    return (unsigned char)hash;
 }
 
 static void clrscr_(unsigned char)

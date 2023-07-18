@@ -237,9 +237,9 @@ static uint8_t frame_num;
 void unit_test_read_pixel(
     short x, short y, uint8_t* red, uint8_t* green, uint8_t* blue)
 {
-    POKE(0xD07D, x);
-    POKE(0xD07E, y);
-    POKE(0xD07F, (x >> 8) + ((y >> 8) << 4));
+    POKE(0xD07D, (uint8_t)x);
+    POKE(0xD07E, (uint8_t)y);
+    POKE(0xD07F, (uint8_t)((x >> 8) + ((y >> 8) << 4)));
 
     // Wait at least two whole frames
     frame_num = PEEK(0xD7FA);
