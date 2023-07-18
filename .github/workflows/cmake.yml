@@ -27,7 +27,7 @@ jobs:
 
     - name: Build using cc65
       working-directory: ${{github.workspace}}
-      run: USE_LOCAL_CC65=1 make
+      run: USE_LOCAL_CC65=1 make -f Makefile_cc65
     
     - name: Install llvm-mos-sdk
       working-directory: ${{github.workspace}}

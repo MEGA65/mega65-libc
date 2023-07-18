@@ -13,7 +13,7 @@ Simple C library for the MEGA65
 ## CC65
 
 1. Install [CC65](https://cc65.github.io) with e.g. `brew install cc65` or `apt install cc65`.
-2. Build by running `make` inside the `mega65-libc/` directory.
+2. Build by running `make -f Makefile_cc65` inside the `mega65-libc/` directory.
 
 ## Clang
 
