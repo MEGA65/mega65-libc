@@ -85,7 +85,6 @@ unsigned char lpeek(long address)
 
 void dma_poke(long address, unsigned char value)
 {
-
     dmalist.option_0b = 0x0b;
     dmalist.option_80 = 0x80;
     dmalist.source_mb = 0x00; // dma_byte lives in 1st MB
