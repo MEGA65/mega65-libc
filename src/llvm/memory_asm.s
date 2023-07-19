@@ -1,7 +1,7 @@
 .global lpeek, lpoke
-.section .zeropage, "a", @nobits
+.section .zeropage, "aw", @nobits
 tmp:
-        .ds.b 8
+        .ds.b 4
 
 .section code,"a"
 lpoke:
@@ -16,7 +16,7 @@ lpoke:
         lda __rc4
         ldz #0
         nop
-        sta (tmp),z
+        sta (tmp), z
         ldz #0
         rts
 lpeek:
