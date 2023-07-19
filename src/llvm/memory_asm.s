@@ -13,7 +13,6 @@ lpoke:
         ldz #0
         nop
         sta (__rc5), z
-        ldz #0
         rts
 lpeek:
         ; copy 32-bit input address (a, x, rc2-rc3) to rc4-rc7
@@ -24,8 +23,6 @@ lpeek:
         lda __rc3
         sta __rc7
         ldz #0
-        ldx #0
         nop
         lda (__rc4), z
-        ldz #0
         rts
