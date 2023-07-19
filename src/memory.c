@@ -75,6 +75,8 @@ void lpoke(long address, unsigned char value)
 {
     dma_poke(address, value);
 }
+#endif
+#if !defined(__clang__) && !defined(__CC65__)
 unsigned char lpeek(long address)
 {
     return dma_peek(address);
