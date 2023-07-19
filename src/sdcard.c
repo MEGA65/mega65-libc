@@ -120,7 +120,7 @@ uint32_t mega65_sdcard_getsize(void)
     // (binary search of sector numbers is NOT safe for some reason.
     //  It frequently reports bigger than the size of the card)
     sector_number = 0;
-    step = 16 * 2048; // = 16MiB
+    step = 16U * 2048U; // = 16MiB
     while (sector_number < 0x10000000U) {
         mega65_sdcard_readsector(sector_number);
         result = PEEK(sd_ctl) & 0x63;
