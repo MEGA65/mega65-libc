@@ -69,17 +69,15 @@ unsigned char lpeek_debounced(long address)
     return db1;
 }
 
-#ifndef __CC65__
-// cc65 has specialized assembler versions of lpeek and lpoke
-void lpoke(long address, unsigned char value)
-{
-    dma_poke(address, value);
-}
-#endif
+// cc65 and llvm have specialized assembler versions of lpeek and lpoke
 #if !defined(__clang__) && !defined(__CC65__)
 unsigned char lpeek(long address)
 {
     return dma_peek(address);
+}
+void lpoke(long address, unsigned char value)
+{
+    dma_poke(address, value);
 }
 #endif
 
