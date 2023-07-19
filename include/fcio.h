@@ -521,4 +521,4 @@ void fc_plotExtChar(byte x, byte y, byte c);
  */
 void fc_plotPetsciiChar(byte x, byte y, byte c, byte color, byte exAttr);
 
-#endif
+#endif // __MEGA65_FCIO_H

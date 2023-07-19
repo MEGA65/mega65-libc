@@ -19,4 +19,4 @@ unsigned char chdir(char* filename);
 // Change working directory to the root directory
 unsigned char chdirroot(void);
 
-#endif
+#endif // __MEGA65_FILEIO_H

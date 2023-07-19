@@ -3,4 +3,4 @@
 
 void debug_msg(char* m);
 
-#endif
+#endif // __MEGA65_DEBUG_H

@@ -31,4 +31,4 @@ void mouse_bind_to_sprite(unsigned char sprite_num);
 void mouse_set_bounding_box(
     unsigned short x1, unsigned short y1, unsigned short x2, unsigned short y2);
 
-#endif
+#endif // __MEGA65_MOUSE_H

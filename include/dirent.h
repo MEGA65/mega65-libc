@@ -15,4 +15,4 @@ struct m65_dirent {
     char d_name[256];
 };
 
-#endif
+#endif // __MEGA65_DIRENT_H

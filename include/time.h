@@ -24,4 +24,4 @@ struct m65_tm {
 void getrtc(struct m65_tm* tm);
 void setrtc(struct m65_tm* tm);
 
-#endif
+#endif // __MEGA65_TIME_H

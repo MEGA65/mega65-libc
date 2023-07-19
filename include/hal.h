@@ -9,4 +9,4 @@
 
 void usleep(uint32_t micros);
 
-#endif
+#endif // __MEGA65_HAL_H

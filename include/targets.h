@@ -15,4 +15,4 @@
 
 unsigned char detect_target(void);
 
-#endif
+#endif // __MEGA65_TARGETS_H

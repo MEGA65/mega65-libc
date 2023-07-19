@@ -11,4 +11,4 @@ uint8_t rand8(uint8_t range);
 uint16_t rand16(uint16_t range);
 uint32_t rand32(uint32_t range);
 
-#endif
+#endif // __MEGA65_RANDOM_H

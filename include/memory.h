@@ -66,4 +66,4 @@ void lfill_skip(long destination_address, unsigned char value,
 #define PEEK32(X)
 #endif
 
-#endif
+#endif // __MEGA65_MEMORY_H

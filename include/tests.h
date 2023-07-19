@@ -128,4 +128,4 @@ void unit_test_print(uint8_t x, uint8_t y, uint8_t colour, char* msg);
 void unit_test_read_pixel(
     short x, short y, uint8_t* red, uint8_t* green, uint8_t* blue);
 
-#endif
+#endif // __MEGA65_TESTS_H
