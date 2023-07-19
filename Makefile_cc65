@@ -39,7 +39,6 @@ all: libmega65.a
 clean:
 	rm -f src/*.o
 	rm -f src/cc65/*.o
-	rm -f libmega65.a
 	rm -rf work
 
 cleanall: clean
