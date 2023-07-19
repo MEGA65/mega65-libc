@@ -8,7 +8,7 @@ Simple C library for the MEGA65
 - **Clang**: Either use the provided CMake setup as detailed below, or include the `.c` and `.h` files you need.
 - **KickC**: Support will be coming soon (or sooner, if someone would like to port the routines :-)
 
-# Building
+# Development and building
 
 ## CC65
 
@@ -23,6 +23,7 @@ Simple C library for the MEGA65
 cmake -DCMAKE_PREFIX_PATH=<llvm-mos-sdk-install-prefix> -B build/ mega65-libc/
 cd build/
 make
+make test # if `xmega65` (Xemu) is in your path
 ~~~
 
 ### Dependent CMake projects

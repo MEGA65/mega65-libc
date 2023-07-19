@@ -3,6 +3,7 @@ set(LLVM_MOS_PLATFORM mega65)
 find_package(llvm-mos-sdk REQUIRED)
 project(mega65libc VERSION 0.3.0 LANGUAGES C ASM)
 
+enable_testing()
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 set(assembler
@@ -66,6 +67,7 @@ set(CLANG_WARNINGS
     -Wpedantic # warn if non-standard C/C++ is used
     -Wlanguage-extension-token
 )
+add_compile_options(-mcpu=mos65c02 -Os ${CLANG_WARNINGS})
 target_compile_options(mega65libc PRIVATE -mcpu=mos65c02 -Os ${CLANG_WARNINGS})
 
 # install target
@@ -88,8 +90,5 @@ install(EXPORT mega65libc-export
     ${CMAKE_INSTALL_LIBDIR}/cmake/mega65libc
     )
 
-# compile example prg file
-add_executable(time-test tests/time.c)
-target_link_libraries(time-test mega65libc)
-set_target_properties(time-test PROPERTIES OUTPUT_NAME time.prg EXCLUDE_FROM_ALL true)
+add_subdirectory(tests)
 
