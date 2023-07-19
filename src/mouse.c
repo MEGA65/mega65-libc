@@ -19,7 +19,7 @@
     Date      2020-07-01
 */
 
-#include "../include/memory.h"
+#include <memory.h>
 
 unsigned short mouse_min_x = 0;
 unsigned short mouse_min_y = 0;

@@ -5,8 +5,8 @@
     Details.
 */
 
-#ifndef __FCIO
-#define __FCIO
+#ifndef __MEGA65_FCIO_H
+#define __MEGA65_FCIO_H
 
 #include <memory.h>
 #include <stdbool.h>
@@ -521,4 +521,4 @@ void fc_plotExtChar(byte x, byte y, byte c);
  */
 void fc_plotPetsciiChar(byte x, byte y, byte c, byte color, byte exAttr);
 
-#endif
+#endif // __MEGA65_FCIO_H

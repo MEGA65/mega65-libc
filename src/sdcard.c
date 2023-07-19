@@ -180,6 +180,7 @@ void mega65_sdcard_unmap_sector_buffer(void)
 
 unsigned short timeout;
 
+// @todo Return -1 corresponds to 255. Is this what we want?
 uint8_t mega65_sdcard_readsector(const uint32_t sector_number)
 {
     char tries = 0;
@@ -267,6 +268,7 @@ uint8_t mega65_sdcard_readsector(const uint32_t sector_number)
 
 uint8_t verify_buffer[512];
 
+// @todo Return -1 corresponds to 255. Is this what we want?
 uint8_t mega65_sdcard_writesector(const uint32_t sector_number)
 {
     // Copy buffer into the SD card buffer, and then execute the write job

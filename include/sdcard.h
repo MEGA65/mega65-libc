@@ -16,4 +16,4 @@ uint8_t mega65_sdcard_writesector(const uint32_t sector_number);
 void mega65_sdcard_erase(
     const uint32_t first_sector, const uint32_t last_sector);
 
-#endif
+#endif // __MEGA65_SDCARD_H

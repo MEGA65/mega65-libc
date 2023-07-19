@@ -6,8 +6,8 @@
   that into account.
 */
 
-#ifndef _TIME_H_
-#define _TIME_H_
+#ifndef __MEGA65_TIME_H
+#define __MEGA65_TIME_H
 
 struct m65_tm {
     unsigned char tm_sec;   /* Seconds (0-60) */
@@ -24,4 +24,4 @@ struct m65_tm {
 void getrtc(struct m65_tm* tm);
 void setrtc(struct m65_tm* tm);
 
-#endif
+#endif // __MEGA65_TIME_H

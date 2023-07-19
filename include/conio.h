@@ -57,12 +57,12 @@
 
 */
 
+#ifndef __MEGA65_CONIO_H
+#define __MEGA65_CONIO_H
+
 #ifndef __CC65__
 #define fastcall
 #endif
-
-#ifndef M65LIBC_CONIO_H
-#define M65LIBC_CONIO_H
 
 /*------------------------------------------------------------------------
   Color and attributes
@@ -837,4 +837,4 @@ void flushkeybuf(void);
 unsigned char cinput(
     unsigned char* buffer, unsigned char buflen, unsigned char flags);
 
-#endif // M65LIBC_CONIO_H
+#endif /* __MEGA65_CONIO_H */

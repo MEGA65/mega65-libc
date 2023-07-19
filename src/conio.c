@@ -16,8 +16,8 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#include "../include/conio.h"
-#include "../include/memory.h"
+#include <conio.h>
+#include <memory.h>
 #include <string.h>
 
 #define VIC_BASE 0xD000UL
@@ -94,7 +94,7 @@ static unsigned char hash(const unsigned char* str, const unsigned char maxLen)
         len++;
         hash = ((hash << 5) + hash) + c;
     }
-    return hash;
+    return (unsigned char)hash;
 }
 
 static void clrscr_(unsigned char)
