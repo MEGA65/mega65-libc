@@ -8,7 +8,8 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 set(assembler
     src/llvm/fileio.s
-    src/llvm/dirent.s)
+    src/llvm/dirent.s
+    src/llvm/memory_asm.s)
 
 set(objects
     src/conio.c
@@ -67,8 +68,7 @@ set(CLANG_WARNINGS
     -Wpedantic # warn if non-standard C/C++ is used
     -Wlanguage-extension-token
 )
-add_compile_options(-mcpu=mos65c02 -Os ${CLANG_WARNINGS})
-target_compile_options(mega65libc PRIVATE -mcpu=mos65c02 -Os ${CLANG_WARNINGS})
+target_compile_options(mega65libc PRIVATE -mcpu=mos65ce02 -Os ${CLANG_WARNINGS})
 
 # install target
 include(GNUInstallDirs)
