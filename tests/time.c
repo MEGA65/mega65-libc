@@ -3,8 +3,8 @@
 
 int main()
 {
-  printf("WAIT 2 SECS...");
-  usleep(2000000); // wait 2 secs
+    printf("WAIT 2 SECS...");
+    usleep(2000000); // wait 2 secs
 
-  return 0;
+    return 0;
 }
