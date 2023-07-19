@@ -43,14 +43,8 @@ void lcopy(long source_address, long destination_address, unsigned int count);
 void lfill(long destination_address, unsigned char value, unsigned int count);
 void lfill_skip(long destination_address, unsigned char value,
     unsigned int count, unsigned char skip);
-#if defined(__CC65__)
-#define POKE(X, Y) (*(uint8_t*)(X)) = Y
-#define POKE16(X, Y) (*(uint16_t*)(X)) = Y
-#define POKE32(X, Y) (*(uint32_t*)(X)) = Y
-#define PEEK(X) (*(uint8_t*)(X))
-#define PEEK16(X) (*(uint16_t*)(X))
-#define PEEK32(X) (*(uint32_t*)(X))
-#elif defined(__clang__)
+
+#ifdef __clang__
 #define POKE(X, Y) (*(volatile uint8_t*)(X)) = Y
 #define POKE16(X, Y) (*(volatile uint16_t*)(X)) = Y
 #define POKE32(X, Y) (*(volatile uint32_t*)(X)) = Y
@@ -58,12 +52,12 @@ void lfill_skip(long destination_address, unsigned char value,
 #define PEEK16(X) (*(volatile uint16_t*)(X))
 #define PEEK32(X) (*(volatile uint32_t*)(X))
 #else
-#define POKE(X, Y)
-#define POKE16(X, Y)
-#define POKE32(X, Y)
-#define PEEK(X)
-#define PEEK16(X)
-#define PEEK32(X)
+#define POKE(X, Y) (*(uint8_t*)(X)) = Y
+#define POKE16(X, Y) (*(uint16_t*)(X)) = Y
+#define POKE32(X, Y) (*(uint32_t*)(X)) = Y
+#define PEEK(X) (*(uint8_t*)(X))
+#define PEEK16(X) (*(uint16_t*)(X))
+#define PEEK32(X) (*(uint32_t*)(X))
 #endif
 
 #endif // __MEGA65_MEMORY_H

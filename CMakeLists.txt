@@ -68,7 +68,6 @@ set(CLANG_WARNINGS
     -Wpedantic # warn if non-standard C/C++ is used
     -Wlanguage-extension-token
 )
-add_compile_options(-mcpu=mos65ce02 -Os ${CLANG_WARNINGS})
 target_compile_options(mega65libc PRIVATE -mcpu=mos65ce02 -Os ${CLANG_WARNINGS})
 
 # install target
