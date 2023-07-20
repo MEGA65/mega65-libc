@@ -8,7 +8,7 @@
 
 uint8_t sector_buffer[512];
 
-const long sd_sectorbuffer = 0xffd6e00L;
+const uint32_t sd_sectorbuffer = 0xffd6e00U;
 const uint16_t sd_ctl = 0xd680L;
 const uint16_t sd_addr = 0xd681L;
 const uint16_t sd_errorcode = 0xd6daL;
@@ -17,7 +17,7 @@ unsigned char sdhc_card = 0;
 
 void mega65_clear_sector_buffer(void)
 {
-    lfill((int32_t)sector_buffer, 0, 512);
+    lfill((uint32_t)sector_buffer, 0, 512);
 }
 
 void mega65_sdcard_reset(void)
@@ -250,7 +250,7 @@ uint8_t mega65_sdcard_readsector(const uint32_t sector_number)
 
         if (!(PEEK(sd_ctl) & 0x67)) {
             // Copy data from hardware sector buffer via DMA
-            lcopy(sd_sectorbuffer, (long)sector_buffer, 512);
+            lcopy(sd_sectorbuffer, (uint32_t)sector_buffer, 512);
 
             return 0;
         }
@@ -303,7 +303,7 @@ uint8_t mega65_sdcard_writesector(const uint32_t sector_number)
     }
 
     // Copy the read data to a buffer for verification
-    lcopy(sd_sectorbuffer, (long)verify_buffer, 512);
+    lcopy(sd_sectorbuffer, (uint32_t)verify_buffer, 512);
 
     // VErify that it matches the data we wrote
     for (i = 0; i < 512; i++) {
@@ -318,7 +318,7 @@ uint8_t mega65_sdcard_writesector(const uint32_t sector_number)
     while (tries < 10) {
 
         // Copy data to hardware sector buffer via DMA
-        lcopy((long)sector_buffer, sd_sectorbuffer, 512);
+        lcopy((uint32_t)sector_buffer, sd_sectorbuffer, 512u);
 
         // Wait for SD card to be ready
         counter = 0;
@@ -392,7 +392,7 @@ uint8_t mega65_sdcard_writesector(const uint32_t sector_number)
             }
 
             // Copy the read data to a buffer for verification
-            lcopy(sd_sectorbuffer, (long)verify_buffer, 512);
+            lcopy(sd_sectorbuffer, (uint32_t)verify_buffer, 512);
 
             // VErify that it matches the data we wrote
             for (i = 0; i < 512; i++) {
@@ -426,8 +426,8 @@ void mega65_sdcard_erase(
     const uint32_t first_sector, const uint32_t last_sector)
 {
     uint32_t n;
-    lfill((int32_t)sector_buffer, 0, 512);
-    lcopy((long)sector_buffer, sd_sectorbuffer, 512);
+    lfill((uint32_t)sector_buffer, 0, 512);
+    lcopy((uint32_t)sector_buffer, sd_sectorbuffer, 512);
 
     //  fprintf(stderr,"ERASING SECTORS %d..%d\r\n",first_sector,last_sector);
 

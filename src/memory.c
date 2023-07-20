@@ -26,7 +26,7 @@ void do_dma(void)
     POKE(0xd705U, ((unsigned int)&dmalist) & 0xff); // triggers enhanced DMA
 }
 
-unsigned char dma_peek(long address)
+unsigned char dma_peek(uint32_t address)
 {
     // Read the byte at <address> in 28-bit address space
     // XXX - Optimise out repeated setup etc
@@ -57,7 +57,7 @@ unsigned char dma_peek(long address)
 
 unsigned char db1, db2, db3;
 
-unsigned char lpeek_debounced(long address)
+unsigned char lpeek_debounced(uint32_t address)
 {
     db1 = 0;
     db2 = 1;
@@ -71,17 +71,17 @@ unsigned char lpeek_debounced(long address)
 
 // cc65 and llvm have specialized assembler versions of lpeek and lpoke
 #if !defined(__clang__) && !defined(__CC65__)
-unsigned char lpeek(long address)
+unsigned char lpeek(uint32_t address)
 {
     return dma_peek(address);
 }
-void lpoke(long address, unsigned char value)
+void lpoke(uint32_t address, unsigned char value)
 {
     dma_poke(address, value);
 }
 #endif
 
-void dma_poke(long address, unsigned char value)
+void dma_poke(uint32_t address, unsigned char value)
 {
     dmalist.option_0b = 0x0b;
     dmalist.option_80 = 0x80;
@@ -105,7 +105,8 @@ void dma_poke(long address, unsigned char value)
     return;
 }
 
-void lcopy(long source_address, long destination_address, unsigned int count)
+void lcopy(
+    uint32_t source_address, uint32_t destination_address, unsigned int count)
 {
     dmalist.option_0b = 0x0b;
     dmalist.option_80 = 0x80;
@@ -137,7 +138,7 @@ void lcopy(long source_address, long destination_address, unsigned int count)
     return;
 }
 
-void lfill(long destination_address, unsigned char value, unsigned int count)
+void lfill(uint32_t destination_address, unsigned char value, unsigned int count)
 {
     dmalist.option_0b = 0x0b;
     dmalist.option_80 = 0x80;
@@ -163,7 +164,7 @@ void lfill(long destination_address, unsigned char value, unsigned int count)
     return;
 }
 
-void lfill_skip(long destination_address, unsigned char value,
+void lfill_skip(uint32_t destination_address, unsigned char value,
     unsigned int count, unsigned char skip)
 {
     dmalist.option_0b = 0x0b;

@@ -34,14 +34,14 @@ extern unsigned char dma_byte;
 #endif
 
 void mega65_io_enable(void);
-unsigned char lpeek(long address);
-unsigned char lpeek_debounced(long address);
-unsigned char dma_peek(long address);
-void lpoke(long address, unsigned char value);
-void dma_poke(long address, unsigned char value);
-void lcopy(long source_address, long destination_address, unsigned int count);
-void lfill(long destination_address, unsigned char value, unsigned int count);
-void lfill_skip(long destination_address, unsigned char value,
+unsigned char lpeek(uint32_t address);
+unsigned char lpeek_debounced(uint32_t address);
+unsigned char dma_peek(uint32_t address);
+void lpoke(uint32_t address, unsigned char value);
+void dma_poke(uint32_t address, unsigned char value);
+void lcopy(uint32_t source_address, uint32_t destination_address, unsigned int count);
+void lfill(uint32_t destination_address, unsigned char value, unsigned int count);
+void lfill_skip(uint32_t destination_address, unsigned char value,
     unsigned int count, unsigned char skip);
 
 #ifdef __clang__
