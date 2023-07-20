@@ -1,9 +1,8 @@
-
+#include <mega65/memory.h>
+#include <mega65/tests.h>
 #include <string.h>
 #include <stdio.h>
 #include <stdint.h>
-#include <memory.h>
-#include <tests.h>
 
 unsigned char __tests_out;
 unsigned short __ut_issueNum;

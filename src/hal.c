@@ -1,5 +1,5 @@
-#include <hal.h>
-#include <memory.h>
+#include <mega65/hal.h>
+#include <mega65/memory.h>
 
 void usleep(uint32_t micros)
 {

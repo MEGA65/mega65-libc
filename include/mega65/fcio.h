@@ -8,7 +8,7 @@
 #ifndef __MEGA65_FCIO_H
 #define __MEGA65_FCIO_H
 
-#include <memory.h>
+#include <mega65/memory.h>
 #include <stdbool.h>
 
 #define FCBUFSIZE 0xff

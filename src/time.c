@@ -6,11 +6,11 @@
   that into account.
 */
 
+#include <mega65/memory.h>
+#include <mega65/time.h>
+#include <mega65/targets.h>
+#include <mega65/hal.h>
 #include <stdio.h>
-#include <memory.h>
-#include <time.h>
-#include <targets.h>
-#include <hal.h>
 
 #define I2CDELAY 5000L
 
