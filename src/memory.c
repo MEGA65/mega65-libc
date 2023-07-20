@@ -1,5 +1,5 @@
+#include <mega65/memory.h>
 #include <stdio.h>
-#include <memory.h>
 
 #ifdef __clang__
 volatile struct dmagic_dmalist dmalist;

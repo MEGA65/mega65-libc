@@ -9,8 +9,9 @@
 
 */
 
+#include <mega65/memory.h>
+#include <mega65/random.h>
 #include <stdint.h>
-#include <memory.h>
 
 uint32_t random_temp;
 uint8_t random_step;

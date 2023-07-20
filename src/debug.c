@@ -1,4 +1,4 @@
-#include <memory.h>
+#include <mega65/memory.h>
 
 unsigned char the_char;
 void debug_msg(char* m)

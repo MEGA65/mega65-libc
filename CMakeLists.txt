@@ -25,18 +25,18 @@ set(objects
     src/time.c)
 
 set(headers
-    include/conio.h
-    include/debug.h
-    include/dirent.h
-    include/fileio.h
-    include/hal.h
-    include/memory.h
-    include/mouse.h
-    include/random.h
-    include/sdcard.h
-    include/targets.h
-    include/tests.h
-    include/time.h)
+    include/mega65/conio.h
+    include/mega65/debug.h
+    include/mega65/dirent.h
+    include/mega65/fileio.h
+    include/mega65/hal.h
+    include/mega65/memory.h
+    include/mega65/mouse.h
+    include/mega65/random.h
+    include/mega65/sdcard.h
+    include/mega65/targets.h
+    include/mega65/tests.h
+    include/mega65/time.h)
 
 set_source_files_properties(${objects} PROPERTIES LANGUAGE C)
 set_source_files_properties(${assembler} PROPERTIES LANGUAGE ASM)
@@ -68,7 +68,7 @@ set(CLANG_WARNINGS
     -Wpedantic # warn if non-standard C/C++ is used
     -Wlanguage-extension-token
 )
-target_compile_options(mega65libc PRIVATE -mcpu=mos65ce02 -Os ${CLANG_WARNINGS})
+target_compile_options(mega65libc PRIVATE -Os ${CLANG_WARNINGS})
 
 # install target
 include(GNUInstallDirs)
@@ -76,7 +76,7 @@ install(TARGETS mega65libc
     EXPORT mega65libc-export
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
     ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
-    PUBLIC_HEADER DESTINATION include
+    PUBLIC_HEADER DESTINATION include/mega65
     )
 install(FILES cmake/mega65libcConfig.cmake DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/mega65libc)
 

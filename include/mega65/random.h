@@ -1,7 +1,7 @@
-#include <stdint.h>
-
 #ifndef __MEGA65_RANDOM_H
 #define __MEGA65_RANDOM_H
+
+#include <stdint.h>
 
 uint32_t random32(uint32_t range);
 uint16_t random16(uint16_t range);

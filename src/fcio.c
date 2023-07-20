@@ -25,8 +25,8 @@
 #define __C64__ 1
 #endif
 
-#include <fcio.h>
-#include <memory.h>
+#include <mega65/fcio.h>
+#include <mega65/memory.h>
 #include <c64.h>
 #include <cbm.h>
 #include <stdarg.h>

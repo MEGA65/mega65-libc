@@ -62,7 +62,7 @@ work
 build
 
 # Visual studio code
-.vscode
+.vscode/*
 
 # CMake
 CMakeCache.txt

@@ -9,10 +9,11 @@
  */
 #include <stdlib.h>
 #include <stdio.h>
-#include <memory.h>
+#include <mega65/memory.h>
 
 #define XEMU_CONTROL 0xD6CF
 #define XEMU_QUIT 0x42
+
 void xemu_exit(int exit_code)
 {
     POKE(XEMU_CONTROL, (uint8_t)exit_code);
