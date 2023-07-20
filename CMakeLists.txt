@@ -66,7 +66,7 @@ set(CLANG_WARNINGS
     -Wformat=2 # warn on security issues around functions that format output (ie printf)
     -Wimplicit-fallthrough # warn on statements that fallthrough without an explicit annotation
     -Wpedantic # warn if non-standard C/C++ is used
-    -Wlanguage-extension-token
+    -Wno-language-extension-token
 )
 target_compile_options(mega65libc PRIVATE -Os ${CLANG_WARNINGS})
 

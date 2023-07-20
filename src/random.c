@@ -24,7 +24,7 @@ void generate_random_byte(void)
 
     while (random_step--) {
         random_byte
-            = (random_byte << 1) | (random_byte >> 7) ^ (PEEK(0xD6DE) & 0x01);
+            = (random_byte << 1) | ((random_byte >> 7) ^ (PEEK(0xD6DE) & 0x01));
         // We then have to wait 10usec before the next value is ready.
         // 1 raster line is more than that, so just wait one raster line
         raster_temp = PEEK(0xD052);

@@ -1,7 +1,7 @@
-#include <mega65/hal.h>
-
 #ifndef __MEGA65_SDCARD_H
 #define __MEGA65_SDCARD_H
+
+#include <stdint.h>
 
 extern uint8_t sector_buffer[512];
 

@@ -28,14 +28,14 @@ long mega65_fat32_create_contiguous_file(char* name, long size,
     unsigned int fat_offset = 0;
     int j;
 
-    clusters = size / 4096;
+    clusters = (unsigned short)(size / 4096);
     if (size & 4095) {
         clusters++;
     }
 
     for (fat_offset = 0; fat_offset <= (fat2_sector - fat1_sector);
          fat_offset++) {
-        mega65_sdcard_readsector(fat1_sector + fat_offset);
+        mega65_sdcard_readsector((uint32_t)(fat1_sector + fat_offset));
         contiguous_clusters = 0;
         start_cluster = 0;
 
@@ -138,5 +138,5 @@ long mega65_fat32_create_contiguous_file(char* name, long size,
 
     mega65_sdcard_writesector(root_dir_sector);
 
-    return root_dir_sector + (start_cluster - 2) * 8;
+    return root_dir_sector + (long)(start_cluster - 2) * 8;
 }
