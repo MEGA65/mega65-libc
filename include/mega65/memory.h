@@ -3,7 +3,11 @@
 
 #include <stdint.h>
 
+#ifdef __clang__
+struct __attribute__((__packed__)) dmagic_dmalist {
+#else
 struct dmagic_dmalist {
+#endif
     // Enhanced DMA options
     uint8_t option_0b;
     uint8_t option_80;
@@ -16,13 +20,13 @@ struct dmagic_dmalist {
 
     // F018B format DMA request
     uint8_t command;
-    unsigned int count;
-    unsigned int source_addr;
+    uint16_t count;
+    uint16_t source_addr;
     uint8_t source_bank;
-    unsigned int dest_addr;
+    uint16_t dest_addr;
     uint8_t dest_bank;
     uint8_t sub_cmd; // F018B subcmd
-    unsigned int modulo;
+    uint16_t modulo;
 };
 
 #ifdef __clang__
@@ -40,10 +44,10 @@ uint8_t dma_peek(uint32_t address);
 void lpoke(uint32_t address, uint8_t value);
 void dma_poke(uint32_t address, uint8_t value);
 void lcopy(
-    uint32_t source_address, uint32_t destination_address, unsigned int count);
-void lfill(uint32_t destination_address, uint8_t value, unsigned int count);
-void lfill_skip(uint32_t destination_address, uint8_t value, unsigned int count,
-    uint8_t skip);
+    uint32_t source_address, uint32_t destination_address, uint16_t count);
+void lfill(uint32_t destination_address, uint8_t value, uint16_t count);
+void lfill_skip(
+    uint32_t destination_address, uint8_t value, uint16_t count, uint8_t skip);
 
 #ifdef __clang__
 #define POKE(X, Y) (*(volatile uint8_t*)(X)) = Y

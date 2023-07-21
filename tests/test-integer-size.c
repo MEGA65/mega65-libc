@@ -34,6 +34,8 @@ int main(void)
 
     assert_eq(sizeof(uint16_t), 2);
     assert_eq(sizeof(unsigned int), 2);
+    assert_eq(sizeof(unsigned short), 2);
+    assert_eq(sizeof(size_t), 2);
     assert_eq(UINT16_MAX, 0xFFFF);
 
     assert_eq(sizeof(uint32_t), 4);
@@ -44,4 +46,3 @@ int main(void)
     assert_eq(INT32_MAX, 0x7FFFFFFF);
     xemu_exit(EXIT_SUCCESS);
 }
-
