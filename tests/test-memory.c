@@ -52,12 +52,12 @@ int main(void)
     assert_eq(lpeek(0x4002), 7);
 
     // dma_poke and dma_peek
-    dma_poke(0x4000, 13);
-    dma_poke(0x4001, 9);
-    dma_poke(0x4002, 7);
-    assert_eq(dma_peek(0x4000), 13);
-    assert_eq(dma_peek(0x4001), 9);
-    assert_eq(dma_peek(0x4002), 7);
+    dma_poke(0x4000, 9);
+    dma_poke(0x4001, 10);
+    dma_poke(0x4002, 11);
+    assert_eq(dma_peek(0x4000), 9);
+    assert_eq(dma_peek(0x4001), 10);
+    assert_eq(dma_peek(0x4002), 11);
 
     // lfill
     lfill(0x3000, 1, 3);
