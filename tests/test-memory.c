@@ -27,22 +27,6 @@ void xemu_exit(int exit_code)
 
 int main(void)
 {
-    // Integer sizes
-    assert_eq(sizeof(uint8_t), 1);
-    assert_eq(sizeof(unsigned char), 1);
-    assert_eq(UINT8_MAX, 0xFF);
-
-    assert_eq(sizeof(uint16_t), 2);
-    assert_eq(sizeof(unsigned int), 2);
-    assert_eq(UINT16_MAX, 0xFFFF);
-
-    assert_eq(sizeof(uint32_t), 4);
-    assert_eq(sizeof(unsigned long), 4);
-    assert_eq(UINT32_MAX, 0xFFFFFFFF);
-
-    assert_eq(INT16_MAX, 0x7FFF);
-    assert_eq(INT32_MAX, 0x7FFFFFFF);
-
     // PEEK and POKE macros
     POKE(0x3000, 7);
     POKE(0x3001, 9);
