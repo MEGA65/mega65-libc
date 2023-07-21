@@ -5,44 +5,45 @@
 
 struct dmagic_dmalist {
     // Enhanced DMA options
-    unsigned char option_0b;
-    unsigned char option_80;
-    unsigned char source_mb;
-    unsigned char option_81;
-    unsigned char dest_mb;
-    unsigned char option_85;
-    unsigned char dest_skip;
-    unsigned char end_of_options;
+    uint8_t option_0b;
+    uint8_t option_80;
+    uint8_t source_mb;
+    uint8_t option_81;
+    uint8_t dest_mb;
+    uint8_t option_85;
+    uint8_t dest_skip;
+    uint8_t end_of_options;
 
     // F018B format DMA request
-    unsigned char command;
+    uint8_t command;
     unsigned int count;
     unsigned int source_addr;
-    unsigned char source_bank;
+    uint8_t source_bank;
     unsigned int dest_addr;
-    unsigned char dest_bank;
-    unsigned char sub_cmd; // F018B subcmd
+    uint8_t dest_bank;
+    uint8_t sub_cmd; // F018B subcmd
     unsigned int modulo;
 };
 
 #ifdef __clang__
 extern volatile struct dmagic_dmalist dmalist;
-extern volatile unsigned char dma_byte;
+extern volatile uint8_t dma_byte;
 #else
 extern struct dmagic_dmalist dmalist;
-extern unsigned char dma_byte;
+extern uint8_t dma_byte;
 #endif
 
 void mega65_io_enable(void);
-unsigned char lpeek(uint32_t address);
-unsigned char lpeek_debounced(uint32_t address);
-unsigned char dma_peek(uint32_t address);
-void lpoke(uint32_t address, unsigned char value);
-void dma_poke(uint32_t address, unsigned char value);
-void lcopy(uint32_t source_address, uint32_t destination_address, unsigned int count);
-void lfill(uint32_t destination_address, unsigned char value, unsigned int count);
-void lfill_skip(uint32_t destination_address, unsigned char value,
-    unsigned int count, unsigned char skip);
+uint8_t lpeek(uint32_t address);
+uint8_t lpeek_debounced(uint32_t address);
+uint8_t dma_peek(uint32_t address);
+void lpoke(uint32_t address, uint8_t value);
+void dma_poke(uint32_t address, uint8_t value);
+void lcopy(
+    uint32_t source_address, uint32_t destination_address, unsigned int count);
+void lfill(uint32_t destination_address, uint8_t value, unsigned int count);
+void lfill_skip(uint32_t destination_address, uint8_t value, unsigned int count,
+    uint8_t skip);
 
 #ifdef __clang__
 #define POKE(X, Y) (*(volatile uint8_t*)(X)) = Y

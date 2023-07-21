@@ -3,10 +3,10 @@
 
 #ifdef __clang__
 volatile struct dmagic_dmalist dmalist;
-volatile unsigned char dma_byte;
+volatile uint8_t dma_byte;
 #else
 struct dmagic_dmalist dmalist;
-unsigned char dma_byte;
+uint8_t dma_byte;
 #endif
 
 void do_dma(void)
@@ -26,7 +26,7 @@ void do_dma(void)
     POKE(0xd705U, ((unsigned int)&dmalist) & 0xff); // triggers enhanced DMA
 }
 
-unsigned char dma_peek(uint32_t address)
+uint8_t dma_peek(uint32_t address)
 {
     // Read the byte at <address> in 28-bit address space
     // XXX - Optimise out repeated setup etc
@@ -55,9 +55,9 @@ unsigned char dma_peek(uint32_t address)
     return dma_byte;
 }
 
-unsigned char db1, db2, db3;
+uint8_t db1, db2, db3;
 
-unsigned char lpeek_debounced(uint32_t address)
+uint8_t lpeek_debounced(uint32_t address)
 {
     db1 = 0;
     db2 = 1;
@@ -71,17 +71,17 @@ unsigned char lpeek_debounced(uint32_t address)
 
 // cc65 and llvm have specialized assembler versions of lpeek and lpoke
 #if !defined(__clang__) && !defined(__CC65__)
-unsigned char lpeek(uint32_t address)
+uint8_t lpeek(uint32_t address)
 {
     return dma_peek(address);
 }
-void lpoke(uint32_t address, unsigned char value)
+void lpoke(uint32_t address, uint8_t value)
 {
     dma_poke(address, value);
 }
 #endif
 
-void dma_poke(uint32_t address, unsigned char value)
+void dma_poke(uint32_t address, uint8_t value)
 {
     dmalist.option_0b = 0x0b;
     dmalist.option_80 = 0x80;
@@ -138,7 +138,7 @@ void lcopy(
     return;
 }
 
-void lfill(uint32_t destination_address, unsigned char value, unsigned int count)
+void lfill(uint32_t destination_address, uint8_t value, unsigned int count)
 {
     dmalist.option_0b = 0x0b;
     dmalist.option_80 = 0x80;
@@ -164,8 +164,8 @@ void lfill(uint32_t destination_address, unsigned char value, unsigned int count
     return;
 }
 
-void lfill_skip(uint32_t destination_address, unsigned char value,
-    unsigned int count, unsigned char skip)
+void lfill_skip(uint32_t destination_address, uint8_t value, unsigned int count,
+    uint8_t skip)
 {
     dmalist.option_0b = 0x0b;
     dmalist.option_80 = 0x80;
