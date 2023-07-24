@@ -8,10 +8,10 @@
 
 uint8_t sector_buffer[512];
 
-const uint32_t sd_sectorbuffer = 0xffd6e00U;
-const uint16_t sd_ctl = 0xd680L;
-const uint16_t sd_addr = 0xd681L;
-const uint16_t sd_errorcode = 0xd6daL;
+const uint32_t sd_sectorbuffer = 0xffd6e00UL;
+const uint16_t sd_ctl = 0xd680U;
+const uint16_t sd_addr = 0xd681U;
+const uint16_t sd_errorcode = 0xd6daU;
 
 unsigned char sdhc_card = 0;
 
@@ -62,12 +62,12 @@ uint32_t mega65_sdcard_getsize(void)
     mega65_sdcard_reset();
 
     // Begin with aligned address, and confirm it works ok.
-    POKE(0xD681U, 0);
-    POKE(0xD682U, 0);
-    POKE(0xD683U, 0);
-    POKE(0xD684U, 0);
+    POKE(0xD681, 0);
+    POKE(0xD682, 0);
+    POKE(0xD683, 0);
+    POKE(0xD684, 0);
     // Trigger read
-    POKE(0xD680U, 2);
+    POKE(0xD680, 2);
 
     // Allow a lot of time for first read after reset to complete
     // (some cards take a while)
@@ -79,12 +79,12 @@ uint32_t mega65_sdcard_getsize(void)
     }
 
     // Setup non-aligned address
-    POKE(0xD681U, 2);
-    POKE(0xD682U, 0);
-    POKE(0xD683U, 0);
-    POKE(0xD684U, 0);
+    POKE(0xD681, 2);
+    POKE(0xD682, 0);
+    POKE(0xD683, 0);
+    POKE(0xD684, 0);
     // Trigger read
-    POKE(0xD680U, 2);
+    POKE(0xD680, 2);
     // Then sleep for plenty of time for the read to complete
     for (result = 0; result < 20; result++) {
         if (PEEK(sd_ctl & 3) == 0) {
@@ -99,7 +99,7 @@ uint32_t mega65_sdcard_getsize(void)
     }
     else {
         //    write_line("SDSC (<4GB) card detected. Using byte addressing.",0);
-        POKE(0xD680U, 0x40);
+        POKE(0xD680, 0x40);
         mega65_sdcard_reset();
         sdhc_card = 0;
     }
