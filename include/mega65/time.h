@@ -25,7 +25,9 @@ struct m65_tm {
     unsigned char tm_isdst; /* Daylight saving time */
 };
 
+/// Get real-time clock
 void getrtc(struct m65_tm* tm);
+/// Set real-time clock
 void setrtc(struct m65_tm* tm);
 
 #endif // __MEGA65_TIME_H

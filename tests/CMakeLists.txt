@@ -12,5 +12,6 @@ function(TEST NAME)
 endfunction()
 
 TEST(test-fileio)
-TEST(test-memory)
 TEST(test-integer-size)
+TEST(test-memory)
+TEST(test-time)

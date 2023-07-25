@@ -1,3 +1,4 @@
+
 /*
   The MEGA65 really only has a Real-Time Clock (RTC), so we just have handy
   functions for that.
@@ -10,7 +11,6 @@
 #include <mega65/time.h>
 #include <mega65/targets.h>
 #include <mega65/hal.h>
-#include <stdio.h>
 
 #define I2CDELAY 5000L
 
@@ -59,6 +59,7 @@ void getrtc(struct m65_tm* tm)
     tm->tm_isdst = 0;
 
     switch (detect_target()) {
+    case TARGET_EMULATION:
     case TARGET_MEGA65R2:
     case TARGET_MEGA65R3:
         tm->tm_sec = unbcd(lpeek_debounced(0xffd7110));
@@ -129,7 +130,7 @@ void setrtc(struct m65_tm* tm)
         lpoke(0xffd7114, tobcd(tm->tm_mon));
         if (tm->tm_year >= 100 && tm->tm_year <= 355) {
             usleep(I2CDELAY);
-            lpoke(0xffd7115, tobcd(tm->tm_year - 100));
+            lpoke(0xffd7115, tobcd((uint8_t)(tm->tm_year - 100)));
         }
         usleep(I2CDELAY);
         lpoke(0xffd7116, tobcd(tm->tm_wday));
