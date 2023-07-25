@@ -17,7 +17,9 @@
 /**
  * @brief Quits Xemu with given exit code
  * @param exit_code Exit code passed to Xemu, e.g. EXIT_SUCCESS or EXIT_FAILURE
- * @note Xemu must be run in `-testing` mode for this to have any effect
+ *
+ * Xemu must be run in `-testing` mode for this to have any effect and
+ * also make sure to call `mega65_io_enable()` before calling this function.
  */
 void xemu_exit(int exit_code);
 
