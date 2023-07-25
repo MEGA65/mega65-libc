@@ -3,10 +3,18 @@
 #include <string.h>
 #include <stdio.h>
 #include <stdint.h>
+#include <stdlib.h>
 
 unsigned char __tests_out;
 unsigned short __ut_issueNum;
 unsigned char __ut_subissue;
+
+void xemu_exit(int exit_code)
+{
+    POKE(XEMU_CONTROL, (uint8_t)exit_code);
+    POKE(XEMU_CONTROL, XEMU_QUIT);
+    exit(exit_code);
+}
 
 void unit_test_report(
     unsigned short issue, unsigned char sub, unsigned char status)

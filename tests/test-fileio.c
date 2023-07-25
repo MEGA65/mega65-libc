@@ -9,17 +9,8 @@
  */
 #include <mega65/memory.h>
 #include <mega65/fileio.h>
+#include <mega65/tests.h>
 #include <stdlib.h>
-
-#define XEMU_CONTROL 0xD6CF
-#define XEMU_QUIT 0x42
-
-void xemu_exit(int exit_code)
-{
-    POKE(XEMU_CONTROL, (uint8_t)exit_code);
-    POKE(XEMU_CONTROL, XEMU_QUIT);
-    exit(exit_code);
-}
 
 #define assert_eq(A, B)                                                        \
     if (A != B)                                                                \
