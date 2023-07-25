@@ -3,10 +3,10 @@
 
 #ifdef __clang__
 volatile struct dmagic_dmalist dmalist;
-volatile unsigned char dma_byte;
+volatile uint8_t dma_byte;
 #else
 struct dmagic_dmalist dmalist;
-unsigned char dma_byte;
+uint8_t dma_byte;
 #endif
 
 void do_dma(void)
@@ -15,18 +15,18 @@ void do_dma(void)
     mega65_io_enable();
 
     //  for(i=0;i<24;i++)
-    //    printf("%02x ",PEEK(i+(unsigned int)&dmalist));
+    //    printf("%02x ",PEEK(i+(uint16_t)&dmalist));
     //  printf("\n");
     //  while(1) continue;
 
     // Now run DMA job (to and from anywhere, and list is in low 1MB)
     POKE(0xd702U, 0);
     POKE(0xd704U, 0x00); // List is in $00xxxxx
-    POKE(0xd701U, ((unsigned int)&dmalist) >> 8);
-    POKE(0xd705U, ((unsigned int)&dmalist) & 0xff); // triggers enhanced DMA
+    POKE(0xd701U, ((uint16_t)&dmalist) >> 8);
+    POKE(0xd705U, ((uint16_t)&dmalist) & 0xff); // triggers enhanced DMA
 }
 
-unsigned char dma_peek(long address)
+uint8_t dma_peek(uint32_t address)
 {
     // Read the byte at <address> in 28-bit address space
     // XXX - Optimise out repeated setup etc
@@ -47,7 +47,7 @@ unsigned char dma_peek(long address)
     dmalist.count = 1;
     dmalist.source_addr = address & 0xffff;
     dmalist.source_bank = (address >> 16) & 0x0f;
-    dmalist.dest_addr = (unsigned int)&dma_byte;
+    dmalist.dest_addr = (uint16_t)&dma_byte;
     dmalist.dest_bank = 0;
 
     do_dma();
@@ -55,9 +55,9 @@ unsigned char dma_peek(long address)
     return dma_byte;
 }
 
-unsigned char db1, db2, db3;
+uint8_t db1, db2, db3;
 
-unsigned char lpeek_debounced(long address)
+uint8_t lpeek_debounced(uint32_t address)
 {
     db1 = 0;
     db2 = 1;
@@ -71,17 +71,17 @@ unsigned char lpeek_debounced(long address)
 
 // cc65 and llvm have specialized assembler versions of lpeek and lpoke
 #if !defined(__clang__) && !defined(__CC65__)
-unsigned char lpeek(long address)
+uint8_t lpeek(uint32_t address)
 {
     return dma_peek(address);
 }
-void lpoke(long address, unsigned char value)
+void lpoke(uint32_t address, uint8_t value)
 {
     dma_poke(address, value);
 }
 #endif
 
-void dma_poke(long address, unsigned char value)
+void dma_poke(uint32_t address, uint8_t value)
 {
     dmalist.option_0b = 0x0b;
     dmalist.option_80 = 0x80;
@@ -96,7 +96,7 @@ void dma_poke(long address, unsigned char value)
     dma_byte = value;
     dmalist.command = 0x00; // copy
     dmalist.count = 1;
-    dmalist.source_addr = (unsigned int)&dma_byte;
+    dmalist.source_addr = (uint16_t)&dma_byte;
     dmalist.source_bank = 0;
     dmalist.dest_addr = address & 0xffff;
     dmalist.dest_bank = (address >> 16) & 0x0f;
@@ -105,7 +105,8 @@ void dma_poke(long address, unsigned char value)
     return;
 }
 
-void lcopy(long source_address, long destination_address, unsigned int count)
+void lcopy(
+    uint32_t source_address, uint32_t destination_address, uint16_t count)
 {
     dmalist.option_0b = 0x0b;
     dmalist.option_80 = 0x80;
@@ -137,7 +138,7 @@ void lcopy(long source_address, long destination_address, unsigned int count)
     return;
 }
 
-void lfill(long destination_address, unsigned char value, unsigned int count)
+void lfill(uint32_t destination_address, uint8_t value, uint16_t count)
 {
     dmalist.option_0b = 0x0b;
     dmalist.option_80 = 0x80;
@@ -163,8 +164,8 @@ void lfill(long destination_address, unsigned char value, unsigned int count)
     return;
 }
 
-void lfill_skip(long destination_address, unsigned char value,
-    unsigned int count, unsigned char skip)
+void lfill_skip(uint32_t destination_address, uint8_t value, uint16_t count,
+    uint8_t skip)
 {
     dmalist.option_0b = 0x0b;
     dmalist.option_80 = 0x80;

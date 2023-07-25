@@ -7,9 +7,8 @@
  *
  * If a test fails, xemu will exit with a non-zero return code.
  */
-#include <stdlib.h>
-#include <stdio.h>
 #include <mega65/memory.h>
+#include <stdlib.h>
 
 #define XEMU_CONTROL 0xD6CF
 #define XEMU_QUIT 0x42
@@ -27,6 +26,9 @@ void xemu_exit(int exit_code)
 
 int main(void)
 {
+    // DMAGIC DMA list size
+    assert_eq(sizeof(struct dmagic_dmalist), 20);
+
     // PEEK and POKE macros
     POKE(0x3000, 7);
     POKE(0x3001, 9);
@@ -50,12 +52,12 @@ int main(void)
     assert_eq(lpeek(0x4002), 7);
 
     // dma_poke and dma_peek
-    dma_poke(0x4000, 13);
-    dma_poke(0x4001, 9);
-    dma_poke(0x4002, 7);
-    assert_eq(dma_peek(0x4000), 13);
-    assert_eq(dma_peek(0x4001), 9);
-    assert_eq(dma_peek(0x4002), 7);
+    dma_poke(0x4000, 9);
+    dma_poke(0x4001, 10);
+    dma_poke(0x4002, 11);
+    assert_eq(dma_peek(0x4000), 9);
+    assert_eq(dma_peek(0x4001), 10);
+    assert_eq(dma_peek(0x4002), 11);
 
     // lfill
     lfill(0x3000, 1, 3);

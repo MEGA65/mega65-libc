@@ -4,12 +4,14 @@
 #include <stdio.h>
 #include <string.h>
 
+#define SDCARD_ERROR 0xff;
+
 uint8_t sector_buffer[512];
 
-const long sd_sectorbuffer = 0xffd6e00L;
-const uint16_t sd_ctl = 0xd680L;
-const uint16_t sd_addr = 0xd681L;
-const uint16_t sd_errorcode = 0xd6daL;
+const uint32_t sd_sectorbuffer = 0xffd6e00UL;
+const uint16_t sd_ctl = 0xd680U;
+const uint16_t sd_addr = 0xd681U;
+const uint16_t sd_errorcode = 0xd6daU;
 
 unsigned char sdhc_card = 0;
 
@@ -60,12 +62,12 @@ uint32_t mega65_sdcard_getsize(void)
     mega65_sdcard_reset();
 
     // Begin with aligned address, and confirm it works ok.
-    POKE(0xD681U, 0);
-    POKE(0xD682U, 0);
-    POKE(0xD683U, 0);
-    POKE(0xD684U, 0);
+    POKE(0xD681, 0);
+    POKE(0xD682, 0);
+    POKE(0xD683, 0);
+    POKE(0xD684, 0);
     // Trigger read
-    POKE(0xD680U, 2);
+    POKE(0xD680, 2);
 
     // Allow a lot of time for first read after reset to complete
     // (some cards take a while)
@@ -77,12 +79,12 @@ uint32_t mega65_sdcard_getsize(void)
     }
 
     // Setup non-aligned address
-    POKE(0xD681U, 2);
-    POKE(0xD682U, 0);
-    POKE(0xD683U, 0);
-    POKE(0xD684U, 0);
+    POKE(0xD681, 2);
+    POKE(0xD682, 0);
+    POKE(0xD683, 0);
+    POKE(0xD684, 0);
     // Trigger read
-    POKE(0xD680U, 2);
+    POKE(0xD680, 2);
     // Then sleep for plenty of time for the read to complete
     for (result = 0; result < 20; result++) {
         if (PEEK(sd_ctl & 3) == 0) {
@@ -97,7 +99,7 @@ uint32_t mega65_sdcard_getsize(void)
     }
     else {
         //    write_line("SDSC (<4GB) card detected. Using byte addressing.",0);
-        POKE(0xD680U, 0x40);
+        POKE(0xD680, 0x40);
         mega65_sdcard_reset();
         sdhc_card = 0;
     }
@@ -179,7 +181,6 @@ void mega65_sdcard_unmap_sector_buffer(void)
 
 unsigned short timeout;
 
-// @todo Return -1 corresponds to 255. Is this what we want?
 uint8_t mega65_sdcard_readsector(const uint32_t sector_number)
 {
     char tries = 0;
@@ -192,7 +193,7 @@ uint8_t mega65_sdcard_readsector(const uint32_t sector_number)
         if (sector_number >= 0x7fffff) {
             //      write_line("ERROR: Asking for sector @ >= 4GB on SDSC
             //      card.",0);
-            return -1;
+            return SDCARD_ERROR;
         }
     }
 
@@ -211,15 +212,15 @@ uint8_t mega65_sdcard_readsector(const uint32_t sector_number)
         while (PEEK(sd_ctl) & 0x3) {
             timeout--;
             if (!timeout) {
-                return -1;
+                return SDCARD_ERROR;
             }
             if (PEEK(sd_ctl) & 0x40) {
-                return -1;
+                return SDCARD_ERROR;
             }
             // Sometimes we see this result, i.e., sdcard.vhdl thinks it is
             // done, but sdcardio.vhdl thinks not. This means a read error
             if (PEEK(sd_ctl) == 0x01) {
-                return -1;
+                return SDCARD_ERROR;
             }
         }
 
@@ -231,16 +232,16 @@ uint8_t mega65_sdcard_readsector(const uint32_t sector_number)
         while (PEEK(sd_ctl) & 0x3) {
             timeout--;
             if (!timeout) {
-                return -1;
+                return SDCARD_ERROR;
             }
             //      write_line("Waiting for read to complete",0);
             if (PEEK(sd_ctl) & 0x40) {
-                return -1;
+                return SDCARD_ERROR;
             }
             // Sometimes we see this result, i.e., sdcard.vhdl thinks it is
             // done, but sdcardio.vhdl thinks not. This means a read error
             if (PEEK(sd_ctl) == 0x01) {
-                return -1;
+                return SDCARD_ERROR;
             }
         }
 
@@ -249,7 +250,7 @@ uint8_t mega65_sdcard_readsector(const uint32_t sector_number)
 
         if (!(PEEK(sd_ctl) & 0x67)) {
             // Copy data from hardware sector buffer via DMA
-            lcopy(sd_sectorbuffer, (long)sector_buffer, 512);
+            lcopy(sd_sectorbuffer, (uint32_t)sector_buffer, 512);
 
             return 0;
         }
@@ -262,12 +263,11 @@ uint8_t mega65_sdcard_readsector(const uint32_t sector_number)
         tries++;
     }
 
-    return -1;
+    return SDCARD_ERROR;
 }
 
 uint8_t verify_buffer[512];
 
-// @todo Return -1 corresponds to 255. Is this what we want?
 uint8_t mega65_sdcard_writesector(const uint32_t sector_number)
 {
     // Copy buffer into the SD card buffer, and then execute the write job
@@ -303,7 +303,7 @@ uint8_t mega65_sdcard_writesector(const uint32_t sector_number)
     }
 
     // Copy the read data to a buffer for verification
-    lcopy(sd_sectorbuffer, (long)verify_buffer, 512);
+    lcopy(sd_sectorbuffer, (uint32_t)verify_buffer, 512);
 
     // VErify that it matches the data we wrote
     for (i = 0; i < 512; i++) {
@@ -318,7 +318,7 @@ uint8_t mega65_sdcard_writesector(const uint32_t sector_number)
     while (tries < 10) {
 
         // Copy data to hardware sector buffer via DMA
-        lcopy((long)sector_buffer, sd_sectorbuffer, 512);
+        lcopy((uint32_t)sector_buffer, sd_sectorbuffer, 512u);
 
         // Wait for SD card to be ready
         counter = 0;
@@ -392,7 +392,7 @@ uint8_t mega65_sdcard_writesector(const uint32_t sector_number)
             }
 
             // Copy the read data to a buffer for verification
-            lcopy(sd_sectorbuffer, (long)verify_buffer, 512);
+            lcopy(sd_sectorbuffer, (uint32_t)verify_buffer, 512);
 
             // VErify that it matches the data we wrote
             for (i = 0; i < 512; i++) {
@@ -419,7 +419,7 @@ uint8_t mega65_sdcard_writesector(const uint32_t sector_number)
 
     //  write_line("Write error @ $$$$$$$$$",2);
     // screen_hex(screen_line_address-80+2+16,sector_number);
-    return -1;
+    return SDCARD_ERROR;
 }
 
 void mega65_sdcard_erase(
@@ -427,7 +427,7 @@ void mega65_sdcard_erase(
 {
     uint32_t n;
     lfill((uint32_t)sector_buffer, 0, 512);
-    lcopy((long)sector_buffer, sd_sectorbuffer, 512);
+    lcopy((uint32_t)sector_buffer, sd_sectorbuffer, 512);
 
     //  fprintf(stderr,"ERASING SECTORS %d..%d\r\n",first_sector,last_sector);
 

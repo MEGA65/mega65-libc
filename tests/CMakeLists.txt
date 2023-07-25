@@ -12,3 +12,4 @@ function(TEST NAME)
 endfunction()
 
 TEST(test-memory)
+TEST(test-integer-size)
