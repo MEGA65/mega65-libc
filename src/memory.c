@@ -35,7 +35,7 @@ uint8_t dma_peek(uint32_t address)
 
     dmalist.option_0b = 0x0b;
     dmalist.option_80 = 0x80;
-    dmalist.source_mb = (address >> 20);
+    dmalist.source_mb = (uint8_t)(address >> 20);
     dmalist.option_81 = 0x81;
     dmalist.dest_mb = 0x00; // dma_byte lives in 1st MB
     dmalist.option_85 = 0x85;
@@ -87,7 +87,7 @@ void dma_poke(uint32_t address, uint8_t value)
     dmalist.option_80 = 0x80;
     dmalist.source_mb = 0x00; // dma_byte lives in 1st MB
     dmalist.option_81 = 0x81;
-    dmalist.dest_mb = (address >> 20);
+    dmalist.dest_mb = (uint8_t)(address >> 20);
     dmalist.option_85 = 0x85;
     dmalist.dest_skip = 1;
     dmalist.end_of_options = 0x00;
@@ -110,9 +110,9 @@ void lcopy(
 {
     dmalist.option_0b = 0x0b;
     dmalist.option_80 = 0x80;
-    dmalist.source_mb = source_address >> 20;
+    dmalist.source_mb = (uint8_t)(source_address >> 20);
     dmalist.option_81 = 0x81;
-    dmalist.dest_mb = (destination_address >> 20);
+    dmalist.dest_mb = (uint8_t)(destination_address >> 20);
     dmalist.option_85 = 0x85;
     dmalist.dest_skip = 1;
     dmalist.end_of_options = 0x00;
@@ -144,7 +144,7 @@ void lfill(uint32_t destination_address, uint8_t value, uint16_t count)
     dmalist.option_80 = 0x80;
     dmalist.source_mb = 0x00;
     dmalist.option_81 = 0x81;
-    dmalist.dest_mb = destination_address >> 20;
+    dmalist.dest_mb = (uint8_t)(destination_address >> 20);
     dmalist.option_85 = 0x85;
     dmalist.dest_skip = 1;
     dmalist.end_of_options = 0x00;
@@ -164,14 +164,14 @@ void lfill(uint32_t destination_address, uint8_t value, uint16_t count)
     return;
 }
 
-void lfill_skip(uint32_t destination_address, uint8_t value, uint16_t count,
-    uint8_t skip)
+void lfill_skip(
+    uint32_t destination_address, uint8_t value, uint16_t count, uint8_t skip)
 {
     dmalist.option_0b = 0x0b;
     dmalist.option_80 = 0x80;
     dmalist.source_mb = 0x00;
     dmalist.option_81 = 0x81;
-    dmalist.dest_mb = destination_address >> 20;
+    dmalist.dest_mb = (uint8_t)(destination_address >> 20);
     dmalist.option_85 = 0x85;
     dmalist.dest_skip = skip;
     dmalist.end_of_options = 0x00;
