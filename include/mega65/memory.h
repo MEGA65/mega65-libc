@@ -2,7 +2,14 @@
 #define __MEGA65_MEMORY_H
 
 #include <stdint.h>
+#include <stddef.h>
 
+#define DMA_COPY_CMD 0x00;
+#define DMA_FILL_CMD 0x03;
+
+/**
+ * @brief DMA list structure
+ */
 #ifdef __clang__
 struct __attribute__((__packed__)) dmagic_dmalist {
 #else
@@ -37,17 +44,65 @@ extern struct dmagic_dmalist dmalist;
 extern uint8_t dma_byte;
 #endif
 
+/**
+ * @brief Enable Mega65 mode
+ */
 void mega65_io_enable(void);
+
+/**
+ * @brief Peek a byte from the given address
+ * @param address 28-bit address
+ * @return uint8_t with the value at the given address
+ */
 uint8_t lpeek(uint32_t address);
 uint8_t lpeek_debounced(uint32_t address);
+
+/**
+ * @brief Peek a byte from the given address using DMA copy
+ * @param address 28-bit address
+ * @return Single byte from the given address
+ */
 uint8_t dma_peek(uint32_t address);
+
+/**
+ * @brief Poke a byte to the given address
+ * @param address 28-bit address
+ * @param value Single byte to write to the given address
+ */
 void lpoke(uint32_t address, uint8_t value);
+
+/**
+ * @brief Poke a byte to the given address using DMA copy
+ * @param address 28-bit address
+ * @param value Single byte to write to the given address
+ */
 void dma_poke(uint32_t address, uint8_t value);
-void lcopy(
-    uint32_t source_address, uint32_t destination_address, uint16_t count);
-void lfill(uint32_t destination_address, uint8_t value, uint16_t count);
+
+/**
+ * @brief Copy a block of memory using DMA
+ * @param source_address 28-bit address to copy from
+ * @param destination_address 28-bit address to copy to
+ * @param count Number of bytes to copy
+ */
+void lcopy(uint32_t source_address, uint32_t destination_address, size_t count);
+
+/**
+ * @brief Fill a block of memory with a single byte using DMA
+ * @param destination_address Start address (28-bit)
+ * @param value Fill value
+ * @param count Number of bytes to fill
+ */
+void lfill(uint32_t destination_address, uint8_t value, size_t count);
+
+/**
+ * @brief Fill a block of memory with a single byte using DMA with a step
+ * @param destination_address Start address (28-bit)
+ * @param value Fill value
+ * @param count Number of bytes to fill
+ * @param skip Skip every n bytes
+ */
 void lfill_skip(
-    uint32_t destination_address, uint8_t value, uint16_t count, uint8_t skip);
+    uint32_t destination_address, uint8_t value, size_t count, uint8_t skip);
 
 #ifdef __clang__
 #define POKE(X, Y) (*(volatile uint8_t*)(X)) = Y
