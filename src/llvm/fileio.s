@@ -3,13 +3,7 @@
     ;; allocate space in zeropage
     .section .zeropage,"aw",@nobits
 ptr1:
-        .ds.b 1 ;; 1 byte
-ptr2:
-        .ds.b 1
-tmp2:
-        .ds.b 1
-tmp3:
-        .ds.b 1
+        .ds.b 2
 
     .section code,"a"
 
@@ -85,8 +79,8 @@ read512:
 
 	;; Number of bytes read returned in X and Y
 	;; Store these for returning
-	stx tmp2
-	sty tmp3
+	stx __rc2
+	sty __rc3
 
 	;; Make sure SD buffer is selected, not FDC buffer
 	lda #$80
@@ -112,8 +106,8 @@ read512:
 	sta $d705
 
 	;; Retrieve the return value
-	lda tmp2
-	ldx tmp3
+	lda __rc2
+	ldx __rc3
 	RTS	
 
 	.data
