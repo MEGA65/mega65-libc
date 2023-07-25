@@ -1,5 +1,4 @@
 #include <mega65/memory.h>
-#include <stdio.h>
 
 #ifdef __clang__
 volatile struct dmagic_dmalist dmalist;
@@ -43,7 +42,7 @@ uint8_t dma_peek(uint32_t address)
     dmalist.end_of_options = 0x00;
     dmalist.sub_cmd = 0x00;
 
-    dmalist.command = 0x00; // copy
+    dmalist.command = DMA_COPY_CMD;
     dmalist.count = 1;
     dmalist.source_addr = address & 0xffff;
     dmalist.source_bank = (address >> 16) & 0x0f;
@@ -94,7 +93,7 @@ void dma_poke(uint32_t address, uint8_t value)
     dmalist.sub_cmd = 0x00;
 
     dma_byte = value;
-    dmalist.command = 0x00; // copy
+    dmalist.command = DMA_COPY_CMD;
     dmalist.count = 1;
     dmalist.source_addr = (uint16_t)&dma_byte;
     dmalist.source_bank = 0;
@@ -118,7 +117,7 @@ void lcopy(
     dmalist.end_of_options = 0x00;
     dmalist.sub_cmd = 0x00;
 
-    dmalist.command = 0x00; // copy
+    dmalist.command = DMA_COPY_CMD;
     dmalist.count = count;
     dmalist.sub_cmd = 0;
     dmalist.source_addr = source_address & 0xffff;
@@ -149,7 +148,7 @@ void lfill(uint32_t destination_address, uint8_t value, uint16_t count)
     dmalist.dest_skip = 1;
     dmalist.end_of_options = 0x00;
 
-    dmalist.command = 0x03; // fill
+    dmalist.command = DMA_FILL_CMD;
     dmalist.sub_cmd = 0;
     dmalist.count = count;
     dmalist.source_addr = value;
@@ -176,7 +175,7 @@ void lfill_skip(
     dmalist.dest_skip = skip;
     dmalist.end_of_options = 0x00;
 
-    dmalist.command = 0x03; // fill
+    dmalist.command = DMA_FILL_CMD;
     dmalist.sub_cmd = 0;
     dmalist.count = count;
     dmalist.source_addr = value;
