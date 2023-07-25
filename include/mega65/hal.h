@@ -3,6 +3,10 @@
 
 #include <stdint.h>
 
+/**
+ * @brief Sleep for the given number of microseconds
+ * @param micros Microseconds to sleep
+ */
 void usleep(uint32_t micros);
 
 #endif // __MEGA65_HAL_H
