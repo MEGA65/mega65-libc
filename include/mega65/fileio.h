@@ -1,22 +1,46 @@
 #ifndef __MEGA65_FILEIO_H
 #define __MEGA65_FILEIO_H
 
-void toggle_rom_write_protect();
+#include <stdint.h>
+#include <stddef.h>
+
+void toggle_rom_write_protect(void);
+
+/** Closes all open files */
 void closeall(void);
-void close(unsigned char fd);
 
-// Returns file descriptor
-unsigned char open(char* filename);
+/**
+ * @brief Close a single file
+ * @param fd File descriptor pointing to file to close
+ */
+void close(uint8_t fd);
 
-// Read upto one sector of data into the supplied buffer.
-// Returns the number of bytes actually read.
-unsigned short read512(unsigned char* buffer);
+/**
+ * @brief Open file
+ * @param filename to open
+ * @return File descriptor or `0xff` if error
+ */
+uint8_t open(char* filename);
 
-// Change working directory
-// (only accepts one directory segment at a time
-unsigned char chdir(char* filename);
+/**
+ * @brief Read up to 512 bytes from file
+ * @param buffer Input buffer
+ * @return Number of bytes read
+ */
+size_t read512(uint8_t* buffer);
 
-// Change working directory to the root directory
-unsigned char chdirroot(void);
+/**
+ * @brief Change working directory
+ * @param filename Directory name
+ * @return Error code (currently unused)
+ * @note Only accepts one directory segment at a time
+ */
+uint8_t chdir(char* filename);
+
+/**
+ * @brief Change working directory to the root directory
+ * @return Error code (currently unused)
+ */
+uint8_t chdirroot(void);
 
 #endif // __MEGA65_FILEIO_H
