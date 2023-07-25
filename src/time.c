@@ -14,14 +14,17 @@
 
 #define I2CDELAY 5000L
 
-unsigned char bcd_work;
+uint8_t bcd_work;
 
-/*
-  While the double dabble algorithm is more time efficient, we mostly care about
-  saving space, so use a simple loop.  Getting/setting time should not be called
-  particularly often.
+/**
+ * @brief Convert a binary value to binary coded decimal (BCD)
+ * @return uint8_t BCD value
+ *
+ * While the double dabble algorithm is more time efficient, we mostly care
+ * about saving space, so use a simple loop.  Getting/setting time should not be
+ * called particularly often.
  */
-unsigned char tobcd(unsigned char in)
+uint8_t tobcd(uint8_t in)
 {
     bcd_work = 0;
     while (in > 9) {
@@ -32,7 +35,12 @@ unsigned char tobcd(unsigned char in)
     return bcd_work;
 }
 
-unsigned char unbcd(unsigned char in)
+/**
+ * @brief Convert a binary coded decimal (BCD) value to binary
+ * @param in Input BCD value
+ * @return unsigned char Decimal value
+ */
+uint8_t unbcd(uint8_t in)
 {
     bcd_work = 0;
     while (in & 0xf0) {

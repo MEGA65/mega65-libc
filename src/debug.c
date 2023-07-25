@@ -9,13 +9,13 @@ void debug_msg(char* msg)
         __asm__("LDA %v", the_char);
         __asm__("STA $D643");
         __asm__("NOP");
-        m++;
 #else
         asm volatile("lda the_char\n"
                      "sta $d643\n"
                      "nop" ::
                          : "a");
 #endif
+        msg++;
     }
 #ifdef __CC65__
     __asm__("LDA #$0d");
