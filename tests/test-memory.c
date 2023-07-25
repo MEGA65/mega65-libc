@@ -26,6 +26,7 @@ void xemu_exit(int exit_code)
 
 int main(void)
 {
+    mega65_io_enable();
     // DMAGIC DMA list size
     assert_eq(sizeof(struct dmagic_dmalist), 20);
 

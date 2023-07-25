@@ -27,6 +27,8 @@ void xemu_exit(int exit_code)
 
 int main(void)
 {
+    mega65_io_enable();
+
     // Integer sizes
     assert_eq(sizeof(uint8_t), 1);
     assert_eq(sizeof(unsigned char), 1);
@@ -44,5 +46,6 @@ int main(void)
 
     assert_eq(INT16_MAX, 0x7FFF);
     assert_eq(INT32_MAX, 0x7FFFFFFF);
+
     xemu_exit(EXIT_SUCCESS);
 }

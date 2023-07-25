@@ -1,3 +1,7 @@
+# PRG files
+*.prg
+tests/*.prg
+
 # Prerequisites
 *.d
 
