@@ -73,7 +73,7 @@ test: | $(TESTS_PRGS)
 	    echo "Cannot run tests as xmega65 (Xemu) is not in your path."; \
 	else \
 	    for test in $(TESTS_PRGS); do \
-	        if $(XEMU) -testing -sleepless -headless -8 MEGADEMO.d81 -prg $$test &> /dev/null; then \
+	        if $(XEMU) -testing -sleepless -headless -prg $$test &> /dev/null; then \
                     echo "Test passed: $$test"; \
 	        else \
 	            echo "Test FAILED: $$test"; \
