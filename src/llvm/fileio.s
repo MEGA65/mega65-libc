@@ -1,18 +1,14 @@
     .global closeall, open, close, read512, toggle_rom_write_protect, chdir, chdirroot
 
     ;; allocate space in zeropage
-    .section .zeropage,"",@nobits
+    .section .zeropage,"aw",@nobits
 ptr1:
         .ds.b 1 ;; 1 byte
 ptr2:
         .ds.b 1
-tmp1:
-        .ds.b 1
 tmp2:
         .ds.b 1
 tmp3:
-        .ds.b 1
-sp:
         .ds.b 1
 
     .section code,"a"
@@ -22,23 +18,6 @@ mega65_io_enable:
 	sta $d02f
 	lda #$53
 	sta $d02f
-	rts
-cc65_args_read_ptr1_16:	
-        ;; sp here is the ca65 sp ZP variable, not the stack pointer of a 4510
-	
-        lda (sp),y
-        sta ptr1
-        iny
-        lda (sp),y
-        sta ptr1+1
-	iny
-	rts
-        
-cc65_args_read_tmp1_8:	
-        ;; sp here is the ca65 sp ZP variable, not the stack pointer of a 4510
-        lda (sp),y
-        sta tmp1
-        iny
 	rts
         
 cc65_copy_ptr1_string_to_0100:	
@@ -75,7 +54,8 @@ closeall:
 	LDA #$22
 	STA $D640
 	NOP
-	LDX #$00
+	;Not needed on llvm-mos
+	;LDX #$00
 	RTS
 
 toggle_rom_write_protect:
@@ -83,11 +63,13 @@ toggle_rom_write_protect:
 	lda #$70
 	STA $d640
 	nop
-	ldx #0
+	;ldx #0
 	rts
 	
 read512:
 	;;  Get pointer to buffer
+	lda __rc2
+	ldx __rc3
 	sta ptr1+0
 	stx ptr1+1
 
@@ -99,7 +81,7 @@ read512:
 	LDA #$1A
 	STA $D640
 	NOP
-	LDX #$00
+	;LDX #$00
 
 	;; Number of bytes read returned in X and Y
 	;; Store these for returning
@@ -153,9 +135,13 @@ copysectorbuffer_destaddr:
         .short $8000 ;; destination address is $8000
         .byte $00   ;; of bank $0
         .short $0000 ;; modulo (unused)
-	
+
+    .section code,"a"
+
 open:
-        ;; Get pointer to file name
+    ; argument pointer stored in rc2 and rc3
+	lda __rc2
+	ldx __rc3
 	sta ptr1+0
 	stx ptr1+1
 	
@@ -184,8 +170,9 @@ open_file_exists:
 	LDA #$18
 	STA $D640
 	NOP
-	
-	LDX #$00
+
+	;clearing X not needed on llvm-mos	
+	;LDX #$00
 	RTS
 
 close:
@@ -194,7 +181,7 @@ close:
 	LDA #$20
 	STA $D640
 	NOP
-	LDX #$00
+	;LDX #$00
 	RTS
 
 chdirroot:
@@ -204,11 +191,13 @@ chdirroot:
 	sta $d640
 	nop
 
-	ldx #$00
+	;ldx #$00
 	rts
 	
 chdir:
         ;; Get pointer to file name
+	lda __rc2
+	ldx __rc3
 	sta ptr1+0
 	stx ptr1+1
 	
@@ -238,5 +227,6 @@ chdir_file_exists:
 	STA $D640
 	NOP
 	
-	LDX #$00
+	;; Not needed on llvm-mos
+	;;LDX #$00
 	RTS

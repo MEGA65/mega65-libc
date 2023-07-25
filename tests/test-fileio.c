@@ -20,6 +20,7 @@
 char filename[11 + 1] = { 0x63, 0x68, 0x61, 0x72, 0x72, 0x6f, 0x6d, 0x2e, 0x6d,
     0x36, 0x35, 0x00 };
 uint8_t file;
+uint8_t error;
 uint8_t buffer[512];
 size_t num_bytes_read;
 
@@ -30,7 +31,7 @@ int main(void)
 
     // Good practice
     closeall();
-    chdirroot();
+    error = chdirroot();
 
     // Check open status
     file = open(filename);
