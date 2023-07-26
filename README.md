@@ -18,17 +18,23 @@ Simple C library for the MEGA65
 ## Clang
 
 1. Install [llvm-mos-sdk](https://github.com/llvm-mos/llvm-mos-sdk#getting-started).
+This e.g. downloads for linux and unpacks into `$HOME/llvm-mos`:
+~~~ sh
+wget https://github.com/llvm-mos/llvm-mos-sdk/releases/latest/download/llvm-mos-linux.tar.xz 
+tar xf llvm-mos-linux.tar.xz -C $HOME
+~~~
 2. Configure and make with:
 ~~~ sh
-cmake -DCMAKE_PREFIX_PATH=<llvm-mos-sdk-install-prefix> -B build/ mega65-libc/
-cd build/
+cmake -DCMAKE_PREFIX_PATH=$HOME/llvm-mos -B build/ mega65-libc/
+cd build
 make
-make test # if `xmega65` (Xemu) is in your path
+make test # if `xmega65` (Xemu) was in your patch when running cmake
 ~~~
 
-### Dependent CMake projects
+### Dependent projects
 
-`CMakeLists.txt` of a dependent project could look like this:
+It's trivial to write a classic `Makefile` for clang.
+For dependent CMake based projects, `CMakeLists.txt` could look like this:
 ~~~ cmake
 cmake_minimum_required(VERSION 3.5)
 set(LLVM_MOS_PLATFORM mega65)
