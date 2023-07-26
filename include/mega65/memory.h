@@ -1,3 +1,7 @@
+/**
+ * @file memory.h
+ * @brief Memory access functions
+ */
 #ifndef __MEGA65_MEMORY_H
 #define __MEGA65_MEMORY_H
 

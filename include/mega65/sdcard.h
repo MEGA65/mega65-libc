@@ -1,3 +1,7 @@
+/**
+ * @file sdcard.h
+ * @brief Function for accessing the SD card
+ */
 #ifndef __MEGA65_SDCARD_H
 #define __MEGA65_SDCARD_H
 

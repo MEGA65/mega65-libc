@@ -1,6 +1,10 @@
 /**
  * @file fcio.h
  * @brief Full colour mode i/o library for the MEGA65
+ *
+ * Takes care of displaying text and images in full colour and super-extended
+ * character modes. It has its own tutorial, located
+ * [here](https://steph72.github.io/fcio-tutorial).
  */
 
 #ifndef __MEGA65_FCIO_H

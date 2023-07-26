@@ -1,3 +1,8 @@
+/**
+ * @file fileio.h
+ * @brief File I/O functions
+ */
+
 #ifndef __MEGA65_FILEIO_H
 #define __MEGA65_FILEIO_H
 

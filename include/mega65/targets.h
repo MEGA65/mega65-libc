@@ -1,3 +1,8 @@
+/**
+ * @file targets.h
+ * @brief Target detection, e.g. Nexys4, Mega65R3, etc.
+ */
+
 #ifndef __MEGA65_TARGETS_H
 #define __MEGA65_TARGETS_H
 

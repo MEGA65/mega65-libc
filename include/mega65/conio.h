@@ -1,3 +1,8 @@
+/**
+ * @file conio.h
+ * @brief Console I/O support
+ */
+
 /*  CONIO.H style Text mode support  for the Mega65 libC
 
     Copyright (c) 2020-2021 Hernán Di Pietro

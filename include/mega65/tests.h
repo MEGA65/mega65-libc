@@ -1,3 +1,7 @@
+/**
+ * @file tests.h
+ * @brief Unit test functions for running on hardware and in Xemu
+ */
 #ifndef __MEGA65_TESTS_H
 #define __MEGA65_TESTS_H
 

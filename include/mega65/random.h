@@ -1,3 +1,7 @@
+/**
+ * @brief Random number function
+ * @file random.h
+ */
 #ifndef __MEGA65_RANDOM_H
 #define __MEGA65_RANDOM_H
 

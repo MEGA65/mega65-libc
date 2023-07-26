@@ -1,3 +1,8 @@
+/**
+ * @file dirent.h
+ * @brief Directory entry functions
+ */
+
 #ifndef __MEGA65_DIRENT_H
 #define __MEGA65_DIRENT_H
 

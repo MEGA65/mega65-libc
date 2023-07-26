@@ -1,3 +1,8 @@
+/**
+ * @file mouse.h
+ * @brief Simple mouse support for the Mega65 libC
+ */
+
 /*  Simple mouse support for the Mega65 libC
 
     Copyright (c) 2020 Paul Gardner-Stephen

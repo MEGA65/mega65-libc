@@ -1,4 +1,6 @@
 /**
+ * @example test-time.c
+ *
  * Tests for time.h
  *
  * This can be run in Xemu in testing mode with e.g.
