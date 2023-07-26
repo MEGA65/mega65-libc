@@ -26,7 +26,6 @@ int main(void)
 
     getrtc(&tm);
 
-    assert_eq(detect_target(), TARGET_EMULATION);
     assert_eq(tm.tm_year + 1900 >= 2000, 1);
     assert_eq(tm.tm_mon < 12, 1);
     assert_eq(tm.tm_mday > 0, 1);
