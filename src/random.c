@@ -1,14 +1,3 @@
-/*
-   Simple random number generator.
-
-   All MEGA65 models have a thermal noise register from the FPGA that
-   we can use to get some entropy from.
-
-   We can then use the hardware multiplier to get random values within
-   arbitrary range without needing to resort to a modulus operator.
-
-*/
-
 #include <mega65/memory.h>
 #include <mega65/random.h>
 #include <stdint.h>

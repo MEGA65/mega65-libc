@@ -11,7 +11,9 @@
 
 void toggle_rom_write_protect(void);
 
-/** Closes all open files */
+/**
+ * @brief Closes all open files
+ */
 void closeall(void);
 
 /**
