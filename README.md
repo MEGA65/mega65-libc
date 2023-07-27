@@ -25,9 +25,9 @@ Requires doxygen which can be installed with e.g.
 2. Build with
 ~~~sh
 cd mega65-libc
-ln -s Makefile_cc65 Makefile
-make # or `make -f Makefile_cc65` and skip the symlink
-make test # if `xmega65` (Xemu) is in your path
+ln -s Makefile_cc65 Makefile # or `make -f Makefile_cc65` below
+make
+make test                    # if `xmega65` (Xemu) is in your path
 ~~~
 ### Clang
 

@@ -1,6 +1,8 @@
 /**
  * @file conio.h
  * @brief Console I/O support
+ * @todo Convert `\m65lib*` to Doxygen tags. How/where is this used? The
+ * reference guide? Doxygen can also output XML which is easy to parse.
  */
 
 /*  CONIO.H style Text mode support  for the Mega65 libC
