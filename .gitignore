@@ -80,4 +80,5 @@ CTestTestfile.cmake
 .swp
 
 # doxygen
-html
+doc/html
+doc/xml

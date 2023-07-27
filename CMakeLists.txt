@@ -94,7 +94,7 @@ install(EXPORT mega65libc-export
 # build API documentation using doxygen
 if(DOXYGEN_FOUND)
     add_custom_target(doc
-        ${DOXYGEN_EXECUTABLE} -q ${CMAKE_SOURCE_DIR}/Doxyfile
+        ${DOXYGEN_EXECUTABLE} -q ${CMAKE_SOURCE_DIR}/doc/Doxyfile
         WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
         COMMENT "Generating API documentation with Doxygen" VERBATIM
     )

@@ -38,7 +38,7 @@ LIB_OBJECTS = \
 	src/tests.o \
 	src/time.o
 
-.PHONY: all clean cleanall test
+.PHONY: all clean cleanall test doc
 
 libmega65.a: $(LIB_OBJECTS)
 	$(AR65) a $@ $^
@@ -47,7 +47,7 @@ all: libmega65.a $(TESTS_PRGS)
 
 clean:
 	rm -f $(LIB_OBJECTS) $(TESTS_PRGS) tests/*.o
-	rm -rf work html
+	rm -rf work doc/html doc/xml
 
 cleanall: clean
 	rm -f libmega65.a
@@ -84,5 +84,5 @@ test: | $(TESTS_PRGS)
 
 # Build documentation
 doc:
-	$(DOXYGEN) -q
+	$(DOXYGEN) -q doc/Doxyfile
 

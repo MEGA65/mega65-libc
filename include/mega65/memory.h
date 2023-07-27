@@ -78,6 +78,7 @@ uint8_t lpeek_debounced(uint32_t address);
  * @brief Peek a byte from the given address using DMA copy
  * @param address 28-bit address
  * @return Single byte from the given address
+ * @note This is slower than lpeek()
  */
 uint8_t dma_peek(uint32_t address);
 
@@ -92,6 +93,7 @@ void lpoke(uint32_t address, uint8_t value);
  * @brief Poke a byte to the given address using DMA copy
  * @param address 28-bit address
  * @param value Single byte to write to the given address
+ * @note This is slower than lpoke()
  */
 void dma_poke(uint32_t address, uint8_t value);
 
