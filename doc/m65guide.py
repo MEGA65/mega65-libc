@@ -43,13 +43,15 @@ class FunctionRecord:
             print(f'\m65libretval{{{self.return_desc}}}')
             
 def find_section(db):
-    ''' Finds dictionary with function definitions '''
+    ''' Finds list with function definitions '''
     if 'doxygen' not in db:
         return {}
     for key, val in db['doxygen']['compounddef'].items():
         if key != 'sectiondef':
             continue
         if isinstance(val, dict):
+            if isinstance(val['memberdef'], dict):
+                return [val['memberdef']]
             return val['memberdef']
         if isinstance(val, list):
             for i in val:
@@ -75,26 +77,22 @@ def extract_arguments(detail):
 
 def extract_return(detail):
     ''' Extracts return value from detailed description'''
-    if detail is None:
-        return None
-    if not isinstance(detail['para'], dict):
-        return None
-    if 'simplesect' in detail['para']:
-        d = detail['para']['simplesect']
-        if isinstance(d, dict):
-            return d['para']
-        if isinstance(d, list):
-            for val in d:
-                if val['@kind'] == 'return':
-                    return val['para']
+    if detail is not None and isinstance(detail['para'], dict):
+        if 'simplesect' in detail['para']:
+            d = detail['para']['simplesect']
+            if isinstance(d, dict):
+                return d['para']
+            if isinstance(d, list):
+                for val in d:
+                    if val['@kind'] == 'return':
+                        return val['para']
     return None
 
 def extract_brief(i):
-    if not isinstance(i, dict):
-        return None
-    if i['@kind'] != 'function':
-        return None
-    return i['briefdescription']
+    if isinstance(i, dict) and i['@kind'] == 'function':
+        if i['briefdescription'] is not None:
+            return i['briefdescription']['para']
+    return None
 
 def parse_function(i):
     ''' Parses a single element and return a dictionary if a function is found '''
@@ -140,7 +138,7 @@ def main():
             prog='m65guide.py',
             description='Extract doxygen generated XML to m65lib documentation')
     parser.add_argument('files', nargs='+',
-                        help='input xml files - should end with *8h.xml')           # positional argument
+                        help='input xml files - should end with *8h.xml')
     args = parser.parse_args()
 
     for filename in match_files(args.files):
