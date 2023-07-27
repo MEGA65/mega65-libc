@@ -28,7 +28,7 @@ struct m65_tm {
     unsigned char tm_wday;  //!< Day of the week (0-6, Sunday = 0)
     int tm_yday;            //!< Day in the year (0-365, 1 Jan = 0)
     unsigned char tm_isdst; //!< Daylight saving time
-}
+};
 
 /// Get real-time clock
 void getrtc(struct m65_tm* tm);

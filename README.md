@@ -15,13 +15,20 @@ Simple C library for the MEGA65
 
 ### API Documentation
 
-Running `doxygen` builds the API documentation in `html/`.
+Running `make doc` builds API documentation in `html/`.
+Requires doxygen which can be installed with e.g.
+`apt install doxygen` or `brew install doxygen`.
 
 ### CC65
 
 1. Install [CC65](https://cc65.github.io) with e.g. `brew install cc65` or `apt install cc65`.
-2. Build by running `make -f Makefile_cc65` inside the `mega65-libc/` directory.
-
+2. Build with
+~~~sh
+cd mega65-libc
+ln -s Makefile_cc65 Makefile
+make # or `make -f Makefile_cc65` and skip the symlink
+make test # if `xmega65` (Xemu) is in your path
+~~~
 ### Clang
 
 1. Install [llvm-mos-sdk](https://github.com/llvm-mos/llvm-mos-sdk#getting-started).
@@ -32,10 +39,10 @@ tar xf llvm-mos-linux.tar.xz -C $HOME
 ~~~
 2. Configure and make with:
 ~~~sh
-cmake -DCMAKE_PREFIX_PATH=$HOME/llvm-mos -B build/ mega65-libc/
-cd build
+cd mega65-libc
+cmake -DCMAKE_PREFIX_PATH=$HOME/llvm-mos -B build
 make
-make test # if `xmega65` (Xemu) was in your patch when running cmake
+make test # if `xmega65` (Xemu) was in your path when running cmake
 ~~~
 
 #### Dependent projects

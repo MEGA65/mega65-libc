@@ -1,6 +1,7 @@
 
 SHELL:=/bin/bash
 XEMU=xmega65
+DOXYGEN=doxygen
 TESTS_DIR := tests
 TESTS_SRCS := $(wildcard $(TESTS_DIR)/*.c)
 TESTS_PRGS := $(TESTS_SRCS:.c=.prg)
@@ -46,7 +47,7 @@ all: libmega65.a $(TESTS_PRGS)
 
 clean:
 	rm -f $(LIB_OBJECTS) $(TESTS_PRGS) tests/*.o
-	rm -rf work
+	rm -rf work html
 
 cleanall: clean
 	rm -f libmega65.a
@@ -80,4 +81,8 @@ test: | $(TESTS_PRGS)
 	        fi; \
 	    done; \
         fi
+
+# Build documentation
+doc:
+	$(DOXYGEN) -q
 

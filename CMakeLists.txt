@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.5)
 set(LLVM_MOS_PLATFORM mega65)
 find_package(llvm-mos-sdk REQUIRED)
+find_package(Doxygen)
 project(mega65libc VERSION 0.3.0 LANGUAGES C ASM)
 
 enable_testing()
@@ -90,5 +91,14 @@ install(EXPORT mega65libc-export
     ${CMAKE_INSTALL_LIBDIR}/cmake/mega65libc
     )
 
-add_subdirectory(tests)
+# build API documentation using doxygen
+if(DOXYGEN_FOUND)
+    add_custom_target(doc
+        ${DOXYGEN_EXECUTABLE} -q ${CMAKE_SOURCE_DIR}/Doxyfile
+        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+        COMMENT "Generating API documentation with Doxygen" VERBATIM
+    )
+endif()
 
+# add tests directory
+add_subdirectory(tests)
