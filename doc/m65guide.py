@@ -30,6 +30,7 @@ class FunctionRecord:
     brief: str
     definition: str
     argsstring: str
+    return_desc: str
     parameters: list
         
     def print_m65_guide(self):
@@ -38,6 +39,8 @@ class FunctionRecord:
         print(f'\m65libsyntax{{{self.definition}{self.argsstring}}}')
         for arg in self.parameters:
             print('\m65libparam{{{}}}{{{}}}'.format(arg['name'], arg['desc']))
+        if isinstance(self.return_desc, str):
+            print(f'\m65libretval{{{self.return_desc}}}')
             
 def find_section(db):
     ''' Finds dictionary with function definitions '''
@@ -54,38 +57,62 @@ def find_section(db):
                     return i['memberdef']
     return {}
 
-def parse_function(i):
-    '''Parses a single element and return a dictionary if a function is found'''
+def extract_arguments(detail):
+    ''' Extracts function arguments from detailed description'''
+    if detail is None:
+        return []
+    if not isinstance(detail['para'], dict):
+        return []
+    if 'parameterlist' not in detail['para']:
+        return []
+    parameters = []
+    for p in detail['para']['parameterlist']['parameteritem']:
+        if isinstance(p, dict):
+            name = p['parameternamelist']['parametername']
+            desc = p['parameterdescription']['para']
+            parameters.append(dict(name=name, desc=desc))
+    return parameters
+
+def extract_return(detail):
+    ''' Extracts return value from detailed description'''
+    if detail is None:
+        return None
+    if not isinstance(detail['para'], dict):
+        return None
+    if 'simplesect' in detail['para']:
+        d = detail['para']['simplesect']
+        if isinstance(d, dict):
+            return d['para']
+        if isinstance(d, list):
+            for val in d:
+                if val['@kind'] == 'return':
+                    return val['para']
+    return None
+
+def extract_brief(i):
     if not isinstance(i, dict):
-        return
+        return None
     if i['@kind'] != 'function':
+        return None
+    return i['briefdescription']
+
+def parse_function(i):
+    ''' Parses a single element and return a dictionary if a function is found '''
+    brief = extract_brief(i)
+    if brief is None:
         return
-    brief = i['briefdescription']
-    if isinstance(brief, type(None)):
-        return
-    brief = brief['para']
     name = i['name']
     argsstring = i['argsstring']
     definition = i['definition']
     detail = i['detaileddescription']
     
     # Handle function arguments
-    parameters = []
-    if detail is None:
-        return
-    if not isinstance(detail['para'], dict):
-        return
-    if not 'parameterlist' in detail['para']:
-        return
-    for p in detail['para']['parameterlist']['parameteritem']:
-        if isinstance(p, dict):
-            name = p['parameternamelist']['parametername']
-            desc = p['parameterdescription']['para']
-            parameters.append(dict(name=name, desc=desc))
+    return_desc = extract_return(detail)
+    parameters = extract_arguments(detail)
 
-    return FunctionRecord(name=name, definition=definition, brief=brief,
-                               parameters=parameters, argsstring=argsstring)
-
+    return FunctionRecord(name = name, definition = definition, brief = brief,
+                               parameters = parameters, argsstring = argsstring,
+                               return_desc = return_desc)
 
 def parse_xml(file):
     '''Parses a single XML file and prints the output'''
@@ -112,7 +139,7 @@ def main():
     parser = argparse.ArgumentParser(
             prog='m65guide.py',
             description='Extract doxygen generated XML to m65lib documentation')
-    parser.add_argument('-f', '--files', nargs='+', required=True,
+    parser.add_argument('files', nargs='+',
                         help='input xml files - should end with *8h.xml')           # positional argument
     args = parser.parse_args()
 
