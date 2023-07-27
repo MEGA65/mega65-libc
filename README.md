@@ -72,6 +72,18 @@ CPMAddPackage(NAME mega65libc GITHUB_REPOSITORY mega65/mega65-libc GIT_TAG maste
 target_link_libraries(<mytarget> mega65libc)
 ~~~
 
+### Contributing
+
+Contributions are very welcome; please make a pull-request on github.
+The repository contains a `.clang-format` file to help with formatting.
+It is highly recommended to install our [pre-commit](https://pre-commit.com) hooks
+which will format/lint upon `git commit`:
+~~~sh
+pip install pre-commit
+cd mega65-libc/
+pre-commit install
+~~~
+
 ## Function descriptions
 
 ### FAT32 File Access
