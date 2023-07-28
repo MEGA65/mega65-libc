@@ -1,0 +1,11 @@
+repos:
+- repo: https://github.com/astral-sh/ruff-pre-commit
+  rev: v0.0.280
+  hooks:
+  - id: ruff
+    args: [doc/m65guide.py]
+- repo: https://github.com/pre-commit/mirrors-clang-format
+  rev: v16.0.6
+  hooks:
+  - id: clang-format
+
