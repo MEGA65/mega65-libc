@@ -13,12 +13,6 @@ Simple C library for the MEGA65
 
 ## Development and building
 
-### API Documentation
-
-Running `make doc` builds API documentation in `html/`.
-Requires doxygen which can be installed with e.g.
-`apt install doxygen` or `brew install doxygen`.
-
 ### CC65
 
 1. Install [CC65](https://cc65.github.io) with e.g. `brew install cc65` or `apt install cc65`.
@@ -72,11 +66,23 @@ CPMAddPackage(NAME mega65libc GITHUB_REPOSITORY mega65/mega65-libc GIT_TAG maste
 target_link_libraries(<mytarget> mega65libc)
 ~~~
 
+### API Documentation
+
+Building the docs requires `doxygen`; install with e.g. `apt install doxygen` or `brew install doxygen`.
+Output is generated in HTML, LaTeX, and XML formats.
+LaTeX input for the MEGA65 User Guide can be extracted from the XML output:
+~~~sh
+make doc              # generates html, xml, latex in doc/
+cd doc/
+pip install xmltodict # required to parse XML output
+python m65guide.py    # LaTeX output for MEGA65 user-guide
+~~~
+
 ### Contributing
 
-Contributions are very welcome; please make a pull-request on github.
-The repository contains a `.clang-format` file to help with formatting.
-It is highly recommended to install our [pre-commit](https://pre-commit.com) hooks
+Contributions are most welcome; please make a pull-request on github.
+To help with formatting, a `.clang-format` file is provide.
+It's highly recommended to install our [pre-commit](https://pre-commit.com) hooks
 which will format/lint upon `git commit`:
 ~~~sh
 pip install pre-commit

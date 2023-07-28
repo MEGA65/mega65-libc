@@ -15,7 +15,7 @@
 # limitations under the license.
 
 # This script extracts doxygen generated XML files and prints
-# the output in a format that can be used in the MEGA65 LaTeX guide.
+# the output in LaTeX format that can be used in the MEGA65 LaTeX guide.
 # Relevant XML files are name *8h.xml.
 
 import xmltodict
@@ -32,9 +32,28 @@ class FunctionRecord:
     argsstring: str
     return_desc: str
     parameters: list
+
+    def print_latex(self):
+        ''' Print in LaTeX syntax for the MEGA65 user guide '''
+        print(f'\subsection{{{self.name}}}')
+        print(f'\index{{{self.name}}}')
+        print(r'\begin{description}[leftmargin=2.4cm,style=nextline]')
+        print(f'\\item [Description:] {{{self.brief}}}')
+        print(f'\\item [Syntax:] \\stw{{{self.definition}{self.argsstring};}}')
+        if len(self.parameters) > 0:
+            print(r'\begin{description}')
+            print(r'\item [Parameters:]')
+            for arg in self.parameters:
+                # \item [{\em addr}:] {The address to set as start of screen RAM}
+                print(f'\\item [{{\\em {arg["name"]}}}:] {{{arg["desc"]}}}')
+            print(r'\end{description}')
+        if self.return_desc is not None and isinstance(self.return_desc, str):
+            print(f'\\item [Return Value:] {{{self.return_desc}}}')
+
+        print(r'\end{description}')
         
     def print_m65_guide(self):
-        ''' Print in syntax used for the MEGA65 LaTeX guide '''
+        ''' Print in syntax used for the MEGA65 LaTeX guide (Unused!)'''
         print(f'\m65libsummary{{{self.name}}}{{{self.brief}}}')
         print(f'\m65libsyntax{{{self.definition}{self.argsstring}}}')
         for arg in self.parameters:
@@ -119,7 +138,7 @@ def parse_xml(file):
     for i in members:
         func = parse_function(i)
         if func is not None:
-            func.print_m65_guide()
+            func.print_latex()
             print()
 
 def match_files(files):
