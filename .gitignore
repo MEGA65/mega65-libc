@@ -82,3 +82,4 @@ CTestTestfile.cmake
 # doxygen
 doc/html
 doc/xml
+doc/latex
