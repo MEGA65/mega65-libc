@@ -40,10 +40,10 @@ LIB_OBJECTS = \
 
 .PHONY: all clean cleanall test doc
 
+all: libmega65.a
+
 libmega65.a: $(LIB_OBJECTS)
 	$(AR65) a $@ $^
-
-all: libmega65.a $(TESTS_PRGS)
 
 clean:
 	rm -f $(LIB_OBJECTS) $(TESTS_PRGS) tests/*.o
