@@ -70,13 +70,14 @@ target_link_libraries(<mytarget> mega65libc)
 
 Building the docs requires `doxygen`; install with e.g. `apt install doxygen` or `brew install doxygen`.
 Output is generated in HTML, LaTeX, and XML formats.
-LaTeX input for the MEGA65 User Guide can be extracted from the XML output:
 ~~~sh
-make doc              # generates html, xml, latex in doc/
-cd doc/
-pip install xmltodict # required to parse XML output
-python m65guide.py    # LaTeX output for MEGA65 user-guide
+make doc # outputs to html, latex, xml in doc/
 ~~~
+
+For use with the [MEGA65 User Guide](https://github.com/mega65/mega65-user-guide),
+the XML output can be converted to custom LaTeX using `make guide`. Output is
+placed in `doc/api-*.tex`.
+This step requires `pip install xmltodict`.
 
 ### Contributing
 

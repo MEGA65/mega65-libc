@@ -86,3 +86,14 @@ test: | $(TESTS_PRGS)
 doc:
 	$(DOXYGEN) -q doc/Doxyfile
 
+guide: doc
+	python3 doc/m65guide.py doc/xml/conio_8h.xml > doc/api-conio.tex
+	python3 doc/m65guide.py doc/xml/dirent_8h.xml > doc/api-dirent.tex
+	python3 doc/m65guide.py doc/xml/fcio_8h.xml > doc/api-fcio.tex
+	python3 doc/m65guide.py doc/xml/fileio_8h.xml > doc/api-fileio.tex
+	python3 doc/m65guide.py doc/xml/hal_8h.xml > doc/api-hal.tex
+	python3 doc/m65guide.py doc/xml/memory_8h.xml > doc/api-memory.tex
+	python3 doc/m65guide.py doc/xml/random_8h.xml > doc/api-random.tex
+	python3 doc/m65guide.py doc/xml/tests_8h.xml > doc/api-tests.tex
+
+
