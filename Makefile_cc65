@@ -39,7 +39,7 @@ LIB_OBJECTS = \
 
 .PHONY: all clean cleanall test
 
-all: libmega65.a
+all: libmega65.a ${TESTS_PRGS}
 
 libmega65.a: $(LIB_OBJECTS)
 	$(AR65) a $@ $^
