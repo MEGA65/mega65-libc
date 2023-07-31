@@ -1,12 +1,13 @@
 	.global _opendir, _readdir, _closedir	
 	
-	;; closedir takes file descriptor as argument (appears in A)
+	.section code,"a"
+
+	;; closedir takes file descriptor from X
 _closedir:
 	TAX
 	LDA #$16
 	STA $D640
 	NOP
-	LDX #$00
 	RTS
 	
 	;; Opendir takes no arguments and returns File descriptor in A
@@ -14,7 +15,6 @@ _opendir:
 	LDA #$12
 	STA $D640
 	NOP
-	LDX #$00
 	RTS
 
 	;; readdir takes the file descriptor returned by opendir as argument
@@ -49,10 +49,9 @@ l1:	sta _readdir_dirent,x
 	NOP
 
 	bcs readDirSuccess
+	sta __rc2
+	ldx __rc3
 
-	;;  Return end of directory
-	lda #$00
-	ldx #$00
 	RTS
 
 readDirSuccess:
