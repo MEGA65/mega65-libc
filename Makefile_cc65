@@ -1,7 +1,6 @@
 
 SHELL:=/bin/bash
 XEMU=xmega65
-DOXYGEN=doxygen
 TESTS_DIR := tests
 TESTS_SRCS := $(wildcard $(TESTS_DIR)/*.c)
 TESTS_PRGS := $(TESTS_SRCS:.c=.prg)
@@ -38,16 +37,16 @@ LIB_OBJECTS = \
 	src/tests.o \
 	src/time.o
 
-.PHONY: all clean cleanall test doc
+.PHONY: all clean cleanall test
 
-all: libmega65.a
+all: libmega65.a ${TESTS_PRGS}
 
 libmega65.a: $(LIB_OBJECTS)
 	$(AR65) a $@ $^
 
 clean:
 	rm -f $(LIB_OBJECTS) $(TESTS_PRGS) tests/*.o
-	rm -rf work doc/html doc/xml
+	rm -rf work
 
 cleanall: clean
 	rm -f libmega65.a
@@ -81,19 +80,4 @@ test: | $(TESTS_PRGS)
 	        fi; \
 	    done; \
         fi
-
-# Build documentation
-doc:
-	$(DOXYGEN) -q doc/Doxyfile
-
-guide: doc
-	python3 doc/m65guide.py doc/xml/conio_8h.xml > doc/api-conio.tex
-	python3 doc/m65guide.py doc/xml/dirent_8h.xml > doc/api-dirent.tex
-	python3 doc/m65guide.py doc/xml/fcio_8h.xml > doc/api-fcio.tex
-	python3 doc/m65guide.py doc/xml/fileio_8h.xml > doc/api-fileio.tex
-	python3 doc/m65guide.py doc/xml/hal_8h.xml > doc/api-hal.tex
-	python3 doc/m65guide.py doc/xml/memory_8h.xml > doc/api-memory.tex
-	python3 doc/m65guide.py doc/xml/random_8h.xml > doc/api-random.tex
-	python3 doc/m65guide.py doc/xml/tests_8h.xml > doc/api-tests.tex
-
 
