@@ -1,5 +1,9 @@
 
 SHELL:=/bin/bash
+XEMU=xmega65
+TESTS_DIR := tests
+TESTS_SRCS := $(wildcard $(TESTS_DIR)/*.c)
+TESTS_PRGS := $(TESTS_SRCS:.c=.prg)
 
 ifdef USE_LOCAL_CC65
     # use locally installed binary (requires 'cc65,ld65,etc' to be in the $PATH)
@@ -10,10 +14,11 @@ else
 endif
 
 CC65=$(CC65_PREFIX)cc65
+CL65=$(CC65_PREFIX)cl65
 CA65=$(CC65_PREFIX)ca65 --cpu 4510
 AR65=$(CC65_PREFIX)ar65
 
-CFLAGS=-O -t c64 -W +unused-param,+error,+unused-label,+no-effect,+unused-var,+no-effect -I include/
+CFLAGS=-O -t c64 -I include/
 
 LIB_OBJECTS = \
 	src/cc65/dirent.o \
@@ -32,20 +37,19 @@ LIB_OBJECTS = \
 	src/tests.o \
 	src/time.o
 
-.PHONY: all clean cleanall
+.PHONY: all clean cleanall test
 
-all: libmega65.a
+all: libmega65.a ${TESTS_PRGS}
+
+libmega65.a: $(LIB_OBJECTS)
+	$(AR65) a $@ $^
 
 clean:
-	rm -f src/*.o
-	rm -f src/cc65/*.o
+	rm -f $(LIB_OBJECTS) $(TESTS_PRGS) tests/*.o
 	rm -rf work
 
 cleanall: clean
 	rm -f libmega65.a
-
-libmega65.a: $(LIB_OBJECTS)
-	$(AR65) a $@ $^
 
 src/cc65/%.o: src/cc65/%.s
 	$(CA65) -o $@ $<
@@ -56,3 +60,24 @@ src/%.o: src/%.c
 	fi
 	$(CC65) $(CFLAGS) -o work/$*.s $<
 	$(CA65) -o $@ work/$*.s
+
+# Unit tests using Xemu in "testing" mode
+#
+# - Xemu `xmega65` must be in your path
+# - Xemu's return code is controlled by register 0xD6CF
+# - All tests are in the `tests/` directory
+tests/%.prg: tests/%.c libmega65.a
+	$(CL65) $(CFLAGS) $< -o $@ libmega65.a
+test: | $(TESTS_PRGS)
+	@if ! command -v $(XEMU) &> /dev/null; then \
+	    echo "Cannot run tests as xmega65 (Xemu) is not in your path."; \
+	else \
+	    for test in $(TESTS_PRGS); do \
+	        if $(XEMU) -testing -sleepless -headless -model 3 -prg $$test &> /dev/null; then \
+                    echo "Test passed: $$test"; \
+	        else \
+	            echo "Test FAILED: $$test"; \
+	        fi; \
+	    done; \
+        fi
+

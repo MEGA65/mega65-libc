@@ -8,18 +8,9 @@
  * If a test fails, xemu will exit with a non-zero return code.
  */
 #include <mega65/memory.h>
+#include <mega65/tests.h>
 #include <stdlib.h>
 #include <stdint.h>
-
-#define XEMU_CONTROL 0xD6CF
-#define XEMU_QUIT 0x42
-
-void xemu_exit(int exit_code)
-{
-    POKE(XEMU_CONTROL, (uint8_t)exit_code);
-    POKE(XEMU_CONTROL, XEMU_QUIT);
-    exit(exit_code);
-}
 
 #define assert_eq(A, B)                                                        \
     if (A != B)                                                                \
@@ -27,6 +18,8 @@ void xemu_exit(int exit_code)
 
 int main(void)
 {
+    mega65_io_enable();
+
     // Integer sizes
     assert_eq(sizeof(uint8_t), 1);
     assert_eq(sizeof(unsigned char), 1);
@@ -44,5 +37,6 @@ int main(void)
 
     assert_eq(INT16_MAX, 0x7FFF);
     assert_eq(INT32_MAX, 0x7FFFFFFF);
+
     xemu_exit(EXIT_SUCCESS);
 }

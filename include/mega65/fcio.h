@@ -1,9 +1,7 @@
-
-/*! @file fcio.h
-    @brief Full colour mode i/o library for the MEGA65
-
-    Details.
-*/
+/**
+ * @file fcio.h
+ * @brief Full colour mode i/o library for the MEGA65
+ */
 
 #ifndef __MEGA65_FCIO_H
 #define __MEGA65_FCIO_H

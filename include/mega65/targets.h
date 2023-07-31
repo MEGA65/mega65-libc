@@ -1,6 +1,8 @@
 #ifndef __MEGA65_TARGETS_H
 #define __MEGA65_TARGETS_H
 
+#include <stdint.h>
+
 #define TARGET_UNKNOWN 0
 #define TARGET_MEGA65R1 1
 #define TARGET_MEGA65R2 2
@@ -12,7 +14,9 @@
 #define TARGET_NEXYS4DDRWIDGET 0x42
 #define TARGET_WUKONG 0xFD
 #define TARGET_SIMULATION 0xFE
+#define TARGET_EMULATION 0xFF //!< Emulator like Xemu
 
-unsigned char detect_target(void);
+/// Detects the target on which we're running
+uint8_t detect_target(void);
 
 #endif // __MEGA65_TARGETS_H

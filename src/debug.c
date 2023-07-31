@@ -1,22 +1,21 @@
 #include <mega65/memory.h>
 
 unsigned char the_char;
-void debug_msg(char* m)
+void debug_msg(char* msg)
 {
-    // Write debug message to serial monitor
-    while (*m) {
-        the_char = *m;
+    while (*msg) {
+        the_char = *msg;
 #ifdef __CC65__
         __asm__("LDA %v", the_char);
         __asm__("STA $D643");
         __asm__("NOP");
-        m++;
 #else
         asm volatile("lda the_char\n"
                      "sta $d643\n"
                      "nop" ::
                          : "a");
 #endif
+        msg++;
     }
 #ifdef __CC65__
     __asm__("LDA #$0d");

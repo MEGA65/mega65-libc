@@ -1,3 +1,4 @@
+
 /*
   The MEGA65 really only has a Real-Time Clock (RTC), so we just have handy
   functions for that.
@@ -10,18 +11,20 @@
 #include <mega65/time.h>
 #include <mega65/targets.h>
 #include <mega65/hal.h>
-#include <stdio.h>
 
 #define I2CDELAY 5000L
 
-unsigned char bcd_work;
+uint8_t bcd_work;
 
-/*
-  While the double dabble algorithm is more time efficient, we mostly care about
-  saving space, so use a simple loop.  Getting/setting time should not be called
-  particularly often.
+/**
+ * @brief Convert a binary value to binary coded decimal (BCD)
+ * @return uint8_t BCD value
+ *
+ * While the double dabble algorithm is more time efficient, we mostly care
+ * about saving space, so use a simple loop.  Getting/setting time should not be
+ * called particularly often.
  */
-unsigned char tobcd(unsigned char in)
+uint8_t tobcd(uint8_t in)
 {
     bcd_work = 0;
     while (in > 9) {
@@ -32,7 +35,12 @@ unsigned char tobcd(unsigned char in)
     return bcd_work;
 }
 
-unsigned char unbcd(unsigned char in)
+/**
+ * @brief Convert a binary coded decimal (BCD) value to binary
+ * @param in Input BCD value
+ * @return unsigned char Decimal value
+ */
+uint8_t unbcd(uint8_t in)
 {
     bcd_work = 0;
     while (in & 0xf0) {
@@ -59,6 +67,7 @@ void getrtc(struct m65_tm* tm)
     tm->tm_isdst = 0;
 
     switch (detect_target()) {
+    case TARGET_EMULATION:
     case TARGET_MEGA65R2:
     case TARGET_MEGA65R3:
         tm->tm_sec = unbcd(lpeek_debounced(0xffd7110));
@@ -129,7 +138,7 @@ void setrtc(struct m65_tm* tm)
         lpoke(0xffd7114, tobcd(tm->tm_mon));
         if (tm->tm_year >= 100 && tm->tm_year <= 355) {
             usleep(I2CDELAY);
-            lpoke(0xffd7115, tobcd(tm->tm_year - 100));
+            lpoke(0xffd7115, tobcd((uint8_t)(tm->tm_year - 100)));
         }
         usleep(I2CDELAY);
         lpoke(0xffd7116, tobcd(tm->tm_wday));

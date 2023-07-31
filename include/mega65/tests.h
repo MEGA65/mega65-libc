@@ -11,6 +11,17 @@
 #define TEST_LOG 0xfd
 #define TEST_SETNAME 0xfe
 #define TEST_DONEALL 0xff
+#define XEMU_CONTROL 0xD6CF
+#define XEMU_QUIT 0x42
+
+/**
+ * @brief Quits Xemu with given exit code
+ * @param exit_code Exit code passed to Xemu, e.g. EXIT_SUCCESS or EXIT_FAILURE
+ *
+ * Xemu must be run in `-testing` mode for this to have any effect and
+ * also make sure to call `mega65_io_enable()` before calling this function.
+ */
+void xemu_exit(int exit_code);
 
 // convenience methods
 

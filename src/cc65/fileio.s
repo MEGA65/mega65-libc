@@ -15,29 +15,6 @@ mega65_io_enable:
 	sta $d02f
 	rts
 	
-cc65_args_read_ptr1_16:	
-        ;; sp here is the ca65 sp ZP variable, not the stack pointer of a 4510
-        .p02
-	
-        lda (sp),y
-        sta ptr1
-        iny
-        lda (sp),y
-        .p4510
-        sta ptr1+1
-	iny
-	rts
-        
-cc65_args_read_tmp1_8:	
-        ;; sp here is the ca65 sp ZP variable, not the stack pointer of a 4510
-        .p02
-        lda (sp),y
-        sta tmp1
-        iny
-        .p4510
-	rts
-        
-
 cc65_copy_ptr1_string_to_0100:	
         ;; Copy file name
 	phy

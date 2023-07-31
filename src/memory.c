@@ -1,5 +1,4 @@
 #include <mega65/memory.h>
-#include <stdio.h>
 
 #ifdef __clang__
 volatile struct dmagic_dmalist dmalist;
@@ -35,7 +34,7 @@ uint8_t dma_peek(uint32_t address)
 
     dmalist.option_0b = 0x0b;
     dmalist.option_80 = 0x80;
-    dmalist.source_mb = (address >> 20);
+    dmalist.source_mb = (uint8_t)(address >> 20);
     dmalist.option_81 = 0x81;
     dmalist.dest_mb = 0x00; // dma_byte lives in 1st MB
     dmalist.option_85 = 0x85;
@@ -43,7 +42,7 @@ uint8_t dma_peek(uint32_t address)
     dmalist.end_of_options = 0x00;
     dmalist.sub_cmd = 0x00;
 
-    dmalist.command = 0x00; // copy
+    dmalist.command = DMA_COPY_CMD;
     dmalist.count = 1;
     dmalist.source_addr = address & 0xffff;
     dmalist.source_bank = (address >> 16) & 0x0f;
@@ -87,14 +86,14 @@ void dma_poke(uint32_t address, uint8_t value)
     dmalist.option_80 = 0x80;
     dmalist.source_mb = 0x00; // dma_byte lives in 1st MB
     dmalist.option_81 = 0x81;
-    dmalist.dest_mb = (address >> 20);
+    dmalist.dest_mb = (uint8_t)(address >> 20);
     dmalist.option_85 = 0x85;
     dmalist.dest_skip = 1;
     dmalist.end_of_options = 0x00;
     dmalist.sub_cmd = 0x00;
 
     dma_byte = value;
-    dmalist.command = 0x00; // copy
+    dmalist.command = DMA_COPY_CMD;
     dmalist.count = 1;
     dmalist.source_addr = (uint16_t)&dma_byte;
     dmalist.source_bank = 0;
@@ -110,15 +109,15 @@ void lcopy(
 {
     dmalist.option_0b = 0x0b;
     dmalist.option_80 = 0x80;
-    dmalist.source_mb = source_address >> 20;
+    dmalist.source_mb = (uint8_t)(source_address >> 20);
     dmalist.option_81 = 0x81;
-    dmalist.dest_mb = (destination_address >> 20);
+    dmalist.dest_mb = (uint8_t)(destination_address >> 20);
     dmalist.option_85 = 0x85;
     dmalist.dest_skip = 1;
     dmalist.end_of_options = 0x00;
     dmalist.sub_cmd = 0x00;
 
-    dmalist.command = 0x00; // copy
+    dmalist.command = DMA_COPY_CMD;
     dmalist.count = count;
     dmalist.sub_cmd = 0;
     dmalist.source_addr = source_address & 0xffff;
@@ -144,12 +143,12 @@ void lfill(uint32_t destination_address, uint8_t value, uint16_t count)
     dmalist.option_80 = 0x80;
     dmalist.source_mb = 0x00;
     dmalist.option_81 = 0x81;
-    dmalist.dest_mb = destination_address >> 20;
+    dmalist.dest_mb = (uint8_t)(destination_address >> 20);
     dmalist.option_85 = 0x85;
     dmalist.dest_skip = 1;
     dmalist.end_of_options = 0x00;
 
-    dmalist.command = 0x03; // fill
+    dmalist.command = DMA_FILL_CMD;
     dmalist.sub_cmd = 0;
     dmalist.count = count;
     dmalist.source_addr = value;
@@ -164,19 +163,19 @@ void lfill(uint32_t destination_address, uint8_t value, uint16_t count)
     return;
 }
 
-void lfill_skip(uint32_t destination_address, uint8_t value, uint16_t count,
-    uint8_t skip)
+void lfill_skip(
+    uint32_t destination_address, uint8_t value, uint16_t count, uint8_t skip)
 {
     dmalist.option_0b = 0x0b;
     dmalist.option_80 = 0x80;
     dmalist.source_mb = 0x00;
     dmalist.option_81 = 0x81;
-    dmalist.dest_mb = destination_address >> 20;
+    dmalist.dest_mb = (uint8_t)(destination_address >> 20);
     dmalist.option_85 = 0x85;
     dmalist.dest_skip = skip;
     dmalist.end_of_options = 0x00;
 
-    dmalist.command = 0x03; // fill
+    dmalist.command = DMA_FILL_CMD;
     dmalist.sub_cmd = 0;
     dmalist.count = count;
     dmalist.source_addr = value;
