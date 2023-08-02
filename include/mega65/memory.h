@@ -46,6 +46,9 @@ extern uint8_t dma_byte;
 
 /**
  * @brief Enable Mega65 mode
+ *
+ * This does nothing unless compiling for a C64 target, i.e.
+ * if the `__C64__` macro is defined.
  */
 void mega65_io_enable(void);
 
