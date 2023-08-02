@@ -2,6 +2,9 @@
 
 HYPPO_GETVERSION = $00;
 HYPPO_CHDIR = $0C;
+HYPPO_OPENDIR = $12;; output file descriptor in A
+HYPPO_READDIR = $14; Input: X=file descriptor; Y MSB of destination
+HYPPO_CLOSEDIR = $16; file handle in X
 HYPPO_OPENFILE = $18;
 HYPPO_READFILE = $1A;
 HYPPO_CLOSEFILE = $20;
