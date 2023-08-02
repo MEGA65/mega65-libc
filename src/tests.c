@@ -25,10 +25,9 @@ void unit_test_report(
     __asm__("STA $D643");
     __asm__("NOP");
 #else
-    asm volatile("LDA __tests_out\n"
-                 "STA $D643\n"
-                 "NOP" ::
-                     : "a");
+    asm volatile("st%0 $D643\n"
+                 "nop" ::"a"(__tests_out)
+                 : "a");
 #endif
     __tests_out = issue >> 8;
 #ifdef __CC65__
@@ -36,10 +35,9 @@ void unit_test_report(
     __asm__("STA $D643");
     __asm__("NOP");
 #else
-    asm volatile("LDA __tests_out\n"
-                 "STA $D643\n"
-                 "NOP" ::
-                     : "a");
+    asm volatile("st%0 $D643\n"
+                 "nop" ::"a"(__tests_out)
+                 : "a");
 #endif
     __tests_out = sub;
 #ifdef __CC65__
@@ -47,10 +45,9 @@ void unit_test_report(
     __asm__("STA $D643");
     __asm__("NOP");
 #else
-    asm volatile("LDA __tests_out\n"
-                 "STA $D643\n"
-                 "NOP" ::
-                     : "a");
+    asm volatile("st%0 $D643\n"
+                 "nop" ::"a"(__tests_out)
+                 : "a");
 #endif
     __tests_out = status;
 #ifdef __CC65__
@@ -58,10 +55,9 @@ void unit_test_report(
     __asm__("STA $D643");
     __asm__("NOP");
 #else
-    asm volatile("LDA __tests_out\n"
-                 "STA $D643\n"
-                 "NOP" ::
-                     : "a");
+    asm volatile("st%0 $D643\n"
+                 "nop" ::"a"(__tests_out)
+                 : "a");
 #endif
 }
 
@@ -79,10 +75,9 @@ void _unit_test_msg(char* msg, char cmd)
         __asm__("STA $D643");
         __asm__("NOP");
 #else
-        asm volatile("LDA __tests_out\n"
-                     "STA $D643\n"
-                     "NOP" ::
-                         : "a");
+        asm volatile("st%0 $D643\n"
+                     "nop" ::"a"(__tests_out)
+                     : "a");
 #endif
     }
 
