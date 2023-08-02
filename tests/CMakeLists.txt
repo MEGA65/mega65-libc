@@ -1,5 +1,5 @@
 find_program(XEMU NAMES xmega65 xmega65.native)
-set(XEMU_ARGS "-headless -sleepless -testing -model 3")
+set(XEMU_ARGS "-headless -sleepless -testing -model 3 -hyperserialascii -hyperdebug")
 
 function(TEST NAME)
     add_executable(${NAME} ${NAME}.c)
