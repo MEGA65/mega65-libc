@@ -11,10 +11,10 @@ void debug_msg(char* msg)
         the_char = *msg;
         __asm__("LDA %v", the_char);
         __asm__("STA $D643");
-        __asm__("NOP");
+        __asm__("CLV");
 #else
         asm volatile("st%0 $d643\n"
-                     "nop" ::"a"(*msg)
+                     "clv\n" ::"a"(*msg)
                      : "a");
 #endif
         msg++;
@@ -22,17 +22,17 @@ void debug_msg(char* msg)
 #ifdef __CC65__
     __asm__("LDA #$0d");
     __asm__("STA $D643");
-    __asm__("NOP");
+    __asm__("CLV");
     __asm__("LDA #$0a");
     __asm__("STA $D643");
-    __asm__("NOP");
+    __asm__("CLV");
 #else
     asm volatile("lda #$0d\n"
                  "sta $d643\n"
-                 "nop\n"
+                 "clv\n"
                  "lda #$0a\n"
                  "sta $d643\n"
-                 "nop" ::
+                 "clv\n" ::
                      : "a");
 #endif
 }

@@ -28,26 +28,26 @@ NameCopyLoop:
 	rts	
 
 setname_0100:
-        ;;  Call dos_setname()
-        ldy #>$0100
-        ldx #<$0100
+	;;  Call dos_setname()
+	ldy #>$0100
+	ldx #<$0100
 	jsr mega65_io_enable
-        lda #$2E                ; dos_setname Hypervisor trap
-        STA $D640               ; Do hypervisor trap
-        NOP                     ; Wasted instruction slot required following hyper trap instruction
-        ;; XXX Check for error (carry would be clear)
+	lda #$2E                ; dos_setname Hypervisor trap
+	sta $D640               ; Do hypervisor trap
+	clv                     ; Wasted instruction slot required following hyper trap instruction
+	;; XXX Check for error (carry would be clear)
 	bcs setname_ok
 	lda #$ff
 	rts
 setname_ok:
-	RTS
+	rts
 	
 	;; closeall
 closeall:
 	jsr mega65_io_enable
 	LDA #$22
 	STA $D640
-	NOP
+	CLV
 	;Not needed on llvm-mos
 	;LDX #$00
 	RTS
@@ -56,7 +56,7 @@ toggle_rom_write_protect:
 	jsr mega65_io_enable
 	lda #$70
 	STA $d640
-	nop
+	clv
 	;ldx #0
 	rts
 	
@@ -74,7 +74,7 @@ read512:
 	jsr mega65_io_enable
 	LDA #$1A
 	STA $D640
-	NOP
+	clv
 	;LDX #$00
 
 	;; Number of bytes read returned in X and Y
@@ -146,12 +146,12 @@ open:
 	; Look for file on FAT file system via hypervisor calls
 	lda #$34
 	sta $d640
-	nop
+	clv
 	bcs open_file_exists
 
 	;; No such file.
 	lda #$ff
-	tax
+	;tax
 	rts
 
 open_file_exists:	
@@ -159,11 +159,11 @@ open_file_exists:
 	jsr mega65_io_enable
 	lda #$00
 	sta $d640
-	nop
+	clv
 	
 	LDA #$18
 	STA $D640
-	NOP
+	clv
 
 	;clearing X not needed on llvm-mos	
 	;LDX #$00
@@ -174,7 +174,7 @@ close:
 	jsr mega65_io_enable
 	LDA #$20
 	STA $D640
-	NOP
+	clv
 	;LDX #$00
 	RTS
 
@@ -183,9 +183,9 @@ chdirroot:
 
 	lda #$3C
 	sta $d640
-	nop
+	clv
 
-	;ldx #$00
+	ldx #$00
 	rts
 	
 chdir:
@@ -202,7 +202,7 @@ chdir:
 	; Look for file on FAT file system via hypervisor calls
 	lda #$34
 	sta $d640
-	nop
+	clv
 	bcs chdir_file_exists
 
 	;; No such file.
@@ -215,11 +215,11 @@ chdir_file_exists:
 	jsr mega65_io_enable
 	lda #$0C
 	sta $d640
-	nop
+	clv
 	
 	LDA #$18
 	STA $D640
-	NOP
+	clv
 	
 	;; Not needed on llvm-mos
 	;;LDX #$00

@@ -1,4 +1,9 @@
 {
         "clang-tidy.buildPath": "build",
-        "editor.formatOnSave": true
+        "editor.formatOnSave": true,
+        "files.associations": {
+                "memory.h": "c",
+                "cstdlib": "c",
+                "fileio.h": "c"
+        }
 }

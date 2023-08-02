@@ -188,11 +188,11 @@ void lfill_skip(
 
 void mega65_io_enable(void)
 {
-#ifdef __C64__
-    // Gate C65 IO enable
+    // #ifdef __C64__
+    //  Gate C65 IO enable
     POKE(0xd02fU, 0x47);
     POKE(0xd02fU, 0x53);
     // Force to full speed
     POKE(0, 65);
-#endif
+    // #endif
 }

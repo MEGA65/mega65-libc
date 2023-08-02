@@ -12,10 +12,6 @@
 #include <stdlib.h>
 #include <stdint.h>
 
-#define assert_eq(A, B)                                                        \
-    if (A != B)                                                                \
-    xemu_exit(EXIT_FAILURE)
-
 int main(void)
 {
     mega65_io_enable();

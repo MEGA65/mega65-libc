@@ -13,10 +13,6 @@
 #include <mega65/targets.h>
 #include <stdlib.h>
 
-#define assert_eq(A, B)                                                        \
-    if (A != B)                                                                \
-    xemu_exit(EXIT_FAILURE)
-
 struct m65_tm tm;
 
 int main(void)

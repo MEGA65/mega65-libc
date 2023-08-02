@@ -10,10 +10,7 @@
 #include <mega65/memory.h>
 #include <mega65/tests.h>
 #include <stdlib.h>
-
-#define assert_eq(A, B)                                                        \
-    if (A != B)                                                                \
-    xemu_exit(EXIT_FAILURE)
+#include <stdint.h>
 
 int main(void)
 {

@@ -7,14 +7,14 @@ _closedir:
 	TAX
 	LDA #$16
 	STA $D640
-	NOP
+	CLV
 	RTS
 	
 	;; Opendir takes no arguments and returns File descriptor in A
 _opendir:
 	LDA #$12
 	STA $D640
-	NOP
+	CLV
 	RTS
 
 	;; readdir takes the file descriptor returned by opendir as argument
@@ -46,7 +46,7 @@ l1:	sta _readdir_dirent,x
 	ldy #>$0400 		; write dirent to $0400 
 	lda #$14
 	STA $D640
-	NOP
+	CLV
 
 	bcs readDirSuccess
 	sta __rc2
