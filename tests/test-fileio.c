@@ -12,6 +12,8 @@
 #include <mega65/tests.h>
 #include <stdlib.h>
 
+#define FILE_ERROR 0xff
+
 // Input file on SD card: CHARROM.M65
 char filename[11 + 1] = { 0x63, 0x68, 0x61, 0x72, 0x72, 0x6f, 0x6d, 0x2e, 0x6d,
     0x36, 0x35, 0x00 };
@@ -32,13 +34,13 @@ int main(void)
 
     // Try to open non-existent file
     file = open(unknown_filename);
-    if (file != 0xff) {
+    if (file != FILE_ERROR) {
         xemu_exit(EXIT_FAILURE);
     }
 
     // Try to open existing file
     file = open(filename);
-    if (file == 0xff) {
+    if (file == FILE_ERROR) {
         xemu_exit(EXIT_FAILURE);
     }
 
@@ -62,7 +64,11 @@ int main(void)
     assert_eq(read512(buffer), 512);
     assert_eq(read512(buffer), 512);
     assert_eq(read512(buffer), 512);
+    // This should return 0, indicating EOF
     assert_eq(read512(buffer), 0);
+
+    // The very last byte of the file
+    assert_eq(buffer[511], 0xf0);
 
     // This has no effect on the test, but let's call anyway
     close(file);
