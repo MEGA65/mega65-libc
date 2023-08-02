@@ -15,6 +15,7 @@
 // Input file on SD card: CHARROM.M65
 char filename[11 + 1] = { 0x63, 0x68, 0x61, 0x72, 0x72, 0x6f, 0x6d, 0x2e, 0x6d,
     0x36, 0x35, 0x00 };
+char* unknown_filename = "PHANTOM_FILE";
 uint8_t file;
 uint8_t error;
 uint8_t buffer[512];
@@ -29,7 +30,13 @@ int main(void)
     closeall();
     error = chdirroot();
 
-    // Check open status
+    // Try to open non-existent file
+    file = open(unknown_filename);
+    if (file != 0xff) {
+        xemu_exit(EXIT_FAILURE);
+    }
+
+    // Try to open existing file
     file = open(filename);
     if (file == 0xff) {
         xemu_exit(EXIT_FAILURE);
