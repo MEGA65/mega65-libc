@@ -12,15 +12,6 @@
 #include <mega65/tests.h>
 #include <stdlib.h>
 
-// @todo For the fileio test, the serial output doesn't work on llvm.
-//       This macro is a workaround and the reason should be found.
-//       fileio.s could be the culprit.
-#ifdef __clang__
-#define assert_eq(A, B)                                                        \
-    if (A != B)                                                                \
-    xemu_exit(EXIT_FAILURE)
-#endif
-
 // Input file on SD card: CHARROM.M65
 char filename[11 + 1] = { 0x63, 0x68, 0x61, 0x72, 0x72, 0x6f, 0x6d, 0x2e, 0x6d,
     0x36, 0x35, 0x00 };

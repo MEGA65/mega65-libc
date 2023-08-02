@@ -155,19 +155,20 @@ open:
 	rts
 
 open_file_exists:	
-	;; Actually call open
 	jsr mega65_io_enable
+	; hyppo_getversion (outputs to A, X, Y, Z)
 	lda #$00
 	sta $d640
 	clv
 	
-	LDA #$18
-	STA $D640
+	; hyppo_openfile (outputs to A)
+	lda #$18
+	sta $D640
 	clv
 
-	;clearing X not needed on llvm-mos	
-	;LDX #$00
-	RTS
+	; make sure Z is cleared before exiting
+	ldz #$00
+	rts
 
 close:
 	TAX
@@ -198,7 +199,7 @@ chdir:
 	jsr cc65_copy_ptr1_string_to_0100
 	jsr setname_0100	
 
-	;; Find file
+	; hyppo_findfile
 	; Look for file on FAT file system via hypervisor calls
 	lda #$34
 	sta $d640
@@ -213,10 +214,12 @@ chdir:
 chdir_file_exists:	
 	;; Actually call chdir
 	jsr mega65_io_enable
+	; hyppo_chdir
 	lda #$0C
 	sta $d640
 	clv
 	
+	; hyppo_openfile (outputs to A)
 	LDA #$18
 	STA $D640
 	clv
