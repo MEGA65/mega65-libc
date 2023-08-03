@@ -1,6 +1,9 @@
 /**
  * @file fileio.h
  * @brief File I/O functions
+ *
+ * If in C64 mode you must call `mega65_io_enable()` found in `memory.h`
+ * before using any of the fileio functions.
  */
 
 #ifndef __MEGA65_FILEIO_H
@@ -49,5 +52,24 @@ uint8_t chdir(char* filename);
  * @return Error code (currently unused)
  */
 uint8_t chdirroot(void);
+
+/**
+ * @brief Struct for holding version information of the hypervisor
+ *
+ * The HDOS in Hyppo is not related to the CBDOS inside the Kernal
+ * or to the DOS in the disk drive units attached to the serial port.
+ */
+struct hyppo_version {
+    uint8_t hyppo_major;
+    uint8_t hyppo_minor;
+    uint8_t hdos_minor;
+    uint8_t hdos_major;
+};
+
+/**
+ * @brief Get the version of the hypervisor
+ * @param version Pointer to a `struct hyppo_version` to fill
+ */
+void gethyppoversion(struct hyppo_version* version);
 
 #endif // __MEGA65_FILEIO_H

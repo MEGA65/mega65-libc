@@ -25,10 +25,19 @@ uint8_t error;
 uint8_t buffer[512];
 size_t num_bytes_read;
 
+struct hyppo_version version;
+
 int main(void)
 {
     // No effect on MEGA65 target
     mega65_io_enable();
+
+    // Get hypervisor version
+    gethyppoversion(&version);
+    assert_eq(version.hyppo_major >= 1, 1);
+    assert_eq(version.hyppo_minor >= 2, 1);
+    assert_eq(version.hdos_major >= 1, 1);
+    assert_eq(version.hdos_minor >= 2, 1);
 
     // Good practice
     closeall();

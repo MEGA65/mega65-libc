@@ -5,6 +5,9 @@
  * Takes care of displaying text and images in full colour and super-extended
  * character modes. It has its own tutorial, located
  * [here](https://steph72.github.io/fcio-tutorial).
+ *
+ * If in C64 mode you must call `mega65_io_enable()` found in `memory.h`
+ * before using any of the fcio functions.
  */
 
 #ifndef __MEGA65_FCIO_H

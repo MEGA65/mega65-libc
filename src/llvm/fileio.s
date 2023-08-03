@@ -1,4 +1,5 @@
 .global closeall, open, close, read512, toggle_rom_write_protect, chdir, chdirroot
+.global gethyppoversion
 
 HYPPO_GETVERSION = $00; Output: A, X, Y, Z. Clear Z before exiting!
 HYPPO_CHDIR      = $0C
@@ -143,3 +144,21 @@ chdir_ok:
 	hyppo HYPPO_CHDIR
 	hyppo HYPPO_OPENFILE; outputs to A
 	rts
+
+gethyppoversion:
+    hyppo HYPPO_GETVERSION; outputs to A, X, Y, Z
+    phy; push Y to stack as we need it for indirect addressing
+    ldy #0
+    sta (__rc2), y; hyppo major (A -> offset 0)
+    iny
+    txa
+    sta (__rc2), y; hyppo minor (X -> offset 1)
+    iny
+    tza
+    sta (__rc2), y; HDOS minor (Z -> offset 2)
+    ply; pull Y from stack
+    tya
+    ldy #3
+    sta (__rc2), y; HDOS major (Y -> offset 3)
+    ldz #0
+    rts

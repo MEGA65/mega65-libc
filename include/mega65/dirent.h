@@ -1,7 +1,8 @@
 /**
  * @file dirent.h
  * @brief Directory entry functions
- * @todo Assembly implementation on LLVM is probably broken
+ * 
+ * If in C64 mode, you must call `mega65_io_enable()` before using these functions.
  */
 
 #ifndef __MEGA65_DIRENT_H
