@@ -4,6 +4,7 @@
         "files.associations": {
                 "memory.h": "c",
                 "cstdlib": "c",
-                "fileio.h": "c"
+                "fileio.h": "c",
+                "stddef.h": "c"
         }
 }

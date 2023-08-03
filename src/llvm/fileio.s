@@ -23,8 +23,8 @@ NAME_ERROR       = $FF
 .endmacro
 
 .section code,"a"
-    
-copy_rc2_string_to_0100:	
+
+copy_rc2_string_to_0100:
 	; copy file name
 	ldy #0
 copyloop:

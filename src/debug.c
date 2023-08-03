@@ -1,3 +1,4 @@
+#include <mega65/memory.h>
 #include <mega65/debug.h>
 
 #ifdef __CC65__

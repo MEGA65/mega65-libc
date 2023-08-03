@@ -1,4 +1,4 @@
-.global opendir, readdir, closedir	
+.global opendir, readdir, closedir
 
 HYPPO_GETVERSION = $00; Output: A, X, Y, Z. Clear Z before exiting!
 HYPPO_CHDIR      = $0C
@@ -48,7 +48,7 @@ readdir:
 	pha                 ; store file descriptor on stack
 	ldx #0              ; zero out dirent
 	txa
-l1:	sta _readdir_dirent, x	
+l1:	sta _readdir_dirent, x
 	dex
 	bne l1
 	plx                 ; pull file descriptor from stack into X
@@ -78,7 +78,7 @@ l3:	lda $0477, x
 	dex
 	bpl l3
 
-	;; d_off stays zero as it is not meaningful here	
+	;; d_off stays zero as it is not meaningful here
 	;; d_reclen we preload with the length of the file (this saves calling stat() on the MEGA65)
 	ldx #$03
 l4:	lda DST_DIRENT + 64 + 1 + 12 + 4, x
