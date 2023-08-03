@@ -147,18 +147,16 @@ chdir_ok:
 
 gethyppoversion:
     hyppo HYPPO_GETVERSION; outputs to A, X, Y, Z
-    phy; push Y to stack as we need it for indirect addressing
-    ldy #0
-    sta (__rc2), y; hyppo major (A -> offset 0)
+    phy
+    ldy #1
+    sta (__rc2), y; A -> offset 1 (hyppo major)
     iny
     txa
-    sta (__rc2), y; hyppo minor (X -> offset 1)
+    sta (__rc2), y; X -> offset 2 (hyppo minor)
     iny
     tza
-    sta (__rc2), y; HDOS minor (Z -> offset 2)
-    ply; pull Y from stack
-    tya
-    ldy #3
-    sta (__rc2), y; HDOS major (Y -> offset 3)
+    sta (__rc2), y; Z -> offset 3 (hdos minor)
+	pla
     ldz #0
+	sta (__rc2), z; Y -> offset 0 (hdos major)
     rts
