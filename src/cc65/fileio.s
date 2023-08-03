@@ -4,13 +4,6 @@
 	
 .SEGMENT "CODE"
 	.p4510
-
-mega65_io_enable:
-	lda #$47
-	sta $d02f
-	lda #$53
-	sta $d02f
-	rts
 	
 cc65_copy_ptr1_string_to_0100:	
     ;; Copy file name
@@ -29,7 +22,6 @@ setname_0100:
 	;;  Call dos_setname()
 	ldy #>$0100
 	ldx #<$0100
-	jsr mega65_io_enable
 	lda #$2E                ; dos_setname Hypervisor trap
 	sta $D640               ; Do hypervisor trap
 	clv                     ; Wasted instruction slot required following hyper trap instruction
@@ -41,7 +33,6 @@ setname_ok:
 	RTS
 	
 _closeall:
-	jsr mega65_io_enable
 	lda #$22
 	sta $D640
 	clv
@@ -49,7 +40,6 @@ _closeall:
 	rts
 
 _toggle_rom_write_protect:
-	jsr mega65_io_enable
 	lda #$70
 	sta $d640
 	clv
@@ -63,7 +53,6 @@ _read512:
 	;; Select current file
 	;; XXX - Not currently implemented
 	;; Read the next sector of data
-	jsr mega65_io_enable
 	lda #$1A
 	sta $D640
 	clv
@@ -139,7 +128,6 @@ _open:
 
 open_file_exists:	
 	;; Actually call open
-	jsr mega65_io_enable
 	lda #$00
 	sta $d640
 	clv	
@@ -151,7 +139,6 @@ open_file_exists:
 
 _close:
 	tax
-	jsr mega65_io_enable
 	lda #$20
 	sta $D640
 	clv
@@ -187,7 +174,6 @@ _chdir:
 
 chdir_file_exists:	
 	;; Actually call chdir
-	jsr mega65_io_enable
 	lda #$0C
 	sta $d640
 	clv
