@@ -1,10 +1,10 @@
 .global closeall, open, close, read512, toggle_rom_write_protect, chdir, chdirroot
 
-HYPPO_GETVERSION = $00;
+HYPPO_GETVERSION = $00; Output: A, X, Y, Z. Don't forget to clear Z before exiting!
 HYPPO_CHDIR = $0C;
-HYPPO_OPENDIR = $12;; output file descriptor in A
+HYPPO_OPENDIR = $12; Output: A=file descriptor
 HYPPO_READDIR = $14; Input: X=file descriptor; Y MSB of destination
-HYPPO_CLOSEDIR = $16; file handle in X
+HYPPO_CLOSEDIR = $16; Input: X=file descriptor
 HYPPO_OPENFILE = $18;
 HYPPO_READFILE = $1A;
 HYPPO_CLOSEFILE = $20;
@@ -139,14 +139,17 @@ open:
 	lda #FILE_ERROR
 	rts
 
-open_file_exists:	
+_getversion:
 	lda #HYPPO_GETVERSION; outputs to A, X, Y, Z
 	sta $D640
 	clv
+	ldz #$00; Z must be cleared before exiting
+	rts
+
+open_file_exists:
 	lda #HYPPO_OPENFILE; outputs to A
 	sta $D640
 	clv
-	ldz #$00; Z must be cleared before exiting
 	rts
 
 close:
