@@ -1,5 +1,5 @@
 	.setcpu "65C02"
-	.export _closeall, _open, _close, _read512, _toggle_rom_write_protect, _chdir, _chdirroot
+	.export _closeall, _open, _close, _read512, _toggle_rom_write_protect, _chdir, _chdirroot, _gethyppoversion
 	.include "zeropage.inc"
 	
 .SEGMENT "CODE"
@@ -182,3 +182,23 @@ chdir_file_exists:
 	clv
 	ldx #$00
 	rts
+
+_gethyppoversion:
+	sta ptr1+0
+	stx ptr1+1
+	lda #0
+	sta $D640; output to A, X, Y, Z
+	clv
+    phy
+    ldy #1
+    sta (ptr1), y; A -> offset 1 (hyppo major)
+    iny
+    txa
+    sta (ptr1), y; X -> offset 2 (hyppo minor)
+    iny
+    tza
+    sta (ptr1), y; Z -> offset 3 (hdos minor)
+	pla
+    ldz #0
+	sta (ptr1), z; Y -> offset 0 (hdos major)
+    rts
