@@ -11,6 +11,7 @@ HYPPO_CLOSEFILE  = $20
 HYPPO_CLOSEALL   = $22
 HYPPO_SETNAME    = $2E
 HYPPO_FINDFILE   = $34
+HYPPO_CHDIRROOT  = $3C; undocumented as of July 2023?
 HYPPO_TOGGLE_ROM_WRITE_PROTECT = $70
 FILE_ERROR       = $FF
 NAME_ERROR       = $FF
@@ -25,56 +26,41 @@ NAME_ERROR       = $FF
     
 copy_rc2_string_to_0100:	
 	; copy file name
-	phy
 	ldy #0
-NameCopyLoop:
-	lda (__rc2),y
-	sta $0100,y
+copyloop:
+	lda (__rc2), y
+	sta $0100, y
 	iny
 	cmp #0
-	bne NameCopyLoop
-	ply
+	bne copyloop
 	rts	
 
 setname_0100:
 	ldy #>$0100
 	ldx #<$0100
-	lda #HYPPO_SETNAME
-	sta $D640
-	clv
-	; XXX Check for error (carry would be clear)
+	hyppo HYPPO_SETNAME
 	bcs setname_ok
 	lda #NAME_ERROR
 setname_ok:
 	rts
 	
 closeall:
-	lda #HYPPO_CLOSEALL
-	sta $D640
-	clv
+	hyppo HYPPO_CLOSEALL
 	rts
 
 toggle_rom_write_protect:
-	lda #HYPPO_TOGGLE_ROM_WRITE_PROTECT
-	sta $D640
-	clv
+	hyppo HYPPO_TOGGLE_ROM_WRITE_PROTECT
 	rts
 	
 read512:
-	;  Get pointer to buffer
+	; pointer to buffer -> A, X
 	lda __rc2
 	ldx __rc3
-	; Select current file
-	; XXX - Not currently implemented
-	; Read the next sector of data
-	lda #HYPPO_READFILE
-	sta $D640
-	clv
-	; bytes read returned in X and Y; stash these for returning
-	stx __rc4
-	sty __rc5
+	hyppo HYPPO_READFILE
+	stx __rc4; bytes read -> X, Y ...
+	sty __rc5; ... stash these for later use
 
-	; Make sure SD buffer is selected, not FDC buffer
+	; ensure SD buffer is selected, not FDC buffer
 	lda #$80
 	tsb $D689
 	
@@ -96,9 +82,8 @@ read512:
 	lda #<dmalist_copysectorbuffer
 	sta $D705
 
-	; Return file length word through A and X
-	lda __rc4
-	ldx __rc5
+	lda __rc4; return file length word ...
+	ldx __rc5; ... through A, X
 	rts
 
 .data
@@ -122,58 +107,39 @@ copysectorbuffer_destaddr:
 
 .section code,"a"
 open:
-    ; argument pointer stored in rc2 and rc3
+    ; filename ptr -> A, X
 	lda __rc2
 	ldx __rc3
-	
 	jsr copy_rc2_string_to_0100
 	jsr setname_0100	
-
-	lda #HYPPO_FINDFILE
-	sta $D640
-	clv
-	bcs open_file_exists
+	hyppo HYPPO_FINDFILE
+	bcs findfile_ok
 	lda #FILE_ERROR
 	rts
-open_file_exists:
-	lda #HYPPO_OPENFILE; outputs to A
-	sta $D640
-	clv
+findfile_ok:
+	hyppo HYPPO_OPENFILE; outputs to A
 	rts
 
 close:
-	tax
-	lda #HYPPO_CLOSEFILE; input in X
-	sta $D640
-	clv
+	tax;
+	hyppo HYPPO_CLOSEFILE; input: X
 	rts
 
 chdirroot:
-	lda #$3c; this seems undocumented as of July 2023?
-	sta $D640
-	clv
-	ldx #$00
+	hyppo HYPPO_CHDIRROOT
 	rts
 	
 chdir:
     ; Get pointer to file name
 	lda __rc2
 	ldx __rc3
-	
 	jsr copy_rc2_string_to_0100
 	jsr setname_0100	
-
-	lda #HYPPO_FINDFILE
-	sta $D640
-	clv
-	bcs chdir_file_exists
+	hyppo HYPPO_FINDFILE
+	bcs chdir_ok
 	lda #FILE_ERROR
 	rts
-chdir_file_exists:	
-	lda #HYPPO_CHDIR
-	sta $D640
-	clv
-	lda #HYPPO_OPENFILE; outputs to A
-	sta $D640
-	clv
+chdir_ok:
+	hyppo HYPPO_CHDIR
+	hyppo HYPPO_OPENFILE; outputs to A
 	rts

@@ -1,19 +1,26 @@
 .global _opendir, _readdir, _closedir	
 
-HYPPO_GETVERSION = $00; Output: A, X, Y, Z. Don't forget to clear Z before exiting!
-HYPPO_CHDIR = $0C;
-HYPPO_OPENDIR = $12; Output: A=file descriptor
-HYPPO_READDIR = $14; Input: X=file descriptor; Y MSB of destination
-HYPPO_CLOSEDIR = $16; Input: X=file descriptor
-HYPPO_OPENFILE = $18;
-HYPPO_READFILE = $1A;
-HYPPO_CLOSEFILE = $20;
-HYPPO_CLOSEALL = $22;
-HYPPO_SETNAME = $2E;
-HYPPO_FINDFILE = $34;
-HYPPO_TOGGLE_ROM_WRITE_PROTECT = $70;
-FILE_ERROR = $FF;
-NAME_ERROR = $FF;
+HYPPO_GETVERSION = $00; Output: A, X, Y, Z. Clear Z before exiting!
+HYPPO_CHDIR      = $0C
+HYPPO_OPENDIR    = $12; Output: A=file descriptor
+HYPPO_READDIR    = $14; Input: X=file descriptor; Y MSB of destination
+HYPPO_CLOSEDIR   = $16; Input: X=file descriptor
+HYPPO_OPENFILE   = $18
+HYPPO_READFILE   = $1A
+HYPPO_CLOSEFILE  = $20
+HYPPO_CLOSEALL   = $22
+HYPPO_SETNAME    = $2E
+HYPPO_FINDFILE   = $34
+HYPPO_CHDIRROOT  = $3C; undocumented as of July 2023?
+HYPPO_TOGGLE_ROM_WRITE_PROTECT = $70
+FILE_ERROR       = $FF
+NAME_ERROR       = $FF
+
+.macro hyppo hyppo_cmd
+	lda #\hyppo_cmd
+	sta $D640
+	clv
+.endmacro
 
 .section code,"a"
 
