@@ -21,12 +21,12 @@ ptr1:
 
 .section code,"a"
     
-cc65_copy_ptr1_string_to_0100:	
+copy_rc2_string_to_0100:	
 	; copy file name
 	phy
 	ldy #0
 NameCopyLoop:
-	lda (ptr1),y
+	lda (__rc2),y
 	sta $0100,y
 	iny
 	cmp #0
@@ -126,10 +126,8 @@ open:
     ; argument pointer stored in rc2 and rc3
 	lda __rc2
 	ldx __rc3
-	sta ptr1+0
-	stx ptr1+1
 	
-	jsr cc65_copy_ptr1_string_to_0100
+	jsr copy_rc2_string_to_0100
 	jsr setname_0100	
 
 	lda #HYPPO_FINDFILE
@@ -138,14 +136,6 @@ open:
 	bcs open_file_exists
 	lda #FILE_ERROR
 	rts
-
-_getversion:
-	lda #HYPPO_GETVERSION; outputs to A, X, Y, Z
-	sta $D640
-	clv
-	ldz #$00; Z must be cleared before exiting
-	rts
-
 open_file_exists:
 	lda #HYPPO_OPENFILE; outputs to A
 	sta $D640
@@ -170,10 +160,8 @@ chdir:
     ; Get pointer to file name
 	lda __rc2
 	ldx __rc3
-	sta ptr1+0
-	stx ptr1+1
 	
-	jsr cc65_copy_ptr1_string_to_0100
+	jsr copy_rc2_string_to_0100
 	jsr setname_0100	
 
 	lda #HYPPO_FINDFILE
