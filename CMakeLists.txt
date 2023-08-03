@@ -90,5 +90,5 @@ install(EXPORT mega65libc-export
     ${CMAKE_INSTALL_LIBDIR}/cmake/mega65libc
     )
 
+add_subdirectory(doc)
 add_subdirectory(tests)
-

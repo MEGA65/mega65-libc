@@ -1,76 +1,111 @@
+[![GitHub Releases](https://img.shields.io/github/release/mega65/mega65-libc.svg)](https://github.com/mega65/mega65-libc/releases)
+[![CMake](https://github.com/MEGA65/mega65-libc/actions/workflows/cmake.yml/badge.svg)](https://github.com/MEGA65/mega65-libc/actions/workflows/cmake.yml)
+
 # MEGA65-libc
 
 Simple C library for the MEGA65
 
-# Using the library
+## Using the library
 
 - **CC65**: Include the `.c` and `.s` files from the `src/` directory that you need.
 - **Clang**: Either use the provided CMake setup as detailed below, or include the `.c` and `.h` files you need.
 - **KickC**: Support will be coming soon (or sooner, if someone would like to port the routines :-)
 
-# Development and building
+## Development and building
 
-## CC65
+### CC65
 
 1. Install [CC65](https://cc65.github.io) with e.g. `brew install cc65` or `apt install cc65`.
-2. Build by running `make -f Makefile_cc65` inside the `mega65-libc/` directory.
-
-## Clang
+2. Build with
+~~~sh
+cd mega65-libc
+ln -s Makefile_cc65 Makefile # or `make -f Makefile_cc65` below
+export USE_LOCAL_CC65=1
+make
+make test                    # if `xmega65` (Xemu) is in your path
+~~~
+### Clang
 
 1. Install [llvm-mos-sdk](https://github.com/llvm-mos/llvm-mos-sdk#getting-started).
 This e.g. downloads for linux and unpacks into `$HOME/llvm-mos`:
-~~~ sh
+~~~sh
 wget https://github.com/llvm-mos/llvm-mos-sdk/releases/latest/download/llvm-mos-linux.tar.xz 
 tar xf llvm-mos-linux.tar.xz -C $HOME
 ~~~
 2. Configure and make with:
-~~~ sh
-cmake -DCMAKE_PREFIX_PATH=$HOME/llvm-mos -B build/ mega65-libc/
-cd build
+~~~sh
+cd mega65-libc
+cmake -DCMAKE_PREFIX_PATH=$HOME/llvm-mos -B build
 make
-make test # if `xmega65` (Xemu) was in your patch when running cmake
+make test # if `xmega65` (Xemu) was in your path when running cmake
 ~~~
 
-### Dependent projects
+#### Dependent projects
 
-It's trivial to write a classic `Makefile` for clang.
+It's trivial to write a classic `Makefile` for clang using `CC=mos-mega65-clang`.
 For dependent CMake based projects, `CMakeLists.txt` could look like this:
-~~~ cmake
+~~~cmake
 cmake_minimum_required(VERSION 3.5)
 set(LLVM_MOS_PLATFORM mega65)
 find_package(llvm-mos-sdk REQUIRED)
-project(myproject VERSION 0.1.0 LANGUAGES C)
+project(myproject LANGUAGES C)
 find_package(mega65libc REQUIRED)
-add_compile_options(-mcpu=mos65ce02 -Os -Wall -Wextra -Wshadow -Wconversion -Wno-language-extension-token)
+add_compile_options(-Os -Wall -Wextra -Wconversion)
 add_executable(main main.c)
 target_link_libraries(main mega65libc::mega65libc)
 set_target_properties(main PROPERTIES OUTPUT_NAME main.prg)
 ~~~
 See more [here](https://github.com/llvm-mos/llvm-mos-sdk#developing-for-6502-with-cmake).
 
-### CPM.cmake dependency manager
+#### CPM.cmake dependency manager
 
 If using [CPM.cmake](https://github.com/cpm-cmake/CPM.cmake),
 `mega65libc` can be easily added and automatically downloaded to your project with:
-~~~ cmake
+~~~cmake
 CPMAddPackage(NAME mega65libc GITHUB_REPOSITORY mega65/mega65-libc GIT_TAG master)
 target_link_libraries(<mytarget> mega65libc)
 ~~~
 
-# Function descriptions
+### API Documentation
 
-## FAT32 File Access
+Building the docs requires `doxygen`; install with e.g. `apt install doxygen` or `brew install doxygen`.
+~~~sh
+make doc # outputs to html, latex, xml in doc/
+~~~
 
-```
+For use with the [MEGA65 User Guide](https://github.com/mega65/mega65-user-guide),
+the XML output can be converted to custom LaTeX:
+~~~sh
+pip install xmltodict
+make guide # outputs to doc/api-*.tex
+~~~
+
+### Contributing
+
+Contributions are most welcome; please make a pull-request on github.
+To help with formatting, a `.clang-format` file is provide.
+It's highly recommended to install our [pre-commit](https://pre-commit.com) hooks
+which will format/lint upon `git commit`:
+~~~sh
+pip install pre-commit
+cd mega65-libc/
+pre-commit install
+~~~
+
+## Function descriptions
+
+### FAT32 File Access
+
+~~~c
 void closeall(void);
 unsigned char open(char *filename);
 void close(unsigned char fd);
 unsigned short read512(unsigned char fd,unsigned char *buffer);
-```
+~~~
 
 To use these functions you must include `fileio.h`
 
-## FAT32 Directory Access
+### FAT32 Directory Access
 
 Functions similar to the POSIX equivalents are provided. Key differences are that `unsigned char *`
 is used instead of `DIR *` for the directory handle, and `readdir()` returns a pointer to a `m65_dirent` struct,
@@ -82,15 +117,15 @@ point in time, and it is wise to call `closeall()` before opening any file or di
 `opendir()` currently takes no path as input, as the Hypervisor can only work on a single directory at the moment.
 Support for sub-directories will come in the fullness of time.
 
-```
+~~~c
 unsigned char *opendir(void);
 m65_dirent *readdir(unsigned char *dir_handle);
 void closedir(unsigned char *dir_handle);
-```
+~~~
 
 To use these functions you must include `dirent.h` 
 
-## Clock Access
+### Clock Access
 
 `getrtc(struct m65_tm *)` and `setrtc(struct struct m65_tm *)` allow retrieval and setting of the real-time-clock
 (RTC) using structures broadly similar to the posix tm structure.
@@ -98,12 +133,12 @@ These routines abstract the different model RTCs that exist on different MEGA65 
 
 To use these functions you must include `time.h`
 
-## Full Colour Mode I/O 
+### Full Colour Mode I/O 
 
 The `fcio` portion of the mega65-libc takes care of displaying text and images in full colour & super-extended character modes. 
 It has its own tutorial, located <a href="https://steph72.github.io/fcio-tutorial/">here.</a>
 
-## Text Console I/O
+### Text Console I/O
 
 The `conio.h` file is projected to support all MEGA65 text features in the future.  
 
@@ -112,8 +147,7 @@ Keep in mind!
 1) Use `conioinit()` to initialize internal state.
 2) **no bounds checking is done in any function due to lazyness and/or performance reasons. Be careful**.
 
-```
-
+~~~c
 /*------------------------------------------------------------------------
   Screen configuration and setup
   -----------------------------------------------------------------------*/
@@ -283,5 +317,4 @@ unsigned char getkeymodstate(void);
 
 /* Flush the hardware keyboard buffer */
 void flushkeybuf(void);
-
-```
+~~~

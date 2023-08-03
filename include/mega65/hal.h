@@ -1,3 +1,7 @@
+/**
+ * @file hal.h
+ * @brief Timing functions ala unistd.h
+ */
 #ifndef __MEGA65_HAL_H
 #define __MEGA65_HAL_H
 

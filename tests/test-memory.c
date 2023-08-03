@@ -1,4 +1,6 @@
 /**
+ * @example test-memory.c
+ *
  * Tests for memory.h
  *
  * This can be run in Xemu in testing mode with e.g.

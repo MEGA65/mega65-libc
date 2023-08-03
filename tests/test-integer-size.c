@@ -1,4 +1,6 @@
 /**
+ * @example test-integer-size.c
+ *
  * Tests for integer sizes
  *
  * This can be run in Xemu in testing mode with e.g.

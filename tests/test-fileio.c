@@ -1,4 +1,6 @@
 /**
+ * @example test-fileio.c
+ *
  * Tests for fileio.h for loading CHARROM.M65 from the SD card
  *
  * This can be run in Xemu in testing mode with e.g.
