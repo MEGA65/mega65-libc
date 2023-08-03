@@ -1,23 +1,25 @@
 .global closeall, open, close, read512, toggle_rom_write_protect, chdir, chdirroot
 
-HYPPO_GETVERSION = $00; Output: A, X, Y, Z. Don't forget to clear Z before exiting!
-HYPPO_CHDIR = $0C;
-HYPPO_OPENDIR = $12; Output: A=file descriptor
-HYPPO_READDIR = $14; Input: X=file descriptor; Y MSB of destination
-HYPPO_CLOSEDIR = $16; Input: X=file descriptor
-HYPPO_OPENFILE = $18;
-HYPPO_READFILE = $1A;
-HYPPO_CLOSEFILE = $20;
-HYPPO_CLOSEALL = $22;
-HYPPO_SETNAME = $2E;
-HYPPO_FINDFILE = $34;
-HYPPO_TOGGLE_ROM_WRITE_PROTECT = $70;
-FILE_ERROR = $FF;
-NAME_ERROR = $FF;
+HYPPO_GETVERSION = $00; Output: A, X, Y, Z. Clear Z before exiting!
+HYPPO_CHDIR      = $0C
+HYPPO_OPENDIR    = $12; Output: A=file descriptor
+HYPPO_READDIR    = $14; Input: X=file descriptor; Y MSB of destination
+HYPPO_CLOSEDIR   = $16; Input: X=file descriptor
+HYPPO_OPENFILE   = $18
+HYPPO_READFILE   = $1A
+HYPPO_CLOSEFILE  = $20
+HYPPO_CLOSEALL   = $22
+HYPPO_SETNAME    = $2E
+HYPPO_FINDFILE   = $34
+HYPPO_TOGGLE_ROM_WRITE_PROTECT = $70
+FILE_ERROR       = $FF
+NAME_ERROR       = $FF
 
-.section .zeropage,"aw",@nobits
-ptr1:
-	.ds.b 2
+.macro hyppo hyppo_cmd
+	lda #\hyppo_cmd
+	sta $D640
+	clv
+.endmacro
 
 .section code,"a"
     
@@ -35,12 +37,11 @@ NameCopyLoop:
 	rts	
 
 setname_0100:
-	; call dos_setname()
 	ldy #>$0100
 	ldx #<$0100
 	lda #HYPPO_SETNAME
-	sta $D640               ; Do hypervisor trap
-	clv                     ; Wasted instruction slot required following hyper trap instruction
+	sta $D640
+	clv
 	; XXX Check for error (carry would be clear)
 	bcs setname_ok
 	lda #NAME_ERROR
@@ -63,8 +64,6 @@ read512:
 	;  Get pointer to buffer
 	lda __rc2
 	ldx __rc3
-	sta ptr1+0
-	stx ptr1+1
 	; Select current file
 	; XXX - Not currently implemented
 	; Read the next sector of data
@@ -72,8 +71,8 @@ read512:
 	sta $D640
 	clv
 	; bytes read returned in X and Y; stash these for returning
-	stx __rc2
-	sty __rc3
+	stx __rc4
+	sty __rc5
 
 	; Make sure SD buffer is selected, not FDC buffer
 	lda #$80
@@ -83,9 +82,9 @@ read512:
 	; (This saves the need to mess with mapping/unmapping the sector
 	; buffer).
 	; Get address to save to
-	lda ptr1+0
+	lda __rc2
 	sta copysectorbuffer_destaddr+0
-	lda ptr1+1
+	lda __rc3
 	sta copysectorbuffer_destaddr+1
 
 	; do DMA job
@@ -98,8 +97,8 @@ read512:
 	sta $D705
 
 	; Return file length word through A and X
-	lda __rc2
-	ldx __rc3
+	lda __rc4
+	ldx __rc5
 	rts
 
 .data
