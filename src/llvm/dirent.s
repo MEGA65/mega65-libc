@@ -14,7 +14,7 @@ HYPPO_FINDFILE   = $34
 HYPPO_CHDIRROOT  = $3C; undocumented as of July 2023?
 HYPPO_TOGGLE_ROM_WRITE_PROTECT = $70
 FILE_ERROR       = $FF
-NAME_ERROR       = $FF
+DST_DIRENT       = $0400
 
 .macro hyppo hyppo_cmd
 	lda #\hyppo_cmd
@@ -45,31 +45,29 @@ opendir:
 ; d_type = file/directory type
 ; d_name = name of file
 readdir:
-	pha
-	; Zero out the dirent
-	ldx #0
+	pha                 ; store file descriptor on stack
+	ldx #0              ; zero out dirent
 	txa
 l1:	sta _readdir_dirent, x	
 	dex
 	bne l1
 	plx                 ; pull file descriptor from stack into X
-	ldy #>$0400 	    ; destination dirent is $0400
+	ldy #>DST_DIRENT 	; MSB of destination dirent
 	hyppo HYPPO_READDIR ; input X=file descriptor, Y MSB of destination
 	bcs readdir_ok
-	lda #0              ; return NULL pointer ...
-	ldx #0              ; ... if error
+	lda #0              ; return NULL pointer if error
 	sta __rc2
-	stx __rc3
+	sta __rc3
 	rts
 readdir_ok:
 	; Copy file name
 	ldx #$3f
-l2:	lda $0400, x
+l2:	lda DST_DIRENT, x
 	sta _readdir_dirent + 4 + 2 + 4 + 2, x
 	dex
 	bpl l2
 	; ensure it is null terminated
-	ldx $0400 + 64
+	ldx DST_DIRENT + 64
 	lda #$00
 	sta _readdir_dirent + 4 + 2 + 4 + 2, x
 
@@ -82,15 +80,15 @@ l3:	lda $0477, x
 
 	;; d_off stays zero as it is not meaningful here	
 	;; d_reclen we preload with the length of the file (this saves calling stat() on the MEGA65)
-	ldx #3
-l4:	lda $0400 + 64 + 1 + 12 + 4, x
+	ldx #$03
+l4:	lda DST_DIRENT + 64 + 1 + 12 + 4, x
 	sta _readdir_dirent + 4 + 2, x
 	dex
 	bpl l4
 
 	;; File type and attributes
 	;; XXX - We should translate these to C style meanings
-	lda $0400 + 64 + 1 + 12 + 4 + 4
+	lda DST_DIRENT + 64 + 1 + 12 + 4 + 4
 	sta _readdir_dirent + 4 + 2 + 4
 
 	; pointer to dirent structure returned through rc2, rc3
