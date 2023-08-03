@@ -15,6 +15,7 @@ set(objects
     src/conio.c
     src/debug.c
     src/fat32.c
+    src/fcio.c
     src/hal.c
     src/memory.c
     src/mouse.c

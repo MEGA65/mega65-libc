@@ -88,7 +88,7 @@ fcioConf stdConfig = {
 #define bitflip(byte, nbit) ((byte) ^= (1 << (nbit)))
 #define bitcheck(byte, nbit) ((byte) & (1 << (nbit)))
 
-#define COLOUR_RAM_OFFSET gFcioConfig->colourBase - 0xff80000l
+#define COLOUR_RAM_OFFSET (gFcioConfig->colourBase - 0xff80000l)
 
 word gScreenSize;          // screen size (in characters)
 byte gScreenColumns;       // number of screen columns (in characters)
@@ -105,6 +105,9 @@ int gBottomBorder;
 bool csrflag; // cursor on/off
 bool autoCR;
 
+#ifdef __clang__
+#pragma GCC warning "readExt() is not implemented for clang yet"
+#else
 unsigned int readExt(FILE* inFile, himemPtr addr, byte skipCBMAddressBytes)
 {
 
@@ -130,7 +133,11 @@ unsigned int readExt(FILE* inFile, himemPtr addr, byte skipCBMAddressBytes)
 
     return overallRead;
 }
+#endif
 
+#ifdef __clang__
+#pragma GCC warning "loadExt() is not implemented for clang yet"
+#else
 unsigned int loadExt(char* filename, himemPtr addr, byte skipCBMAddressBytes)
 {
 
@@ -147,6 +154,7 @@ unsigned int loadExt(char* filename, himemPtr addr, byte skipCBMAddressBytes)
 
     return readBytes;
 }
+#endif
 
 void fc_loadReservedBitmap(char* name)
 {
@@ -195,6 +203,7 @@ static unsigned char swp;
 unsigned char fc_nyblswap(unsigned char in) // oh why?!
 {
     swp = in;
+#ifdef __CC65__
     __asm__("lda %v", swp);
     __asm__("asl  a");
     __asm__("adc  #$80");
@@ -203,6 +212,20 @@ unsigned char fc_nyblswap(unsigned char in) // oh why?!
     __asm__("adc  #$80");
     __asm__("rol  a");
     __asm__("sta %v", swp);
+#elif defined(__clang__)
+#pragma GCC warning "LLVM assembly needs to be checked in fc_nyblswap()"
+    asm volatile("ld%0\n"
+                 "asl a\n"
+                 "adc #$80\n"
+                 "rol a\n"
+                 "asl a\n"
+                 "adc #$80\n"
+                 "rol a\n"
+                 "st%0" ::"a"(swp)
+                 : "a");
+#else
+#pragma GCC warning "fc_nyblswap() is not implemented for this compiler"
+#endif
     return swp;
 }
 
@@ -259,7 +282,14 @@ void fc_fatal(const char* format, ...)
 
     mega65_io_enable();
     va_start(args, format);
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wformat-nonliteral"
+    vsnprintf(buf, 159, format, args);
+#pragma clang diagnostic pop
+#else
     vsprintf(buf, format, args);
+#endif
     va_end(args);
     fc_go8bit();
     fc_bordercolor(2);
@@ -337,9 +367,12 @@ char asciiToPetscii(byte c)
     return c;
 }
 
+#ifdef __clang__
+void adjustBorders(byte extraRows, __attribute__((unused)) byte extraColumns)
+#else
 void adjustBorders(byte extraRows, byte extraColumns)
+#endif
 {
-
     byte extraTopRows = 0;
     byte extraBottomRows = 0;
     int newBottomBorder;
@@ -348,13 +381,15 @@ void adjustBorders(byte extraRows, byte extraColumns)
     extraBottomRows = extraRows / 2;
     extraTopRows = extraRows - extraBottomRows;
 
-    POKE(53320u, gTopBorder - (extraTopRows * 8)); // top border position
-    POKE(53326u, gTopBorder - (extraTopRows * 8)); // top text position
+    // top border position
+    POKE(53320u, (uint8_t)(gTopBorder - (extraTopRows * 8)));
+    // top text position
+    POKE(53326u, (uint8_t)(gTopBorder - (extraTopRows * 8)));
 
     newBottomBorder = gBottomBorder + (extraBottomRows * 8);
 
-    POKE(53322U, newBottomBorder % 256);
-    POKE(53323U, newBottomBorder / 256);
+    POKE(53322U, (uint8_t)(newBottomBorder % 256));
+    POKE(53323U, (uint8_t)(newBottomBorder / 256));
 
     POKE(53371u, gScreenRows);
 }
@@ -401,7 +436,7 @@ void fc_screenmode(byte h640, byte v400, byte rows)
     HOTREG &= 127; // disable hotreg
 
     if (extraRows > 0) {
-        adjustBorders(extraRows, 0);
+        adjustBorders((byte)extraRows, 0);
     }
 
     // move colour RAM because of stupid CBDOS himem usage
@@ -447,33 +482,37 @@ void fc_go8bit(void)
 void fc_plotExtChar(byte x, byte y, byte c)
 {
     word charIdx;
-    long adr;
-    charIdx = (gFcioConfig->reservedBitmapBase / 64) + c;
+    uint32_t adr;
+    charIdx = (word)((gFcioConfig->reservedBitmapBase / 64) + c);
     adr = (x * 2) + (y * gScreenColumns * 2);
-    lpoke(gFcioConfig->screenBase + adr, charIdx % 256);
-    lpoke(gFcioConfig->screenBase + adr + 1, charIdx / 256);
+    lpoke(gFcioConfig->screenBase + adr, (uint8_t)(charIdx % 256));
+    lpoke(gFcioConfig->screenBase + adr + 1, (uint8_t)(charIdx / 256));
 }
 
 void fc_addGraphicsRect(
     byte x0, byte y0, byte width, byte height, himemPtr bitmapData)
 {
     static byte x, y;
-    long adr;
+    uint32_t adr;
     word currentCharIdx;
 
-    currentCharIdx = bitmapData / 64;
+    currentCharIdx = (word)(bitmapData / 64);
 
     for (y = y0; y < y0 + height; ++y) {
         for (x = x0; x < x0 + width; ++x) {
             adr = gFcioConfig->screenBase + (x * 2) + (y * gScreenColumns * 2);
             lpoke(adr + 1,
                 currentCharIdx / 256); // set highbyte first to avoid blinking
-            lpoke(adr, currentCharIdx % 256); // while setting up the screeen
+            lpoke(adr, (uint8_t)(currentCharIdx
+                                 % 256)); // while setting up the screeen
             currentCharIdx++;
         }
     }
 }
 
+#ifdef __clang__
+#pragma GCC warning "fc_loadFCI() is not implemented for clang yet"
+#else
 fciInfo* fc_loadFCI(char* filename, himemPtr address, himemPtr paletteAddress)
 {
     static byte numColumns, numRows, lastColourIndex;
@@ -559,6 +598,7 @@ fciInfo* fc_loadFCI(char* filename, himemPtr address, himemPtr paletteAddress)
 
     return info;
 }
+#endif
 
 void fc_zeroPalette(byte reservedSysPalette)
 {
@@ -581,16 +621,16 @@ void fc_loadPalette(himemPtr adr, byte size, byte reservedSysPalette)
     start = reservedSysPalette ? 16 : 0;
 
     for (i = start; i <= size; ++i) {
-        colAdr = i * 3;
+        colAdr = (himemPtr)(i * 3);
         // fc_printf("\n%d (%lx) : %2x %2x %2x", i, adr + colAdr, lpeek(adr +
         // colAdr), lpeek(adr + colAdr + 1), lpeek(adr + colAdr + 2));
         // fc_getkey();
         // palette[colAdr];
-        POKE(0xd100u + i, fc_nyblswap(lpeek(adr + colAdr)));
+        POKE(0xd100u + (unsigned int)i, fc_nyblswap(lpeek(adr + colAdr)));
         // palette[colAdr + 1];
-        POKE(0xd200u + i, fc_nyblswap(lpeek(adr + colAdr + 1)));
+        POKE(0xd200u + (unsigned int)i, fc_nyblswap(lpeek(adr + colAdr + 1)));
         // palette[colAdr + 2];
-        POKE(0xd300u + i, fc_nyblswap(lpeek(adr + colAdr + 2)));
+        POKE(0xd300u + (unsigned int)i, fc_nyblswap(lpeek(adr + colAdr + 2)));
     }
 }
 
@@ -606,12 +646,12 @@ void fc_fadePalette(
 
     startReg = reservedSysPalette ? 16 : 0;
     destPalette = malloc(size * 3);
-    lcopy(adr, (long)destPalette, size * 3);
+    lcopy(adr, (uint32_t)destPalette, size * 3);
 
     if (fadeOut) {
         start = steps;
         end = 0;
-        step = -1;
+        step = (byte)(-1);
     }
     else {
         start = 0;
@@ -663,18 +703,18 @@ fciInfo* fc_displayFCIFile(char* filename, byte x0, byte y0)
 void fc_scrollUp(void)
 {
     static byte y;
-    long bas0, bas1;
+    uint32_t bas0, bas1;
     for (y = gCurrentWin->y0; y < gCurrentWin->y0 + gCurrentWin->height - 1;
          y++) {
         bas0 = gFcioConfig->screenBase
-             + (gCurrentWin->x0 * 2 + (y * gScreenColumns * 2));
+             + (himemPtr)(gCurrentWin->x0 * 2 + (y * gScreenColumns * 2));
         bas1 = gFcioConfig->screenBase
-             + (gCurrentWin->x0 * 2 + ((y + 1) * gScreenColumns * 2));
-        lcopy(bas1, bas0, gCurrentWin->width * 2);
+             + (himemPtr)(gCurrentWin->x0 * 2 + ((y + 1) * gScreenColumns * 2));
+        lcopy((uint32_t)bas1, (uint32_t)bas0, gCurrentWin->width * 2);
         bas0 = gFcioConfig->colourBase
-             + (gCurrentWin->x0 * 2 + (y * gScreenColumns * 2));
+             + (himemPtr)(gCurrentWin->x0 * 2 + (y * gScreenColumns * 2));
         bas1 = gFcioConfig->colourBase
-             + (gCurrentWin->x0 * 2 + ((y + 1) * gScreenColumns * 2));
+             + (himemPtr)(gCurrentWin->x0 * 2 + ((y + 1) * gScreenColumns * 2));
         lcopy(bas1, bas0, gCurrentWin->width * 2);
     }
     fc_line(0, gCurrentWin->height - 1, gCurrentWin->width, 32,
@@ -684,25 +724,26 @@ void fc_scrollUp(void)
 void fc_scrollDown(void)
 {
     signed char y;
-    long bas0, bas1;
+    uint32_t bas0, bas1;
     for (y = gCurrentWin->y0 + gCurrentWin->height - 2; y >= gCurrentWin->y0;
          y--) {
         bas0 = gFcioConfig->screenBase
-             + (gCurrentWin->x0 * 2 + (y * gScreenColumns * 2));
+             + (himemPtr)(gCurrentWin->x0 * 2 + (y * gScreenColumns * 2));
         bas1 = gFcioConfig->screenBase
-             + (gCurrentWin->x0 * 2 + ((y + 1) * gScreenColumns * 2));
+             + (himemPtr)(gCurrentWin->x0 * 2 + ((y + 1) * gScreenColumns * 2));
         lcopy(bas0, bas1, gCurrentWin->width * 2);
+
         bas0 = gFcioConfig->colourBase
-             + (gCurrentWin->x0 * 2 + (y * gScreenColumns * 2));
+             + (himemPtr)(gCurrentWin->x0 * 2 + (y * gScreenColumns * 2));
         bas1 = gFcioConfig->colourBase
-             + (gCurrentWin->x0 * 2 + ((y + 1) * gScreenColumns * 2));
+             + (himemPtr)(gCurrentWin->x0 * 2 + ((y + 1) * gScreenColumns * 2));
         lcopy(bas0, bas1, gCurrentWin->width * 2);
     }
 
     fc_line(0, 0, gCurrentWin->width, 32, gCurrentWin->textcolor);
 }
 
-void cr()
+void cr(void)
 {
     gCurrentWin->xc = 0;
     gCurrentWin->yc++;
@@ -722,12 +763,12 @@ void fc_plotPetsciiChar(byte x, byte y, byte c, byte color, byte exAttr)
     lpoke(gFcioConfig->colourBase + adrOffset, 0);
 }
 
-byte fc_wherex()
+byte fc_wherex(void)
 {
     return gCurrentWin->xc;
 }
 
-byte fc_wherey()
+byte fc_wherey(void)
 {
     return gCurrentWin->yc;
 }
@@ -841,7 +882,14 @@ void fc_printf(const char* format, ...)
     char buf[160];
     va_list args;
     va_start(args, format);
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wformat-nonliteral"
+    vsnprintf(buf, 159, format, args);
+#pragma clang diagnostic pop
+#else
     vsprintf(buf, format, args);
+#endif
     va_end(args);
     fc_puts(buf);
 }
@@ -886,12 +934,12 @@ textwin* fc_makeWin(byte x0, byte y0, byte width, byte height)
     return aWin;
 }
 
-byte fc_kbhit()
+byte fc_kbhit(void)
 {
     return PEEK(0xD610U);
 }
 
-byte fc_cgetc()
+byte fc_cgetc(void)
 {
     byte k;
     while ((k = PEEK(0xD610U)) == 0)
@@ -913,6 +961,9 @@ char fc_getkey(void)
     return fc_cgetc();
 }
 
+#ifdef __clang__
+#pragma GCC warning "fc_getnum() is not implemented for clang yet"
+#else
 int fc_getnum(byte maxlen)
 {
     int res;
@@ -922,6 +973,7 @@ int fc_getnum(byte maxlen)
     free(inptr);
     return res;
 }
+#endif
 
 char* fc_input(byte maxlen)
 {
@@ -1002,21 +1054,21 @@ void fc_block(
 void fc_center(byte x, byte y, byte width, char* text)
 {
     static byte l;
-    l = strlen(text);
+    l = (byte)strlen(text);
     if (l >= width - 2) {
         fc_gotoxy(x, y);
         fc_puts(text);
         return;
     }
-    fc_gotoxy(-1 + x + width / 2 - l / 2, y);
+    fc_gotoxy((unsigned char)(-1 + x + width / 2 - l / 2), y);
     fc_puts(text);
 }
 
 void fc_setPalette(int num, byte red, byte green, byte blue)
 {
-    POKE(0xd100U + num, fc_nyblswap(red));
-    POKE(0xd200U + num, fc_nyblswap(green));
-    POKE(0xd300U + num, fc_nyblswap(blue));
+    POKE(0xd100U + (unsigned int)num, fc_nyblswap(red));
+    POKE(0xd200U + (unsigned int)num, fc_nyblswap(green));
+    POKE(0xd300U + (unsigned int)num, fc_nyblswap(blue));
 }
 
 char fc_getkeyP(byte x, byte y, const char* prompt)

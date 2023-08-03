@@ -5,7 +5,8 @@
                 "memory.h": "c",
                 "cstdlib": "c",
                 "fileio.h": "c",
-                "stddef.h": "c"
+                "stddef.h": "c",
+                "cstddef": "c"
         },
         "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools"
 }
