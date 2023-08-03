@@ -1,4 +1,4 @@
-.global _opendir, _readdir, _closedir	
+.global opendir, readdir, closedir	
 
 HYPPO_GETVERSION = $00; Output: A, X, Y, Z. Clear Z before exiting!
 HYPPO_CHDIR      = $0C
@@ -24,19 +24,13 @@ NAME_ERROR       = $FF
 
 .section code,"a"
 
-; closedir takes file descriptor from X
-_closedir:
+closedir:
 	tax
-	lda #HYPPO_CLOSEDIR
-	sta $D640
-	clv
+	hyppo HYPPO_CLOSEDIR; input X=file descriptor
 	rts
 	
-; Opendir takes no arguments and returns File descriptor in A
-_opendir:
-	lda #HYPPO_OPENDIR
-	sta $D640
-	clv
+opendir:
+	hyppo HYPPO_OPENDIR; output A=file descriptor
 	rts
 
 ; readdir takes the file descriptor returned by opendir as argument
@@ -50,42 +44,36 @@ _opendir:
 ; d_reclen = size of the dirent on disk (32 bytes)
 ; d_type = file/directory type
 ; d_name = name of file
-_readdir:
+readdir:
 	pha
-	;; First, clear out the dirent
+	; Zero out the dirent
 	ldx #0
 	txa
 l1:	sta _readdir_dirent, x	
 	dex
 	bne l1
-
-	;; Third, call the hypervisor trap
-	;; File descriptor gets passed in in X.
-	;; Result gets written to transfer area we setup at $0400
-	plx
-	ldy #>$0400 		; write dirent to $0400 
-	lda #HYPPO_READDIR
-	sta $D640
-	clv
-
-	bcs readDirSuccess
+	plx                 ; pull file descriptor from stack into X
+	ldy #>$0400 	    ; destination dirent is $0400
+	hyppo HYPPO_READDIR ; input X=file descriptor, Y MSB of destination
+	bcs readdir_ok
+	lda #0              ; return NULL pointer ...
+	ldx #0              ; ... if error
 	sta __rc2
-	ldx __rc3
+	stx __rc3
 	rts
-
-readDirSuccess:
-	;;  Copy file name
+readdir_ok:
+	; Copy file name
 	ldx #$3f
 l2:	lda $0400, x
 	sta _readdir_dirent + 4 + 2 + 4 + 2, x
 	dex
 	bpl l2
-	;; make sure it is null terminated
+	; ensure it is null terminated
 	ldx $0400 + 64
 	lda #$00
 	sta _readdir_dirent + 4 + 2 + 4 + 2, x
 
-	;; Inode = cluster from offset 64 + 1 + 12 = 77
+	; Inode = cluster from offset 64 + 1 + 12 = 77
 	ldx #$03
 l3:	lda $0477, x
 	sta _readdir_dirent + 0, x
@@ -105,9 +93,11 @@ l4:	lda $0400 + 64 + 1 + 12 + 4, x
 	lda $0400 + 64 + 1 + 12 + 4 + 4
 	sta _readdir_dirent + 4 + 2 + 4
 
-	;; Return address of dirent structure
+	; pointer to dirent structure returned through rc2, rc3
 	lda #<_readdir_dirent
 	ldx #>_readdir_dirent
+	sta __rc2
+	stx __rc3
 	rts
 
 .data
