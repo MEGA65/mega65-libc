@@ -28,9 +28,8 @@ setname_0100:
 	;; XXX Check for error (carry would be clear)
 	bcs setname_ok
 	lda #$ff
-	rts
 setname_ok:
-	RTS
+	rts
 	
 _closeall:
 	lda #$22
@@ -128,13 +127,14 @@ _open:
 
 open_file_exists:	
 	;; Actually call open
-	lda #$00
-	sta $d640
-	clv	
+	lda #$00; hyppo_getversion
+	sta $d640; Seems unused; sets A, X, Y, Z
+	clv
 	lda #$18
 	sta $D640
 	clv
 	ldx #$00
+	ldz #$00; clear Z due to hyppo_getversion
 	rts
 
 _close:
