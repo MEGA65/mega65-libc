@@ -60,9 +60,9 @@ uint8_t chdirroot(void);
  * or to the DOS in the disk drive units attached to the serial port.
  */
 struct hyppo_version {
-    uint8_t hdos_major;
     uint8_t hyppo_major;
     uint8_t hyppo_minor;
+    uint8_t hdos_major;
     uint8_t hdos_minor;
 };
 

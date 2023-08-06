@@ -187,18 +187,10 @@ _gethyppoversion:
 	sta ptr1+0
 	stx ptr1+1
 	lda #0
-	sta $D640; output to A, X, Y, Z
+	sta $D640    ; output to A, X, Y, Z
 	clv
-    phy
-    ldy #1
-    sta (ptr1), y; A -> offset 1 (hyppo major)
-    iny
-    txa
-    sta (ptr1), y; X -> offset 2 (hyppo minor)
-    iny
-    tza
-    sta (ptr1), y; Z -> offset 3 (hdos minor)
-	pla
-    ldz #0
-	sta (ptr1), z; Y -> offset 0 (hdos major)
+	neg          ; Activate 45GS02 virtual 32-bit register (holds A, X, Y, Z) ...
+	neg          ; ... also called the pseudo Q register
+	sta (ptr1),z ; indirectly store Q in pointer ("stq", Z offset ignored)
+    ldz #0       ; Z must be cleared before returning
     rts

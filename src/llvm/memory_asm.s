@@ -11,7 +11,7 @@ lpoke:
         ; 8-bit input value (rc4)
         lda __rc4
         ldz #0
-        nop
+        nop; switch to 32-bit mode
         sta (__rc5), z
         rts
 lpeek:
@@ -23,6 +23,6 @@ lpeek:
         lda __rc3
         sta __rc7
         ldz #0
-        nop
+        nop; switch to 32-bit mode
         lda (__rc4), z
         rts

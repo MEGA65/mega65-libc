@@ -7,6 +7,5 @@
                 "fileio.h": "c",
                 "stddef.h": "c",
                 "cstddef": "c"
-        },
-        "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools"
+        }
 }

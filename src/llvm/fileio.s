@@ -16,10 +16,11 @@ HYPPO_CHDIRROOT  = $3C; undocumented as of July 2023?
 HYPPO_TOGGLE_ROM_WRITE_PROTECT = $70
 FILE_ERROR       = $FF
 NAME_ERROR       = $FF
+HTRAP00          = $D640; Hypervisor trap, register A
 
 .macro hyppo hyppo_cmd
 	lda #\hyppo_cmd
-	sta $D640
+	sta HTRAP00
 	clv
 .endmacro
 
@@ -146,17 +147,9 @@ chdir_ok:
 	rts
 
 gethyppoversion:
-    hyppo HYPPO_GETVERSION; outputs to A, X, Y, Z
-    phy
-    ldy #1
-    sta (__rc2), y; A -> offset 1 (hyppo major)
-    iny
-    txa
-    sta (__rc2), y; X -> offset 2 (hyppo minor)
-    iny
-    tza
-    sta (__rc2), y; Z -> offset 3 (hdos minor)
-	pla
-    ldz #0
-	sta (__rc2), z; Y -> offset 0 (hdos major)
+    hyppo HYPPO_GETVERSION ; outputs to A, X, Y, Z = "Q"
+	neg                    ; Activate 45GS02 virtual 32-bit register (holds A, X, Y, Z) ...
+	neg                    ; ... also called the pseudo Q register
+	sta (__rc2),z          ; indirectly store Q to __rc2 pointer ("stq", Z offset ignored)
+    ldz #0                 ; Z must be cleared before returning
     rts
