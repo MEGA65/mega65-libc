@@ -55,9 +55,9 @@ toggle_rom_write_protect:
 	rts
 	
 read512:
-	hyppo HYPPO_READFILE
-	stx __rc4; bytes read -> X, Y ...
-	sty __rc5; ... stash these for later use
+	hyppo HYPPO_READFILE; outputs bytes read -> X, Y
+	stx __rc4
+	sty __rc5
 
 	; ensure SD buffer is selected, not FDC buffer
 	lda #$80
@@ -106,11 +106,8 @@ copysectorbuffer_destaddr:
 
 .section code,"a"
 open:
-    ; filename ptr -> A, X
-	lda __rc2
-	ldx __rc3
 	jsr copy_rc2_string_to_0100
-	jsr setname_0100	
+	jsr setname_0100
 	hyppo HYPPO_FINDFILE
 	bcs findfile_ok
 	lda #FILE_ERROR
@@ -129,9 +126,6 @@ chdirroot:
 	rts
 	
 chdir:
-    ; Get pointer to file name
-	lda __rc2
-	ldx __rc3
 	jsr copy_rc2_string_to_0100
 	jsr setname_0100	
 	hyppo HYPPO_FINDFILE
