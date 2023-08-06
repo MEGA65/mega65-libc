@@ -55,9 +55,6 @@ toggle_rom_write_protect:
 	rts
 	
 read512:
-	; pointer to buffer -> A, X
-	lda __rc2
-	ldx __rc3
 	hyppo HYPPO_READFILE
 	stx __rc4; bytes read -> X, Y ...
 	sty __rc5; ... stash these for later use
@@ -69,7 +66,7 @@ read512:
 	; Copy the full 512 bytes from the sector buffer at $FFD6E00
 	; (This saves the need to mess with mapping/unmapping the sector
 	; buffer).
-	; Get address to save to
+	; Input buffer pointer in rc2 and rc3
 	lda __rc2
 	sta copysectorbuffer_destaddr+0
 	lda __rc3
