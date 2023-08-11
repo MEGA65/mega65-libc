@@ -1,3 +1,9 @@
+/**
+ * @file dirent.h
+ * @brief Directory entry functions
+ * @todo Assembly implementation on LLVM is probably broken
+ */
+
 #ifndef __MEGA65_DIRENT_H
 #define __MEGA65_DIRENT_H
 

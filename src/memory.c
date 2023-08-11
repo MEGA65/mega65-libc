@@ -8,6 +8,9 @@ struct dmagic_dmalist dmalist;
 uint8_t dma_byte;
 #endif
 
+/**
+ * @brief Perform DMA operation
+ */
 void do_dma(void)
 {
     //  unsigned char i;

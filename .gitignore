@@ -78,3 +78,8 @@ DartConfiguration.tcl
 Testing
 CTestTestfile.cmake
 .swp
+
+# doxygen
+doc/html
+doc/xml
+doc/latex

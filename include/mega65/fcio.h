@@ -1,6 +1,10 @@
 /**
  * @file fcio.h
  * @brief Full colour mode i/o library for the MEGA65
+ *
+ * Takes care of displaying text and images in full colour and super-extended
+ * character modes. It has its own tutorial, located
+ * [here](https://steph72.github.io/fcio-tutorial).
  */
 
 #ifndef __MEGA65_FCIO_H
@@ -11,26 +15,26 @@
 
 #define FCBUFSIZE 0xff
 
-#define COLOUR_BLACK 0
-#define COLOUR_WHITE 1
-#define COLOUR_RED 2
-#define COLOUR_CYAN 3
-#define COLOUR_PURPLE 4
-#define COLOUR_GREEN 5
-#define COLOUR_BLUE 6
-#define COLOUR_YELLOW 7
-#define COLOUR_ORANGE 8
-#define COLOUR_BROWN 9
-#define COLOUR_PINK 10
-#define COLOUR_GREY1 11
-#define COLOUR_DARKGREY 11
-#define COLOUR_GREY2 12
-#define COLOUR_GREY 12
-#define COLOUR_MEDIUMGREY 12
-#define COLOUR_LIGHTGREEN 13
-#define COLOUR_LIGHTBLUE 14
-#define COLOUR_GREY3 15
-#define COLOUR_LIGHTGREY 15
+#define COLOUR_BLACK 0       //!< Black color
+#define COLOUR_WHITE 1       //!< White color
+#define COLOUR_RED 2         //!< Red color
+#define COLOUR_CYAN 3        //!< Cyan color
+#define COLOUR_PURPLE 4      //!< Purple color
+#define COLOUR_GREEN 5       //!< Green color
+#define COLOUR_BLUE 6        //!< Blue color
+#define COLOUR_YELLOW 7      //!< Yellow color
+#define COLOUR_ORANGE 8      //!< Orange color
+#define COLOUR_BROWN 9       //!< Brown color
+#define COLOUR_PINK 10       //!< Pink color
+#define COLOUR_GREY1 11      //!< Grey1 color
+#define COLOUR_DARKGREY 11   //!< Dark grey color
+#define COLOUR_GREY2 12      //!< Grey2 color
+#define COLOUR_GREY 12       //!< Grey color
+#define COLOUR_MEDIUMGREY 12 //!< Medium grey color
+#define COLOUR_LIGHTGREEN 13 //!< Light green color
+#define COLOUR_LIGHTBLUE 14  //!< Light blue color
+#define COLOUR_GREY3 15      //!< Grey3 color
+#define COLOUR_LIGHTGREY 15  //!< Light grey color
 
 #ifndef byte
 typedef unsigned char byte;

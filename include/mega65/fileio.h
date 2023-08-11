@@ -1,3 +1,8 @@
+/**
+ * @file fileio.h
+ * @brief File I/O functions
+ */
+
 #ifndef __MEGA65_FILEIO_H
 #define __MEGA65_FILEIO_H
 
@@ -6,7 +11,9 @@
 
 void toggle_rom_write_protect(void);
 
-/** Closes all open files */
+/**
+ * @brief Closes all open files
+ */
 void closeall(void);
 
 /**
