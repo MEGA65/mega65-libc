@@ -1,6 +1,6 @@
 ; To see how LLVM-MOS encodes this file, run:
 ;
-;    llvm-mc -mcpu=mos65ce02 --show-encoding fileio.s
+;    llvm-mc -mcpu=mos45gs02 --show-encoding fileio.s
 ;
 .global closeall, open, close, read512, toggle_rom_write_protect, chdir, chdirroot
 .global gethyppoversion
