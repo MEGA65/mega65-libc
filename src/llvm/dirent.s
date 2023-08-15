@@ -1,3 +1,7 @@
+; To see how LLVM-MOS encodes this file, run:
+;
+;    llvm-mc -mcpu=mos45gs02 --show-encoding dirent.s
+;
 .global opendir, readdir, closedir
 
 HYPPO_GETVERSION = $00; Output: A, X, Y, Z. Clear Z before exiting!

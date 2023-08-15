@@ -1,3 +1,7 @@
+; To see how LLVM-MOS encodes this file, run:
+;
+;    llvm-mc -mcpu=mos65ce02 --show-encoding fileio.s
+;
 .global closeall, open, close, read512, toggle_rom_write_protect, chdir, chdirroot
 .global gethyppoversion
 
@@ -138,9 +142,7 @@ chdir_ok:
 	rts
 
 gethyppoversion:
-    hyppo HYPPO_GETVERSION ; outputs to A, X, Y, Z = "Q"
-	neg                    ; Activate 45GS02 virtual 32-bit register (holds A, X, Y, Z) ...
-	neg                    ; ... also called the pseudo Q register
-	sta (__rc2),z          ; indirectly store Q to __rc2 pointer ("stq", Z offset ignored)
+    hyppo HYPPO_GETVERSION ; outputs to Q = A, X, Y, Z
+    stq (__rc2)            ; store Q to __rc2 pointer
     ldz #0                 ; Z must be cleared before returning
     rts

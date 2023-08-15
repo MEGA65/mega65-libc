@@ -190,7 +190,7 @@ _gethyppoversion:
 	sta $D640    ; output to A, X, Y, Z
 	clv
 	neg          ; Activate 45GS02 virtual 32-bit register (holds A, X, Y, Z) ...
-	neg          ; ... also called the pseudo Q register
+	neg          ; ... also called the Q pseudo register
 	sta (ptr1),z ; indirectly store Q in pointer ("stq", Z offset ignored)
     ldz #0       ; Z must be cleared before returning
     rts
