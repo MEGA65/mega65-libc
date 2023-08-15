@@ -1,3 +1,7 @@
+; To see how LLVM-MOS encodes this file, run:
+;
+;    llvm-mc -mcpu=mos45gs02 --show-encoding memory_asm.s
+;
 .global lpoke, lpeek
 .section code, "a"
 lpoke:
@@ -11,8 +15,7 @@ lpoke:
         ; 8-bit input value (rc4)
         lda __rc4
         ldz #0
-        nop; switch to 32-bit mode
-        sta (__rc5), z
+        sta [__rc5], z
         rts
 lpeek:
         ; copy 32-bit input address (a, x, rc2-rc3) to rc4-rc7
@@ -23,6 +26,5 @@ lpeek:
         lda __rc3
         sta __rc7
         ldz #0
-        nop; switch to 32-bit mode
-        lda (__rc4), z
+        lda [__rc4], z
         rts
