@@ -15,8 +15,10 @@ void debug_msg(char* msg)
         __asm__("CLV");
 #else
         asm volatile("st%0 $d643\n"
-                     "clv\n" ::"a"(*msg)
-                     : "a");
+                     "clv\n"
+                     :           /* no output operands */
+                     : "a"(*msg) /* input operands */
+                     : "a" /* clobber list */);
 #endif
         msg++;
     }
@@ -27,15 +29,17 @@ void debug_msg(char* msg)
     __asm__("LDA #$0a");
     __asm__("STA $D643");
     __asm__("CLV");
-    __asm__("LDZ #$0");
 #else
+    // clearing Z seems to fix occasional xemu freeze. Why?
     asm volatile("lda #$0d\n"
                  "sta $d643\n"
                  "clv\n"
                  "lda #$0a\n"
                  "sta $d643\n"
                  "clv\n"
-                 "ldz #0\n" :: // clearing Z seems to fix a xemu freeze. Why?
-                     : "a");
+                 "ldz #0\n"
+                 : /* no output operands */
+                 : /* no input operands*/
+                 : "a" /* clobber list */);
 #endif
 }
