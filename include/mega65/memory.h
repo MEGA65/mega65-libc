@@ -71,7 +71,11 @@ void mega65_io_enable(void);
  * @param address 28-bit address
  * @return uint8_t with the value at the given address
  */
+#ifdef __clang__
+uint8_t lpeek(uint32_t address) __attribute__((leaf));
+#else
 uint8_t lpeek(uint32_t address);
+#endif
 uint8_t lpeek_debounced(uint32_t address);
 
 /**
@@ -87,7 +91,11 @@ uint8_t dma_peek(uint32_t address);
  * @param address 28-bit address
  * @param value Single byte to write to the given address
  */
+#ifdef __clang__
+void lpoke(uint32_t address, uint8_t value) __attribute__((leaf));
+#else
 void lpoke(uint32_t address, uint8_t value);
+#endif
 
 /**
  * @brief Poke a byte to the given address using DMA copy
@@ -136,6 +144,8 @@ void lfill_skip(
 #define PEEK16(X) (*(volatile uint16_t*)(X))
 /// Peek four bytes from the given address
 #define PEEK32(X) (*(volatile uint32_t*)(X))
+/// Peek eight bytes from the given address
+#define PEEK64(X) (*(volatile uint64_t*)(X))
 #else
 /// Poke a byte to the given address
 #define POKE(X, Y) (*(uint8_t*)(X)) = Y
@@ -149,6 +159,8 @@ void lfill_skip(
 #define PEEK16(X) (*(uint16_t*)(X))
 /// Peek four bytes from the given address
 #define PEEK32(X) (*(uint32_t*)(X))
+/// Peek eight bytes from the given address
+#define PEEK64(X) (*(uint64_t*)(X))
 #endif
 
 #endif // __MEGA65_MEMORY_H
