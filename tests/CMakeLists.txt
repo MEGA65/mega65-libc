@@ -11,6 +11,7 @@ function(TEST NAME)
     endif()
 endfunction()
 
+TEST(test-math)
 TEST(test-fileio)
 TEST(test-integer-size)
 TEST(test-memory)

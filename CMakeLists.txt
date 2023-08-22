@@ -17,6 +17,7 @@ set(objects
     src/fat32.c
     src/fcio.c
     src/hal.c
+    src/math.c
     src/memory.c
     src/mouse.c
     src/random.c
@@ -31,6 +32,7 @@ set(headers
     include/mega65/dirent.h
     include/mega65/fileio.h
     include/mega65/hal.h
+    include/mega65/math.h
     include/mega65/memory.h
     include/mega65/mouse.h
     include/mega65/random.h

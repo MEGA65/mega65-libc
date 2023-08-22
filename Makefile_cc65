@@ -29,6 +29,7 @@ LIB_OBJECTS = \
 	src/fat32.o \
 	src/fcio.o \
 	src/hal.o \
+	src/math.o \
 	src/memory.o \
 	src/mouse.o \
 	src/random.o \
