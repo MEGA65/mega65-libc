@@ -6,6 +6,8 @@
                 "cstdlib": "c",
                 "fileio.h": "c",
                 "stddef.h": "c",
-                "cstddef": "c"
+                "cstddef": "c",
+                "stdint.h": "c",
+                "tests.h": "c"
         }
 }
