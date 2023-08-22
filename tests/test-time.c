@@ -35,4 +35,5 @@ int main(void)
     assert_eq(tm.tm_yday < 366, 1);
 
     xemu_exit(EXIT_SUCCESS);
+    return 0;
 }

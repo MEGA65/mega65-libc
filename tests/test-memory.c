@@ -71,4 +71,5 @@ int main(void)
     assert_eq(PEEK32(0x3000), 0xAABBCCDD);
 
     xemu_exit(EXIT_SUCCESS);
+    return 0;
 }

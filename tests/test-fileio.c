@@ -86,4 +86,5 @@ int main(void)
     closeall();
 
     xemu_exit(EXIT_SUCCESS);
+    return 0;
 }
