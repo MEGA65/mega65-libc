@@ -2,8 +2,7 @@
 ;
 ;    llvm-mc -mcpu=mos45gs02 --show-encoding fileio.s
 ;
-.global closeall, open, close, read512, toggle_rom_write_protect, chdir, chdirroot
-.global gethyppoversion
+.section .text,"ax",@progbits
 
 HYPPO_GETVERSION = $00; Output: A, X, Y, Z. Clear Z before exiting!
 HYPPO_CHDIR      = $0C
@@ -28,8 +27,6 @@ HTRAP00          = $D640; Hypervisor trap, register A
 	clv
 .endmacro
 
-.section code,"a"
-
 copy_rc2_string_to_0100:
 	; copy file name
 	ldy #0
@@ -50,14 +47,17 @@ setname_0100:
 setname_ok:
 	rts
 	
+.global closeall
 closeall:
 	hyppo HYPPO_CLOSEALL
 	rts
 
+.global toggle_rom_write_protect
 toggle_rom_write_protect:
 	hyppo HYPPO_TOGGLE_ROM_WRITE_PROTECT
 	rts
-	
+
+.global read512
 read512:
 	hyppo HYPPO_READFILE; outputs bytes read -> X, Y
 	stx __rc4
@@ -108,7 +108,7 @@ copysectorbuffer_destaddr:
 	.byte $0   ;; of bank $0
 	.short $0000 ;; modulo (unused)
 
-.section code,"a"
+.global open
 open:
 	jsr copy_rc2_string_to_0100
 	jsr setname_0100
@@ -120,15 +120,18 @@ findfile_ok:
 	hyppo HYPPO_OPENFILE; outputs to A
 	rts
 
+.global close
 close:
 	tax;
 	hyppo HYPPO_CLOSEFILE; input: X
 	rts
 
+.global chdirroot
 chdirroot:
 	hyppo HYPPO_CHDIRROOT
 	rts
-	
+
+.global chdir	
 chdir:
 	jsr copy_rc2_string_to_0100
 	jsr setname_0100	
@@ -141,6 +144,7 @@ chdir_ok:
 	hyppo HYPPO_OPENFILE; outputs to A
 	rts
 
+.global gethyppoversion
 gethyppoversion:
     hyppo HYPPO_GETVERSION ; outputs to Q = A, X, Y, Z
     stq (__rc2)            ; store Q to __rc2 pointer

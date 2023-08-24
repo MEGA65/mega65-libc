@@ -2,7 +2,7 @@
 ;
 ;    llvm-mc -mcpu=mos45gs02 --show-encoding dirent.s
 ;
-.global opendir, readdir, closedir
+.section .text,"ax",@progbits
 
 HYPPO_GETVERSION = $00; Output: A, X, Y, Z. Clear Z before exiting!
 HYPPO_CHDIR      = $0C
@@ -26,13 +26,13 @@ DST_DIRENT       = $0400
 	clv
 .endmacro
 
-.section code,"a"
-
+.global closedir
 closedir:
 	tax
 	hyppo HYPPO_CLOSEDIR; input X=file descriptor
 	rts
-	
+
+.global opendir
 opendir:
 	hyppo HYPPO_OPENDIR; output A=file descriptor
 	rts
@@ -48,6 +48,7 @@ opendir:
 ; d_reclen = size of the dirent on disk (32 bytes)
 ; d_type = file/directory type
 ; d_name = name of file
+.global readdir
 readdir:
 	pha                 ; store file descriptor on stack
 	ldx #0              ; zero out dirent
@@ -102,7 +103,7 @@ l4:	lda DST_DIRENT + 64 + 1 + 12 + 4, x
 	stx __rc3
 	rts
 
-.data
+.section .data
 _readdir_dirent:
 	.short 0,0   	; d_ino
 	.short 0		; d_off

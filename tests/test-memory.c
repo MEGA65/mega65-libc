@@ -36,11 +36,12 @@ int main(void)
 
     // lpoke and lpeek
     lpoke(0x4000, 13);
-    lpoke(0x4001, 9);
-    lpoke(0x4002, 7);
     assert_eq(lpeek(0x4000), 13);
+    lpoke(0x4001, 9);
     assert_eq(lpeek(0x4001), 9);
+    lpoke(0x4002, 7);
     assert_eq(lpeek(0x4002), 7);
+    assert_eq(501, 501);
 
     // dma_poke and dma_peek
     dma_poke(0x4000, 9);
