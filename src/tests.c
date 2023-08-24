@@ -49,37 +49,28 @@ void unit_test_report(
     __asm__("LDA %v", __tests_out);
     __asm__("STA $D643");
     __asm__("CLV");
-#else
-    asm volatile("st%0 $D643\n"
-                 "clv" ::"a"((uint8_t)(issue & 0xff))
-                 : "a");
-#endif
-#ifdef __CC65__
     __tests_out = issue >> 8;
     __asm__("LDA %v", __tests_out);
     __asm__("STA $D643");
     __asm__("CLV");
-#else
-    asm volatile("st%0 $D643\n"
-                 "clv" ::"a"((uint8_t)(issue >> 8))
-                 : "a");
-#endif
-#ifdef __CC65__
     __tests_out = sub;
     __asm__("LDA %v", __tests_out);
     __asm__("STA $D643");
     __asm__("CLV");
-#else
-    asm volatile("st%0 $D643\n"
-                 "clv" ::"a"(sub)
-                 : "a");
-#endif
-#ifdef __CC65__
     __tests_out = status;
     __asm__("LDA %v", __tests_out);
     __asm__("STA $D643");
     __asm__("CLV");
 #else
+    asm volatile("st%0 $D643\n"
+                 "clv" ::"a"((uint8_t)(issue & 0xff))
+                 : "a");
+    asm volatile("st%0 $D643\n"
+                 "clv" ::"a"((uint8_t)(issue >> 8))
+                 : "a");
+    asm volatile("st%0 $D643\n"
+                 "clv" ::"a"(sub)
+                 : "a");
     asm volatile("st%0 $D643\n"
                  "clv" ::"a"(status)
                  : "a");
