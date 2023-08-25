@@ -2,8 +2,8 @@
 ;
 ;    llvm-mc -mcpu=mos45gs02 --show-encoding memory_asm.s
 ;
-.section .text,"ax",@progbits
 .global lpoke
+.section .text.lpoke,"ax",@progbits
 lpoke:
         ; copy 32-bit input address (a, x, rc2-rc3) to rc5-rc8
         sta __rc5
@@ -18,8 +18,9 @@ lpoke:
         sta [__rc5], z
         rts
 
-.global lpeek
-lpeek:
+;.global lpeek
+.section .text.llpeek,"ax",@progbits
+llpeek:
         ; copy 32-bit input address (a, x, rc2-rc3) to rc4-rc7
         sta __rc4
         stx __rc5

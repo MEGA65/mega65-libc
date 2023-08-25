@@ -2,8 +2,6 @@
 ;
 ;    llvm-mc -mcpu=mos45gs02 --show-encoding fileio.s
 ;
-.section .text,"ax",@progbits
-
 HYPPO_GETVERSION = $00; Output: A, X, Y, Z. Clear Z before exiting!
 HYPPO_CHDIR      = $0C
 HYPPO_OPENDIR    = $12; Output: A=file descriptor
@@ -27,6 +25,7 @@ HTRAP00          = $D640; Hypervisor trap, register A
 	clv
 .endmacro
 
+.section .text.fileio_copy_rc2,"ax",@progbits
 copy_rc2_string_to_0100:
 	; copy file name
 	ldy #0
@@ -48,16 +47,19 @@ setname_ok:
 	rts
 	
 .global closeall
+.section .text.fileio_closeall,"ax",@progbits
 closeall:
 	hyppo HYPPO_CLOSEALL
 	rts
 
 .global toggle_rom_write_protect
+.section .text.fileio_toggle_rom_write_protect,"ax",@progbits
 toggle_rom_write_protect:
 	hyppo HYPPO_TOGGLE_ROM_WRITE_PROTECT
 	rts
 
 .global read512
+.section .text.fileio_read512,"ax",@progbits
 read512:
 	hyppo HYPPO_READFILE; outputs bytes read -> X, Y
 	stx __rc4
@@ -89,7 +91,7 @@ read512:
 	ldx __rc5; ... through A, X
 	rts
 
-.data
+.section .data.fileio_dmalist_copysectorbuffer
 dmalist_copysectorbuffer:
 	; Copy $FFD6E00 - $FFD6FFF down to low memory 
 	; MEGA65 Enhanced DMA options
@@ -109,6 +111,7 @@ copysectorbuffer_destaddr:
 	.short $0000 ;; modulo (unused)
 
 .global open
+.section .text.fileio_open,"ax",@progbits
 open:
 	jsr copy_rc2_string_to_0100
 	jsr setname_0100
@@ -121,17 +124,20 @@ findfile_ok:
 	rts
 
 .global close
+.section .text.fileio_close,"ax",@progbits
 close:
 	tax;
 	hyppo HYPPO_CLOSEFILE; input: X
 	rts
 
 .global chdirroot
+.section .text.fileio_chdirroot,"ax",@progbits
 chdirroot:
 	hyppo HYPPO_CHDIRROOT
 	rts
 
 .global chdir	
+.section .text.fileio_chdir,"ax",@progbits
 chdir:
 	jsr copy_rc2_string_to_0100
 	jsr setname_0100	
@@ -145,6 +151,7 @@ chdir_ok:
 	rts
 
 .global gethyppoversion
+.section .text.fileio_gethyppoversion,"ax",@progbits
 gethyppoversion:
     hyppo HYPPO_GETVERSION ; outputs to Q = A, X, Y, Z
     stq (__rc2)            ; store Q to __rc2 pointer
