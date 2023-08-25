@@ -18,9 +18,9 @@ lpoke:
         sta [__rc5], z
         rts
 
-;.global lpeek
-.section .text.llpeek,"ax",@progbits
-llpeek:
+.global lpeek
+.section .text.lpeek,"ax",@progbits
+lpeek:
         ; copy 32-bit input address (a, x, rc2-rc3) to rc4-rc7
         sta __rc4
         stx __rc5
