@@ -13,29 +13,26 @@
 #include <stddef.h>
 
 #ifdef __clang__
-void toggle_rom_write_protect(void) __attribute__((leaf));
-#else
-void toggle_rom_write_protect(void);
+__attribute__((leaf))
 #endif
+void toggle_rom_write_protect(void);
 
 /**
  * @brief Closes all open files
  */
 #ifdef __clang__
-void closeall(void) __attribute__((leaf));
-#else
-void closeall(void);
+__attribute__((leaf))
 #endif
+void closeall(void);
 
 /**
  * @brief Close a single file
  * @param fd File descriptor pointing to file to close
  */
 #ifdef __clang__
-void close(uint8_t fd) __attribute__((leaf));
-#else
-void close(uint8_t fd);
+__attribute__((leaf))
 #endif
+void close(uint8_t fd);
 
 /**
  * @brief Open file
@@ -43,10 +40,9 @@ void close(uint8_t fd);
  * @return File descriptor or `0xff` if error
  */
 #ifdef __clang__
-uint8_t open(char* filename) __attribute__((leaf));
-#else
-uint8_t open(char* filename);
+__attribute__((leaf))
 #endif
+uint8_t open(char* filename);
 
 /**
  * @brief Read up to 512 bytes from file
@@ -54,10 +50,9 @@ uint8_t open(char* filename);
  * @return Number of bytes read
  */
 #ifdef __clang__
-size_t read512(uint8_t* buffer) __attribute__((leaf));
-#else
-size_t read512(uint8_t* buffer);
+__attribute__((leaf))
 #endif
+size_t read512(uint8_t* buffer);
 
 /**
  * @brief Change working directory
@@ -66,20 +61,18 @@ size_t read512(uint8_t* buffer);
  * @note Only accepts one directory segment at a time
  */
 #ifdef __clang__
-uint8_t chdir(char* filename) __attribute__((leaf));
-#else
-uint8_t chdir(char* filename);
+__attribute__((leaf))
 #endif
+uint8_t chdir(char* filename);
 
 /**
  * @brief Change working directory to the root directory
  * @return Error code (currently unused)
  */
 #ifdef __clang__
-uint8_t chdirroot(void) __attribute__((leaf));
-#else
-uint8_t chdirroot(void);
+__attribute__((leaf))
 #endif
+uint8_t chdirroot(void);
 
 /**
  * @brief Struct for holding version information of the hypervisor
@@ -99,9 +92,8 @@ struct hyppo_version {
  * @param version Pointer to a `struct hyppo_version` to fill
  */
 #ifdef __clang__
-void gethyppoversion(struct hyppo_version* version) __attribute__((leaf));
-#else
-void gethyppoversion(struct hyppo_version* version);
+__attribute__((leaf))
 #endif
+void gethyppoversion(struct hyppo_version* version);
 
 #endif // __MEGA65_FILEIO_H

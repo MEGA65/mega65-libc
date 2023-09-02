@@ -13,24 +13,21 @@
 
 /// Open a directory
 #ifdef __clang__
-unsigned char opendir(void) __attribute__((leaf));
-#else
-unsigned char opendir(void);
+__attribute__((leaf))
 #endif
+unsigned char opendir(void);
 
 /// Read directory entry
 #ifdef __clang__
-struct m65_dirent* readdir(unsigned char) __attribute__((leaf));
-#else
-struct m65_dirent* readdir(unsigned char);
+__attribute__((leaf))
 #endif
+struct m65_dirent* readdir(unsigned char);
 
 /// Close directory entry
 #ifdef __clang__
-void closedir(unsigned char) __attribute__((leaf));
-#else
-void closedir(unsigned char);
+__attribute__((leaf))
 #endif
+void closedir(unsigned char);
 
 /// Structure describing an open directory
 struct m65_dirent {

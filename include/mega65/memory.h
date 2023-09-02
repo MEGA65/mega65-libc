@@ -25,11 +25,7 @@
 /**
  * @brief DMA list structure
  */
-#ifdef __clang__
-struct __attribute__((__packed__)) dmagic_dmalist {
-#else
 struct dmagic_dmalist {
-#endif
     // Enhanced DMA options
     uint8_t option_0b;
     uint8_t option_80;
@@ -72,10 +68,10 @@ void mega65_io_enable(void);
  * @return uint8_t with the value at the given address
  */
 #ifdef __clang__
-uint8_t lpeek(uint32_t address) __attribute__((leaf));
-#else
-uint8_t lpeek(uint32_t address);
+__attribute__((leaf))
 #endif
+uint8_t lpeek(uint32_t address);
+
 uint8_t lpeek_debounced(uint32_t address);
 
 /**
@@ -92,10 +88,9 @@ uint8_t dma_peek(uint32_t address);
  * @param value Single byte to write to the given address
  */
 #ifdef __clang__
-void lpoke(uint32_t address, uint8_t value) __attribute__((leaf));
-#else
-void lpoke(uint32_t address, uint8_t value);
+__attribute__((leaf))
 #endif
+void lpoke(uint32_t address, uint8_t value);
 
 /**
  * @brief Poke a byte to the given address using DMA copy
@@ -131,7 +126,6 @@ void lfill(uint32_t destination_address, uint8_t value, size_t count);
 void lfill_skip(
     uint32_t destination_address, uint8_t value, size_t count, uint8_t skip);
 
-#ifdef __clang__
 /// Poke a byte to the given address
 #define POKE(X, Y) (*(volatile uint8_t*)(X)) = Y
 /// Poke two bytes to the given address
@@ -144,23 +138,10 @@ void lfill_skip(
 #define PEEK16(X) (*(volatile uint16_t*)(X))
 /// Peek four bytes from the given address
 #define PEEK32(X) (*(volatile uint32_t*)(X))
+
+#ifdef __clang__
 /// Peek eight bytes from the given address
 #define PEEK64(X) (*(volatile uint64_t*)(X))
-#else
-/// Poke a byte to the given address
-#define POKE(X, Y) (*(uint8_t*)(X)) = Y
-/// Poke two bytes to the given address
-#define POKE16(X, Y) (*(uint16_t*)(X)) = Y
-/// Poke four bytes to the given address
-#define POKE32(X, Y) (*(uint32_t*)(X)) = Y
-/// Peek a byte from the given address
-#define PEEK(X) (*(uint8_t*)(X))
-/// Peek two bytes from the given address
-#define PEEK16(X) (*(uint16_t*)(X))
-/// Peek four bytes from the given address
-#define PEEK32(X) (*(uint32_t*)(X))
-/// Peek eight bytes from the given address
-#define PEEK64(X) (*(uint64_t*)(X))
 #endif
 
 #endif // __MEGA65_MEMORY_H
