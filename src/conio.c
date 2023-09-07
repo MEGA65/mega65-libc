@@ -71,6 +71,7 @@ static unsigned char g_curScreenH = 0;
 static const unsigned char hexDigits[] = { '0', '1', '2', '3', '4', '5', '6',
     '7', '8', '9', 0x41, 0x42, 0x43, 0x44, 0x45, 0x46 };
 
+#ifdef __CC65__
 // Drawing characters for `box` call
 //
 //                                      NONE, INNER   MID    OUTER    ROUND
@@ -82,6 +83,7 @@ const unsigned char chHorzTop[] = { 0x20, 0x64, 0x43, 0x77, 0x43 };
 const unsigned char chHorzBottom[] = { 0x20, 0x63, 0x43, 0x6F, 0x43 };
 const unsigned char chVertRight[] = { 0x20, 0x74, 0x5D, 0x6A, 0x5D };
 const unsigned char chVertLeft[] = { 0x20, 0x6A, 0x5D, 0x74, 0x5D };
+#endif
 
 // Hash function for cprintf ESCAPE codes
 
@@ -622,7 +624,16 @@ void box(const RECT* rc, unsigned char color, unsigned char style,
     register unsigned char i = 0;
     const unsigned char len = rc->right - rc->left;
     unsigned char prevCol = g_curTextColor;
-
+#ifndef __CC65__
+    const unsigned char chTopLeft[] = { 0x20, 0x20, 0x70, 0x4F, 0x55 };
+    const unsigned char chTopRight[] = { 0x20, 0x20, 0x6E, 0x50, 0x49 };
+    const unsigned char chBottomLeft[] = { 0x20, 0x20, 0x6D, 0x4C, 0x4A };
+    const unsigned char chBottomRight[] = { 0x20, 0x20, 0x7D, 0x7A, 0x4B };
+    const unsigned char chHorzTop[] = { 0x20, 0x64, 0x43, 0x77, 0x43 };
+    const unsigned char chHorzBottom[] = { 0x20, 0x63, 0x43, 0x6F, 0x43 };
+    const unsigned char chVertRight[] = { 0x20, 0x74, 0x5D, 0x6A, 0x5D };
+    const unsigned char chVertLeft[] = { 0x20, 0x6A, 0x5D, 0x74, 0x5D };
+#endif
     textcolor(color);
     if (clear) {
         fillrect(rc, ' ', g_curTextColor);
