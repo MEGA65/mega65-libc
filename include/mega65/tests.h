@@ -29,6 +29,15 @@
  */
 void xemu_exit(int exit_code);
 
+/**
+ * @brief Assert if two integers are equal; if not, quit Xemu with EXIT_FAILURE
+ */
+#ifdef __CC65__
+void assert_eq(int32_t a, int32_t b);
+#else
+void assert_eq(int64_t a, int64_t b);
+#endif
+
 // convenience methods
 
 /* \m65libsummary{unit_test_setup}{Setup of the unit test reporting to the host

@@ -29,6 +29,7 @@ LIB_OBJECTS = \
 	src/fat32.o \
 	src/fcio.o \
 	src/hal.o \
+	src/math.o \
 	src/memory.o \
 	src/mouse.o \
 	src/random.o \
@@ -73,7 +74,7 @@ test: | $(TESTS_PRGS)
 	    echo "Cannot run tests as xmega65 (Xemu) is not in your path."; \
 	else \
 	    for test in $(TESTS_PRGS); do \
-	        if $(XEMU) -testing -sleepless -headless -model 3 -prg $$test &> /dev/null; then \
+	        if $(XEMU) -testing -hyperserialascii -sleepless -headless -model 3 -prg $$test &> /dev/null; then \
                     echo "Test passed: $$test"; \
 	        else \
 	            echo "Test FAILED: $$test"; \

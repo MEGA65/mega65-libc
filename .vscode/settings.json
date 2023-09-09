@@ -1,3 +1,13 @@
 {
-        "editor.formatOnSave": true
+        "clang-tidy.buildPath": "build",
+        "editor.formatOnSave": true,
+        "files.associations": {
+                "memory.h": "c",
+                "cstdlib": "c",
+                "fileio.h": "c",
+                "stddef.h": "c",
+                "cstddef": "c",
+                "stdint.h": "c",
+                "tests.h": "c"
+        }
 }

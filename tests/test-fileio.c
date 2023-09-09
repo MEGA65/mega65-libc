@@ -14,30 +14,44 @@
 #include <mega65/tests.h>
 #include <stdlib.h>
 
-#define assert_eq(A, B)                                                        \
-    if (A != B)                                                                \
-    xemu_exit(EXIT_FAILURE)
+#define FILE_ERROR 0xff
 
 // Input file on SD card: CHARROM.M65
 char filename[11 + 1] = { 0x63, 0x68, 0x61, 0x72, 0x72, 0x6f, 0x6d, 0x2e, 0x6d,
     0x36, 0x35, 0x00 };
+char* unknown_filename = "PHANTOM_FILE";
 uint8_t file;
 uint8_t error;
 uint8_t buffer[512];
 size_t num_bytes_read;
 
+struct hyppo_version version;
+
 int main(void)
 {
-    // Tests run in C64 mode so we need to enable mega65
+    // No effect on MEGA65 target
     mega65_io_enable();
+
+    // Get hypervisor version
+    gethyppoversion(&version);
+    assert_eq(version.hyppo_major >= 1, 1);
+    assert_eq(version.hyppo_minor >= 2, 1);
+    assert_eq(version.hdos_major >= 1, 1);
+    assert_eq(version.hdos_minor >= 2, 1);
 
     // Good practice
     closeall();
     error = chdirroot();
 
-    // Check open status
+    // Try to open non-existent file
+    file = open(unknown_filename);
+    if (file != FILE_ERROR) {
+        xemu_exit(EXIT_FAILURE);
+    }
+
+    // Try to open existing file
     file = open(filename);
-    if (file == 0xff) {
+    if (file == FILE_ERROR) {
         xemu_exit(EXIT_FAILURE);
     }
 
@@ -61,11 +75,16 @@ int main(void)
     assert_eq(read512(buffer), 512);
     assert_eq(read512(buffer), 512);
     assert_eq(read512(buffer), 512);
+    // This should return 0, indicating EOF
     assert_eq(read512(buffer), 0);
+
+    // The very last byte of the file
+    assert_eq(buffer[511], 0xf0);
 
     // This has no effect on the test, but let's call anyway
     close(file);
     closeall();
 
     xemu_exit(EXIT_SUCCESS);
+    return 0;
 }

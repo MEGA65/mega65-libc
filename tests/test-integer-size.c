@@ -14,15 +14,13 @@
 #include <stdlib.h>
 #include <stdint.h>
 
-#define assert_eq(A, B)                                                        \
-    if (A != B)                                                                \
-    xemu_exit(EXIT_FAILURE)
-
 int main(void)
 {
     mega65_io_enable();
 
     // Integer sizes
+    assert_eq((char)(255), (unsigned char)(255)); // char is unsigned on MEGA65
+
     assert_eq(sizeof(uint8_t), 1);
     assert_eq(sizeof(unsigned char), 1);
     assert_eq(UINT8_MAX, 0xFF);
@@ -41,4 +39,5 @@ int main(void)
     assert_eq(INT32_MAX, 0x7FFFFFFF);
 
     xemu_exit(EXIT_SUCCESS);
+    return 0;
 }

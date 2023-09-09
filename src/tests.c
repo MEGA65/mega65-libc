@@ -1,11 +1,14 @@
 #include <mega65/memory.h>
 #include <mega65/tests.h>
+#include <mega65/debug.h>
 #include <string.h>
 #include <stdio.h>
 #include <stdint.h>
 #include <stdlib.h>
 
+#ifdef __CC65__
 unsigned char __tests_out;
+#endif
 unsigned short __ut_issueNum;
 unsigned char __ut_subissue;
 
@@ -16,52 +19,61 @@ void xemu_exit(int exit_code)
     exit(exit_code);
 }
 
+#ifdef __CC65__
+char __debug_text[40 + 1];
+void assert_eq(int32_t a, int32_t b)
+{
+    sprintf(__debug_text, "ASSERT-EQ %ld == %ld", a, b);
+    debug_msg(__debug_text);
+    if (a != b) {
+        xemu_exit(EXIT_FAILURE);
+    }
+}
+#else
+void assert_eq(int64_t a, int64_t b)
+{
+    char msg[40 + 1];
+    sprintf(msg, "ASSERT-EQ %lld == %lld", a, b);
+    debug_msg(msg);
+    if (a != b) {
+        xemu_exit(EXIT_FAILURE);
+    }
+}
+#endif
+
 void unit_test_report(
     unsigned short issue, unsigned char sub, unsigned char status)
 {
+#ifdef __CC65__
     __tests_out = issue & 0xff;
-#ifdef __CC65__
     __asm__("LDA %v", __tests_out);
     __asm__("STA $D643");
-    __asm__("NOP");
-#else
-    asm volatile("LDA __tests_out\n"
-                 "STA $D643\n"
-                 "NOP" ::
-                     : "a");
-#endif
+    __asm__("CLV");
     __tests_out = issue >> 8;
-#ifdef __CC65__
     __asm__("LDA %v", __tests_out);
     __asm__("STA $D643");
-    __asm__("NOP");
-#else
-    asm volatile("LDA __tests_out\n"
-                 "STA $D643\n"
-                 "NOP" ::
-                     : "a");
-#endif
+    __asm__("CLV");
     __tests_out = sub;
-#ifdef __CC65__
     __asm__("LDA %v", __tests_out);
     __asm__("STA $D643");
-    __asm__("NOP");
-#else
-    asm volatile("LDA __tests_out\n"
-                 "STA $D643\n"
-                 "NOP" ::
-                     : "a");
-#endif
+    __asm__("CLV");
     __tests_out = status;
-#ifdef __CC65__
     __asm__("LDA %v", __tests_out);
     __asm__("STA $D643");
-    __asm__("NOP");
+    __asm__("CLV");
 #else
-    asm volatile("LDA __tests_out\n"
-                 "STA $D643\n"
-                 "NOP" ::
-                     : "a");
+    asm volatile("st%0 $D643\n"
+                 "clv" ::"a"((uint8_t)(issue & 0xff))
+                 : "a");
+    asm volatile("st%0 $D643\n"
+                 "clv" ::"a"((uint8_t)(issue >> 8))
+                 : "a");
+    asm volatile("st%0 $D643\n"
+                 "clv" ::"a"(sub)
+                 : "a");
+    asm volatile("st%0 $D643\n"
+                 "clv" ::"a"(status)
+                 : "a");
 #endif
 }
 
@@ -73,27 +85,27 @@ void _unit_test_msg(char* msg, char cmd)
     current = msg;
 
     while (*current) {
-        __tests_out = *current++;
 #ifdef __CC65__
+        __tests_out = *current;
         __asm__("LDA %v", __tests_out);
         __asm__("STA $D643");
-        __asm__("NOP");
+        __asm__("CLV");
 #else
-        asm volatile("LDA __tests_out\n"
-                     "STA $D643\n"
-                     "NOP" ::
-                         : "a");
+        asm volatile("st%0 $D643\n"
+                     "clv" ::"a"(*current)
+                     : "a");
 #endif
+        current++;
     }
 
 #ifdef __CC65__
     __asm__("LDA #92");
     __asm__("STA $D643");
-    __asm__("NOP");
+    __asm__("CLV");
 #else
-    asm volatile("LDA #92\n"
-                 "STA $D643\n"
-                 "NOP" ::
+    asm volatile("lda #92\n"
+                 "sta $D643\n"
+                 "clv" ::
                      : "a");
 #endif
 }

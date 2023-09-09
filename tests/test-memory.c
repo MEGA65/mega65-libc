@@ -12,10 +12,7 @@
 #include <mega65/memory.h>
 #include <mega65/tests.h>
 #include <stdlib.h>
-
-#define assert_eq(A, B)                                                        \
-    if (A != B)                                                                \
-    xemu_exit(EXIT_FAILURE)
+#include <stdint.h>
 
 int main(void)
 {
@@ -39,11 +36,12 @@ int main(void)
 
     // lpoke and lpeek
     lpoke(0x4000, 13);
-    lpoke(0x4001, 9);
-    lpoke(0x4002, 7);
     assert_eq(lpeek(0x4000), 13);
+    lpoke(0x4001, 9);
     assert_eq(lpeek(0x4001), 9);
+    lpoke(0x4002, 7);
     assert_eq(lpeek(0x4002), 7);
+    assert_eq(501, 501);
 
     // dma_poke and dma_peek
     dma_poke(0x4000, 9);
@@ -74,4 +72,5 @@ int main(void)
     assert_eq(PEEK32(0x3000), 0xAABBCCDD);
 
     xemu_exit(EXIT_SUCCESS);
+    return 0;
 }
