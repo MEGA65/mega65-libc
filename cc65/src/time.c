@@ -20,6 +20,8 @@ unsigned char bcd_work;
  */
 unsigned char tobcd(unsigned char in)
 {
+  if (in>99)
+    return 0;
   bcd_work=0;
   while(in>9) {
     bcd_work += 0x10;
@@ -54,7 +56,8 @@ void getrtc(struct m65_tm *tm)
   tm->tm_isdst=0;
   
   switch (detect_target()) {
-  case TARGET_MEGA65R2: case TARGET_MEGA65R3:
+  case TARGET_MEGA65R2:
+  case TARGET_MEGA65R3:
     tm->tm_sec = unbcd(lpeek_debounced(0xffd7110));
     tm->tm_min = unbcd(lpeek_debounced(0xffd7111));
     tm->tm_hour = lpeek_debounced(0xffd7112);
@@ -62,9 +65,9 @@ void getrtc(struct m65_tm *tm)
       tm->tm_hour=unbcd(tm->tm_hour&0x3f);
     } else {
       if (tm->tm_hour&0x20) {
-	tm->tm_hour=unbcd(tm->tm_hour&0x1f)+12;
+        tm->tm_hour=unbcd(tm->tm_hour&0x1f)+12;
       } else {
-	tm->tm_hour=unbcd(tm->tm_hour&0x1f);
+        tm->tm_hour=unbcd(tm->tm_hour&0x1f);
       }
     }
     tm->tm_mday = unbcd(lpeek_debounced(0xffd7113));
@@ -72,7 +75,19 @@ void getrtc(struct m65_tm *tm)
     // RTC is based on 2000, not 1900
     tm->tm_year = unbcd(lpeek_debounced(0xffd7115))+100;
     tm->tm_wday = unbcd(lpeek_debounced(0xffd7116));
-    tm->tm_isdst= lpeek_debounced(0xffd7117)&0x20;
+    tm->tm_isdst = lpeek_debounced(0xffd7117)&0x20;
+    break;
+  case TARGET_MEGA65R4:
+  case TARGET_MEGA65R5:
+    tm->tm_sec = unbcd(lpeek_debounced(0xffd7110));
+    tm->tm_min = unbcd(lpeek_debounced(0xffd7111));
+    tm->tm_hour = unbcd(lpeek_debounced(0xffd7112)&0x3f);
+    tm->tm_mday = unbcd(lpeek_debounced(0xffd7113));
+    tm->tm_mon = unbcd(lpeek_debounced(0xffd7114));
+    // RTC is based on 2000, not 1900
+    tm->tm_year = unbcd(lpeek_debounced(0xffd7115))+100;
+    tm->tm_wday = unbcd(lpeek_debounced(0xffd7116));
+    tm->tm_isdst = 0;
     break;
   case TARGET_MEGAPHONER1:
     break;
@@ -86,11 +101,11 @@ void setrtc(struct m65_tm *tm)
   if (!tm) return;
 
   switch (detect_target()) {
-  case TARGET_MEGA65R2: case TARGET_MEGA65R3:
+  case TARGET_MEGA65R2:
+  case TARGET_MEGA65R3:
     // Unlock RTC registers
     usleep(I2CDELAY);
     lpoke(0xffd7118,0x41);
-    
     usleep(I2CDELAY);
     lpoke(0xffd7110,tobcd(tm->tm_sec));
     usleep(I2CDELAY);
@@ -100,21 +115,21 @@ void setrtc(struct m65_tm *tm)
       lpoke(0xffd7112,tobcd(tm->tm_hour)|0x80);
     } else {
       if (tm->tm_hour>=12) {
-	// PM
-	usleep(I2CDELAY);
-	lpoke(0xffd7112,tobcd(tm->tm_hour-12)|0x20);
+        // PM
+        usleep(I2CDELAY);
+        lpoke(0xffd7112,tobcd(tm->tm_hour-12)|0x20);
       } else {
-	// AM
-	usleep(I2CDELAY);
-	lpoke(0xffd7112,tobcd(tm->tm_hour));
+        // AM
+        usleep(I2CDELAY);
+        lpoke(0xffd7112,tobcd(tm->tm_hour));
       }
     }
-    
+
     usleep(I2CDELAY);
     lpoke(0xffd7113,tobcd(tm->tm_mday));
     usleep(I2CDELAY);
     lpoke(0xffd7114,tobcd(tm->tm_mon));
-    if (tm->tm_year>=100&&tm->tm_year<=355) {
+    if (tm->tm_year>=100&&tm->tm_year<=199) {
       usleep(I2CDELAY);
       lpoke(0xffd7115,tobcd(tm->tm_year-100));
     }
@@ -131,6 +146,27 @@ void setrtc(struct m65_tm *tm)
     usleep(I2CDELAY);
     lpoke(0xffd7118,0x01);
     
+    break;
+  case TARGET_MEGA65R4:
+  case TARGET_MEGA65R5:
+    usleep(I2CDELAY);
+    lpoke(0xffd7110,tobcd(tm->tm_sec));
+    usleep(I2CDELAY);
+    lpoke(0xffd7111,tobcd(tm->tm_min));
+    usleep(I2CDELAY);
+    lpoke(0xffd7112,tobcd(tm->tm_hour)); // no need to set 24h mode, swiss RTC does not have AM/PM
+
+    usleep(I2CDELAY);
+    lpoke(0xffd7113,tobcd(tm->tm_mday));
+    usleep(I2CDELAY);
+    lpoke(0xffd7114,tobcd(tm->tm_mon));
+    if (tm->tm_year>=100) {
+      usleep(I2CDELAY);
+      lpoke(0xffd7115,tobcd(tm->tm_year-100));
+    }
+    usleep(I2CDELAY);
+    lpoke(0xffd7116,tobcd(tm->tm_wday<7 ? tm->tm_wday : 0));
+
     break;
   case TARGET_MEGAPHONER1:
     break;
