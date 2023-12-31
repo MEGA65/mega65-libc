@@ -79,6 +79,7 @@ void getrtc(struct m65_tm *tm)
     break;
   case TARGET_MEGA65R4:
   case TARGET_MEGA65R5:
+  case TARGET_MEGA65R6:
     tm->tm_sec = unbcd(lpeek_debounced(0xffd7110));
     tm->tm_min = unbcd(lpeek_debounced(0xffd7111));
     tm->tm_hour = unbcd(lpeek_debounced(0xffd7112)&0x3f);
@@ -149,6 +150,7 @@ void setrtc(struct m65_tm *tm)
     break;
   case TARGET_MEGA65R4:
   case TARGET_MEGA65R5:
+  case TARGET_MEGA65R6:
     usleep(I2CDELAY);
     lpoke(0xffd7110,tobcd(tm->tm_sec));
     usleep(I2CDELAY);
