@@ -1,3 +1,8 @@
+// Copyright 2023 The MEGA65 project
+// Licensed under the Apache License, Version 2.0 with LLVM Exceptions.
+// See https://github.com/mega65/mega65-libc/blob/main/LICENSE for license
+// information.
+
 /**
  * @file time.h
  * @brief Real time clock support
