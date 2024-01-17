@@ -18,7 +18,12 @@ void debug_msg(char* msg)
                      "clv\n"
                      :           /* no output operands */
                      : "a"(*msg) /* input operands */
-                     : "a" /* clobber list */);
+#ifndef LLVM
+                     : "a" /* clobber list */
+#else
+		     :
+#endif
+);
 #endif
         msg++;
     }

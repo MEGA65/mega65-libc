@@ -99,16 +99,16 @@ static unsigned char hash(const unsigned char* str, const unsigned char maxLen)
     return (unsigned char)hash;
 }
 
-static void clrscr_(unsigned char)
+static void clrscr_(unsigned char ignored)
 {
     clrscr();
     gohome();
 } // Callable from Escape Code table
-static void gohome_(unsigned char)
+static void gohome_(unsigned char ignored)
 {
     gohome();
 } // Callable from Escape Code table
-static void escNOP(unsigned char)
+static void escNOP(unsigned char ignored)
 { /* do nothing */
 }
 
@@ -534,6 +534,9 @@ unsigned char _cprintf(
 
         fmt++;
     }
+
+    // PGS 20240117 - What is the correct return value?
+    return 0;
 }
 
 void cputhex(long n, unsigned char prec)

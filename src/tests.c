@@ -64,16 +64,32 @@ void unit_test_report(
 #else
     asm volatile("st%0 $D643\n"
                  "clv" ::"a"((uint8_t)(issue & 0xff))
+#ifdef LLVM
+		 : );
+#else
                  : "a");
+#endif
     asm volatile("st%0 $D643\n"
                  "clv" ::"a"((uint8_t)(issue >> 8))
+#ifdef LLVM
+		 : );
+#else
                  : "a");
+#endif
     asm volatile("st%0 $D643\n"
                  "clv" ::"a"(sub)
+#ifdef LLVM
+		 : );
+#else
                  : "a");
+#endif
     asm volatile("st%0 $D643\n"
                  "clv" ::"a"(status)
+#ifdef LLVM
+		 : );
+#else
                  : "a");
+#endif
 #endif
 }
 
@@ -93,7 +109,11 @@ void _unit_test_msg(char* msg, char cmd)
 #else
         asm volatile("st%0 $D643\n"
                      "clv" ::"a"(*current)
+#ifndef LLVM
                      : "a");
+#else
+		: );
+#endif
 #endif
         current++;
     }
@@ -106,7 +126,11 @@ void _unit_test_msg(char* msg, char cmd)
     asm volatile("lda #92\n"
                  "sta $D643\n"
                  "clv" ::
+#ifdef LLVM
+		: );
+#else
                      : "a");
+#endif
 #endif
 }
 

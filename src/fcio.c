@@ -222,7 +222,11 @@ unsigned char fc_nyblswap(unsigned char in) // oh why?!
                  "adc #$80\n"
                  "rol a\n"
                  "st%0" ::"a"(swp)
+#ifdef LLVM
+                 : );
+#else
                  : "a");
+#endif
 #else
 #pragma GCC warning "fc_nyblswap() is not implemented for this compiler"
 #endif
