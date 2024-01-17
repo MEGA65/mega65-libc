@@ -72,6 +72,7 @@ char mouse_clicked(void)
         mouse_click_flag = 0;
         return 1;
     }
+    return 0;
 }
 
 void mouse_update_pointer(void)

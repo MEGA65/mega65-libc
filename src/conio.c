@@ -213,7 +213,8 @@ char* petsciitoscreencode_s(char* s)
 {
     char* src = s;
     char* dest = p2sbuf;
-    while (*dest++ = petsciitoscreencode(*src++))
+    // This loop intentionally uses assignment in the test condition
+    while ( (*dest++ = petsciitoscreencode(*src++)) )
         ;
     return p2sbuf;
 }

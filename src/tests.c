@@ -98,7 +98,7 @@ void _unit_test_msg(char* msg, char cmd)
     unsigned char* current;
 
     unit_test_report(0, 0, cmd);
-    current = msg;
+    current = (unsigned char *)msg;
 
     while (*current) {
 #ifdef __CC65__
