@@ -18,7 +18,7 @@ void debug_msg(char* msg)
                      "clv\n"
                      :           /* no output operands */
                      : "a"(*msg) /* input operands */
-#ifndef LLVM
+#ifndef __clang__
                      : "a" /* clobber list */
 #else
 		     :

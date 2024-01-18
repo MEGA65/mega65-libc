@@ -64,28 +64,28 @@ void unit_test_report(
 #else
     asm volatile("st%0 $D643\n"
                  "clv" ::"a"((uint8_t)(issue & 0xff))
-#ifdef LLVM
+#ifdef __clang__
 		 : );
 #else
                  : "a");
 #endif
     asm volatile("st%0 $D643\n"
                  "clv" ::"a"((uint8_t)(issue >> 8))
-#ifdef LLVM
+#ifdef __clang__
 		 : );
 #else
                  : "a");
 #endif
     asm volatile("st%0 $D643\n"
                  "clv" ::"a"(sub)
-#ifdef LLVM
+#ifdef __clang__
 		 : );
 #else
                  : "a");
 #endif
     asm volatile("st%0 $D643\n"
                  "clv" ::"a"(status)
-#ifdef LLVM
+#ifdef __clang__
 		 : );
 #else
                  : "a");
@@ -109,7 +109,7 @@ void _unit_test_msg(char* msg, char cmd)
 #else
         asm volatile("st%0 $D643\n"
                      "clv" ::"a"(*current)
-#ifndef LLVM
+#ifndef __clang__
                      : "a");
 #else
 		: );
@@ -126,7 +126,7 @@ void _unit_test_msg(char* msg, char cmd)
     asm volatile("lda #92\n"
                  "sta $D643\n"
                  "clv" ::
-#ifdef LLVM
+#ifdef __clang__
 		: );
 #else
                      : "a");
