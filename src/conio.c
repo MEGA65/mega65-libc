@@ -40,8 +40,8 @@
 #define SCREEN_RAM_BASE_B2 (PEEK(VIC_BASE + 0x62))
 #define SCREEN_RAM_BASE_B3 (PEEK(VIC_BASE + 0x63) & 7) // upper nybble
 #define SCREEN_RAM_BASE                                                        \
-    (((long)SCREEN_RAM_BASE_B3 << 24) | ((long)SCREEN_RAM_BASE_B2 << 16)       \
-        | ((long)SCREEN_RAM_BASE_B1 << 8) | (SCREEN_RAM_BASE_B0))
+    (((unsigned long)SCREEN_RAM_BASE_B3 << 24) | ((unsigned long)SCREEN_RAM_BASE_B2 << 16)       \
+        | ((unsigned long)SCREEN_RAM_BASE_B1 << 8) | ((unsigned long)SCREEN_RAM_BASE_B0))
 #define COLOR_RAM_BASE 0xFF80000UL
 
 #define PRINTF_IN_FORMAT_SPEC 0x1
@@ -99,16 +99,16 @@ static unsigned char hash(const unsigned char* str, const unsigned char maxLen)
     return (unsigned char)hash;
 }
 
-static void clrscr_(unsigned char ignored)
+static void clrscr_(unsigned char ignored __attribute__((unused)))
 {
     clrscr();
     gohome();
 } // Callable from Escape Code table
-static void gohome_(unsigned char ignored)
+static void gohome_(unsigned char ignored __attribute__((unused)))
 {
     gohome();
 } // Callable from Escape Code table
-static void escNOP(unsigned char ignored)
+static void escNOP(unsigned char ignored __attribute__((unused)))
 { /* do nothing */
 }
 
@@ -219,7 +219,7 @@ char* petsciitoscreencode_s(char* s)
     return p2sbuf;
 }
 
-void setscreenaddr(long address)
+void setscreenaddr(unsigned long address)
 {
     POKE(VIC_BASE + 0x60, address & 0x0000FFUL);
     POKE(VIC_BASE + 0x61, (address & 0xFF00UL) >> 8);
@@ -228,12 +228,12 @@ void setscreenaddr(long address)
         (PEEK(VIC_BASE + 0x63) & 0xF) | ((address & 0xF000000UL) >> 24));
 }
 
-long getscreenaddr(void)
+unsigned long getscreenaddr(void)
 {
     return SCREEN_RAM_BASE;
 }
 
-void setcharsetaddr(long address)
+void setcharsetaddr(unsigned long address)
 {
     POKE(VIC_BASE + 0x68, address & 0x0000FFUL);
     POKE(VIC_BASE + 0x69, (address & 0xFF00UL) >> 8);
@@ -337,7 +337,7 @@ void togglecase(void)
     POKE(0xD018U, PEEK(0xD018U) ^ 0x02);
 }
 
-void clrscr()
+void clrscr(void)
 {
     const unsigned int cBytes
         = (unsigned int)g_curScreenW * g_curScreenH * (IS_16BITCHARSET ? 2 : 1);
@@ -540,7 +540,7 @@ unsigned char _cprintf(
     return 0;
 }
 
-void cputhex(long n, unsigned char prec)
+void cputhex(unsigned long n, unsigned char prec)
 {
     unsigned char buffer[10];
     buffer[0] = '$';
@@ -557,12 +557,11 @@ void cputhex(long n, unsigned char prec)
     cputs(&buffer[8 - prec]);
 }
 
-void cputdec(long n, unsigned char padding, unsigned char leadingZeros)
+void cputdec(unsigned long n, unsigned char padding __attribute__((unused)), unsigned char leadingZeros)
 {
     unsigned char buffer[11];
-    unsigned char rem = 0, i = 0;
-    char digit = 9;
-    padding = 0; // NOTE: done to suppress compiler warning
+    unsigned char rem = 0;
+    unsigned char digit = 9;
     buffer[10] = '\0';
     do {
         rem = n % 10;
@@ -584,9 +583,9 @@ void cputs(const unsigned char* s)
 
 void cputsxy(unsigned char x, unsigned char y, const unsigned char* s)
 {
-    const unsigned char len = strlen((const char*)s);
+    const unsigned char len = (unsigned char)strlen((const char*)s);
     const unsigned int offset = (y * (unsigned int)g_curScreenW) + x;
-    lcopy((long)s, SCREEN_RAM_BASE + offset, len);
+    lcopy((unsigned long)s, SCREEN_RAM_BASE + offset, len);
     lfill(COLOR_RAM_BASE + offset, g_curTextColor, len);
     g_curY = y + ((x + len) / g_curScreenW);
     g_curX = (x + len) % g_curScreenW;
@@ -714,8 +713,8 @@ unsigned char cinput(
     unsigned char* buffer, unsigned char buflen, unsigned char flags)
 {
     register unsigned char numch = 0, i, ch;
-    const int sx = wherex();
-    const int sy = wherey();
+    const unsigned char sx = wherex();
+    const unsigned char sy = wherey();
 
     if (buffer == NULL || buflen == 0) {
         return 0;
@@ -763,7 +762,7 @@ unsigned char cinput(
 
 void setpalbank(unsigned char bank)
 {
-    POKE(0xD070U, (PEEK(0xD070U) & ~0x30) | ((bank & 0x3) << 4));
+    POKE(0xD070U, (PEEK(0xD070U) & ~0x30) | (unsigned char)((bank & 0x3) << 4) );
 }
 
 void setpalbanka(unsigned char bank)
@@ -783,7 +782,7 @@ unsigned char getpalbanka(void)
 
 void setmapedpal(unsigned char bank)
 {
-    POKE(0xD070U, (PEEK(0xD070U) & ~0xC0) | ((bank & 0x3) << 6));
+    POKE(0xD070U, (PEEK(0xD070U) & ~0xC0) | (unsigned char)((bank & 0x3) << 6) );
 }
 
 unsigned char getmapedpal(void)

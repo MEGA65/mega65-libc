@@ -212,7 +212,7 @@ void setlowercase(void);
 void setuppercase(void);
 
 /* \m65libsummary{setscreenaddr}{Sets the screen RAM start address}
-    \m65libsyntax    {void setscreenaddr(long addr);}
+    \m65libsyntax    {void setscreenaddr(unsigned long addr);}
     \m65libparam     {addr}{The address to set as start of screen RAM}
     \m65example   {
       // Set beginning of screen RAM at $48000
@@ -225,17 +225,17 @@ void setuppercase(void);
  * @param addr The address to set as start of screen RAM
  * @remarks No bounds check is performed on the selected address
  */
-void setscreenaddr(long addr);
+void setscreenaddr(unsigned long addr);
 
 /* \m65libsummary{getscreenaddr}{Returns the screen RAM start address}
-    \m65libsyntax    {long getscreenaddr(void);}
+    \m65libsyntax    {unsigned long getscreenaddr(void);}
     \m65libretval    {The current screen RAM address start address.}
 */
 /**
  * @brief Returns the screen RAM start address
  * @return The current screen RAM address start address.
  */
-long getscreenaddr(void);
+unsigned long getscreenaddr(void);
 
 /* \m65libsummary{setcolramoffset}{Sets the color RAM start offset value}
     \m65libsyntax    {void setcolramoffset(long offset);}
@@ -262,7 +262,7 @@ void setcolramoffset(unsigned int addr);
 unsigned int getcolramoffset(void);
 
 /* \m65libsummary{setcharsetaddr}{Sets the character set start address}
-    \m65libsyntax    {void setcharsetaddr(long addr);}
+    \m65libsyntax    {void setcharsetaddr(unsigned long addr);}
     \m65libparam     {addr}{The address to set as start of character set}
     \m65libremarks   {No bounds check is performed on the selected address}
 */
@@ -271,7 +271,7 @@ unsigned int getcolramoffset(void);
  * @param addr The address to set as start of character set
  * @remarks No bounds check is performed on the selected address
  */
-void setcharsetaddr(long addr);
+void setcharsetaddr(unsigned long addr);
 
 /* \m65libsummary{getcharsetaddr}{Returns the current character set start
    address} \m65libsyntax    {long getscreenaddr(void);} \m65libretval    {The
@@ -907,7 +907,7 @@ void fastcall cputc(unsigned char c);
 void fastcall cputnc(unsigned char count, unsigned char c);
 
 /* \m65libsummary{cputhex}{Output an hex-formatted number at current position}
-    \m65libsyntax    {void cputhex(long n, unsigned char prec)}
+    \m65libsyntax    {void cputhex(unsigned long n, unsigned char prec)}
     \m65libparam     {n}{The number to write}
     \m65libparam     {prec}{The precision of the hex number, in digits. Leading
    zeros will be printed accordingly} \m65libremarks   {The $ symbol will be
@@ -920,10 +920,10 @@ void fastcall cputnc(unsigned char count, unsigned char c);
  * printed accordingly
  * @remarks The $ symbol will be automatically added at beginning of string
  */
-void cputhex(long n, unsigned char prec);
+void cputhex(unsigned long n, unsigned char prec);
 
 /* \m65libsummary{cputdec}{Output a decimal number at current position}
-    \m65libsyntax    {void cputdec(long n, unsigned char padding, unsigned char
+    \m65libsyntax    {void cputdec(unsigned long n, unsigned char padding, unsigned char
    leadingZ)} \m65libparam     {n}{The number to write} \m65libparam
    {padding}{The padding space to add before number} \m65libparam {leadingZ}{The
    leading zeros to print}
@@ -931,10 +931,10 @@ void cputhex(long n, unsigned char prec);
 /**
  * @brief Output a decimal number at current position
  * @param n The number to write
- * @param padding The padding space to add before number
+ * @param padding The padding space to add before number (currently ignored)
  * @param leadingZ The leading zeros to print
  */
-void cputdec(long n, unsigned char padding, unsigned char leadingZ);
+void cputdec(unsigned long n, unsigned char padding, unsigned char leadingZ);
 
 /* \m65libsummary{cputs}{Output screen codes at current position}
     \m65libsyntax    {void cputs(const unsigned char* s)}
