@@ -185,7 +185,7 @@ void setrtc(struct m65_tm* tm)
         lpoke(0xffd7114, tobcd(tm->tm_mon));
         if (tm->tm_year >= 100 && tm->tm_year <= 199) {
             usleep(I2CDELAY);
-            lpoke(0xffd7115, tobcd(tm->tm_year - 100));
+            lpoke(0xffd7115, tobcd((unsigned char)tm->tm_year - 100));
         }
         usleep(I2CDELAY);
         lpoke(0xffd7116, tobcd(tm->tm_wday < 7 ? tm->tm_wday : 0));

@@ -78,32 +78,32 @@ char mouse_clicked(void)
 void mouse_update_pointer(void)
 {
     if (mouse_sprite_number < 8) {
-        POKE(0xD000 + (mouse_sprite_number << 1), mouse_x & 0xff);
+        POKE(0xD000U + (unsigned char)(mouse_sprite_number << 1), mouse_x & 0xff);
         if (mouse_x & 0x100) {
-            POKE(0xD010, PEEK(0xD010) | (1 << mouse_sprite_number));
+            POKE(0xD010U, PEEK(0xD010U) | (unsigned char)(1 << mouse_sprite_number));
         }
         else {
-            POKE(0xD010, PEEK(0xD010) & (0xFF - (1 << mouse_sprite_number)));
+            POKE(0xD010U, PEEK(0xD010U) & (0xFF - (unsigned char)(1 << mouse_sprite_number)));
         }
         if (mouse_x & 0x200) {
-            POKE(0xD05F, PEEK(0xD05F) | (1 << mouse_sprite_number));
+            POKE(0xD05FU, PEEK(0xD05FU) | (unsigned char)(1 << mouse_sprite_number));
         }
         else {
-            POKE(0xD05F, PEEK(0xD05F) & (0xFF - (1 << mouse_sprite_number)));
+            POKE(0xD05FU, PEEK(0xD05FU) & (0xFF - (unsigned char)(1 << mouse_sprite_number)));
         }
 
-        POKE(0xD001 + (mouse_sprite_number << 1), mouse_y & 0xff);
+        POKE(0xD001U + (unsigned char)(mouse_sprite_number << 1), mouse_y & 0xff);
         if (mouse_y & 0x100) {
-            POKE(0xD077, PEEK(0xD077) | (1 << mouse_sprite_number));
+            POKE(0xD077U, PEEK(0xD077U) | (unsigned char)(1 << mouse_sprite_number));
         }
         else {
-            POKE(0xD077, PEEK(0xD077) & (0xFF - (1 << mouse_sprite_number)));
+            POKE(0xD077U, PEEK(0xD077U) & (0xFF - (1 << mouse_sprite_number)));
         }
         if (mouse_y & 0x200) {
-            POKE(0xD05F, PEEK(0xD05F) | (1 << mouse_sprite_number));
+            POKE(0xD05FU, PEEK(0xD05FU) | (unsigned char)(1 << mouse_sprite_number));
         }
         else {
-            POKE(0xD078, PEEK(0xD078) & (0xFF - (1 << mouse_sprite_number)));
+            POKE(0xD078U, PEEK(0xD078U) & (0xFF - (1 << mouse_sprite_number)));
         }
     }
 }

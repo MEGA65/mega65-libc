@@ -14,10 +14,10 @@
   The root directory is the start of cluster 2, and clusters are
   assumed to be 4KB in size, to keep things simple.
 
-  Returns first sector of file if successful, or -1 on failure.
+  Returns first sector of file if successful, or 0xffffffff on failure.
 */
-long mega65_fat32_create_contiguous_file(char* name, long size,
-    long root_dir_sector, long fat1_sector, long fat2_sector)
+unsigned long mega65_fat32_create_contiguous_file(char* name, unsigned long size,
+    unsigned long root_dir_sector, unsigned long fat1_sector, unsigned long fat2_sector)
 {
     unsigned char i;
     unsigned short offset;
@@ -51,9 +51,9 @@ long mega65_fat32_create_contiguous_file(char* name, long size,
 
         for (offset = 0; offset < 512; offset += 4) {
             next_cluster = sector_buffer[offset];
-            next_cluster |= ((long)sector_buffer[offset + 1] << 8L);
-            next_cluster |= ((long)sector_buffer[offset + 2] << 16L);
-            next_cluster |= ((long)sector_buffer[offset + 3] << 24L);
+            next_cluster |= ((unsigned long)sector_buffer[offset + 1] << 8L);
+            next_cluster |= ((unsigned long)sector_buffer[offset + 2] << 16L);
+            next_cluster |= ((unsigned long)sector_buffer[offset + 3] << 24L);
             if (!next_cluster) {
                 if (!start_cluster) {
                     start_cluster = (offset / 4) + fat_offset * (512 / 4);
@@ -96,7 +96,7 @@ long mega65_fat32_create_contiguous_file(char* name, long size,
     if ((!start_cluster) || (contiguous_clusters != clusters)) {
         //    write_line("ERROR: Could not find enough free clusters in file
         //    system",0);
-        return -1;
+        return 0xffffffffUL;
     }
 
     // Commit sector to disk (in both copies of FAT)
@@ -116,7 +116,7 @@ long mega65_fat32_create_contiguous_file(char* name, long size,
     if (offset == 512) {
         //    write_line("ERROR: First sector of root directory already
         //    full.",0);
-        return -1;
+        return 0xffffffffUL;
     }
 
     // Build directory entry
@@ -127,16 +127,16 @@ long mega65_fat32_create_contiguous_file(char* name, long size,
         sector_buffer[offset + i] = name[i];
     }
     sector_buffer[offset + 0x0b] = 0x20; // Archive bit set
-    sector_buffer[offset + 0x1A] = start_cluster;
-    sector_buffer[offset + 0x1B] = start_cluster >> 8;
-    sector_buffer[offset + 0x14] = start_cluster >> 16;
-    sector_buffer[offset + 0x15] = start_cluster >> 24;
+    sector_buffer[offset + 0x1A] = (unsigned char)start_cluster;
+    sector_buffer[offset + 0x1B] = (unsigned char)(start_cluster >> 8);
+    sector_buffer[offset + 0x14] = (unsigned char)(start_cluster >> 16);
+    sector_buffer[offset + 0x15] = (unsigned char)(start_cluster >> 24);
     sector_buffer[offset + 0x1C] = (size >> 0) & 0xff;
-    sector_buffer[offset + 0x1D] = (size >> 8L) & 0xff;
-    sector_buffer[offset + 0x1E] = (size >> 16L) & 0xff;
-    sector_buffer[offset + 0x1F] = (size >> 24l) & 0xff;
+    sector_buffer[offset + 0x1D] = (unsigned char)(size >> 8L) & 0xff;
+    sector_buffer[offset + 0x1E] = (unsigned char)(size >> 16L) & 0xff;
+    sector_buffer[offset + 0x1F] = (unsigned char)(size >> 24l) & 0xff;
 
     mega65_sdcard_writesector(root_dir_sector);
 
-    return root_dir_sector + (long)(start_cluster - 2) * 8;
+    return root_dir_sector + (unsigned long)(start_cluster - 2) * 8;
 }
