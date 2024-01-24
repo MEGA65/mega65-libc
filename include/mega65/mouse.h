@@ -1,28 +1,9 @@
 /**
  * @file mouse.h
  * @brief Simple mouse support for the Mega65 libC
+ * @author Paul Gardner-Stephen
+ * @date 2020
  */
-
-/*  Simple mouse support for the Mega65 libC
-
-    Copyright (c) 2020 Paul Gardner-Stephen
-
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Lesser General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU Lesser General Public License for more details.
-
-    You should have received a copy of the GNU Lesser General Public License
-    along with this program.  If not, see <https://www.gnu.org/licenses/>.
-
-    Version   0.1
-    Date      2020-07-01
-*/
 
 #ifndef __MEGA65_MOUSE_H
 #define __MEGA65_MOUSE_H

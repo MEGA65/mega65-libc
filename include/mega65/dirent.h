@@ -15,13 +15,15 @@
 #ifdef __clang__
 __attribute__((leaf))
 #endif
-unsigned char opendir(void);
+unsigned char
+opendir(void);
 
 /// Read directory entry
 #ifdef __clang__
 __attribute__((leaf))
 #endif
-struct m65_dirent* readdir(unsigned char);
+struct m65_dirent*
+readdir(unsigned char);
 
 /// Close directory entry
 #ifdef __clang__

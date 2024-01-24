@@ -1,68 +1,10 @@
 /**
  * @file conio.h
+ * @author Hernán Di Pietro
  * @brief Console I/O support
  * @todo Convert `\m65lib*` to Doxygen tags. How/where is this used? The
  * reference guide? Doxygen can also output XML which is easy to parse.
  */
-
-/*  CONIO.H style Text mode support  for the Mega65 libC
-
-    Copyright (c) 2020-2021 Hernán Di Pietro
-
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Lesser General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU Lesser General Public License for more details.
-
-    You should have received a copy of the GNU Lesser General Public License
-    along with this program.  If not, see <https://www.gnu.org/licenses/>.
-
-    Version   0.10
-    Date      2021-06-21
-
-    CHANGELOG
-
-    v0.4        Added getscreensize, setscreensize, setextendattribute,
-                set16bitcharmode, moveup,moveleft,moveright, movedown, gohome,
-                flushkeybuf.
-                Cache screen sizes for faster calls.
-                Added cprintf escape codes for formatted screen colors and
-   attributes. Added proper initialisation function. Fixed a bug where screen
-   was fixed at $8000!
-
-    v0.5        Added fillrect, box, cgets, wherex, wherey, togglecase
-   functions. Fixed moveXXXX to do multiple steps.  Minor optimizations in
-   cputs/cputc.
-
-    v0.6        Added vline, hline  to draw lines. cputnc,cputncxy for repeating
-   characters.
-
-    v0.6.5      Added LaTEX style comments for doc generation.
-
-    v0.7        Added cinput function. Fixed cputncxy color fill. BOX_STYLE_NONE
-   added.
-
-    v0.8        Fixed documentation. COLOR_RAM_BASE is 0xFF80000UL to access
-   full 32/64KB space. Added setcolramoffset, getcolramoffset, setcharsetaddr,
-   getcharsetaddr.
-
-    v0.8.1      Fixed Latex documentation.
-
-    v0.9        Added sethotregs.
-
-    v0.9.1      Fixed cinput buffer overrun bug and documentation.
-
-    v0.9.2      Fixed CC65 2.19 mismatched header types.
-
-    v0.10       Added setpalbank, getpalbank, setpalbanka, getpalbanka,
-   setmapedpal, getmapedpal, setpalentry.
-
-*/
 
 #ifndef __MEGA65_CONIO_H
 #define __MEGA65_CONIO_H
