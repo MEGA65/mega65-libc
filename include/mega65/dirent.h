@@ -1,8 +1,3 @@
-// Copyright 2023 The MEGA65 project
-// Licensed under the Apache License, Version 2.0 with LLVM Exceptions.
-// See https://github.com/mega65/mega65-libc/blob/main/LICENSE for license
-// information.
-
 /**
  * @file dirent.h
  * @brief Directory entry functions
@@ -20,13 +15,15 @@
 #ifdef __clang__
 __attribute__((leaf))
 #endif
-unsigned char opendir(void);
+unsigned char
+opendir(void);
 
 /// Read directory entry
 #ifdef __clang__
 __attribute__((leaf))
 #endif
-struct m65_dirent* readdir(unsigned char);
+struct m65_dirent*
+readdir(unsigned char);
 
 /// Close directory entry
 #ifdef __clang__

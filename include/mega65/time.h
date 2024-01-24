@@ -15,7 +15,6 @@
  */
 #ifndef __MEGA65_TIME_H
 #define __MEGA65_TIME_H
-
 /**
  * @brief Real-time clock structure
  */

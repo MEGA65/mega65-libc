@@ -1,6 +1,7 @@
 # PRG files
 *.prg
 tests/*.prg
+*.tex
 
 # Prerequisites
 *.d
