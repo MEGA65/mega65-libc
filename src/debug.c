@@ -18,7 +18,7 @@ void debug_msg(char* msg)
                      "clv\n"
                      :           /* no output operands */
                      : "a"(*msg) /* input operands */
-                     : "a" /* clobber list */);
+                     : "v" /* clobber list */);
 #endif
         msg++;
     }
@@ -40,6 +40,6 @@ void debug_msg(char* msg)
                  "ldz #0\n"
                  : /* no output operands */
                  : /* no input operands*/
-                 : "a" /* clobber list */);
+                 : "a", "v" /* clobber list */);
 #endif
 }
