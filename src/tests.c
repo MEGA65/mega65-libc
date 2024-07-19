@@ -63,17 +63,13 @@ void unit_test_report(
     __asm__("CLV");
 #else
     asm volatile("st%0 $D643\n"
-                 "clv" ::"a"((uint8_t)(issue & 0xff))
-                 : "a");
+                 "clv" ::"a"((uint8_t)(issue & 0xff)));
     asm volatile("st%0 $D643\n"
-                 "clv" ::"a"((uint8_t)(issue >> 8))
-                 : "a");
+                 "clv" ::"a"((uint8_t)(issue >> 8)));
     asm volatile("st%0 $D643\n"
-                 "clv" ::"a"(sub)
-                 : "a");
+                 "clv" ::"a"(sub));
     asm volatile("st%0 $D643\n"
-                 "clv" ::"a"(status)
-                 : "a");
+                 "clv" ::"a"(status));
 #endif
 }
 
@@ -92,8 +88,7 @@ void _unit_test_msg(char* msg, char cmd)
         __asm__("CLV");
 #else
         asm volatile("st%0 $D643\n"
-                     "clv" ::"a"(*current)
-                     : "a");
+                     "clv" ::"a"(*current));
 #endif
         current++;
     }

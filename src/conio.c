@@ -213,7 +213,7 @@ char* petsciitoscreencode_s(char* s)
 {
     char* src = s;
     char* dest = p2sbuf;
-    while (*dest++ = petsciitoscreencode(*src++))
+    while ((*dest++ = petsciitoscreencode(*src++)))
         ;
     return p2sbuf;
 }
@@ -336,7 +336,7 @@ void togglecase(void)
     POKE(0xD018U, PEEK(0xD018U) ^ 0x02);
 }
 
-void clrscr()
+void clrscr(void)
 {
     const unsigned int cBytes
         = (unsigned int)g_curScreenW * g_curScreenH * (IS_16BITCHARSET ? 2 : 1);
@@ -553,10 +553,15 @@ void cputhex(long n, unsigned char prec)
     cputs(&buffer[8 - prec]);
 }
 
+#ifdef __clang__
+void cputdec(long n, __attribute__ ((unused)) unsigned char padding, unsigned char leadingZeros)
+#else
 void cputdec(long n, unsigned char padding, unsigned char leadingZeros)
+#endif
+
 {
     unsigned char buffer[11];
-    unsigned char rem = 0, i = 0;
+    unsigned char rem = 0;
     char digit = 9;
     padding = 0; // NOTE: done to suppress compiler warning
     buffer[10] = '\0';

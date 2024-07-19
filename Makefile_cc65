@@ -55,12 +55,14 @@ cleanall: clean
 src/cc65/%.o: src/cc65/%.s
 	$(CA65) -o $@ $<
 
-src/%.o: src/%.c
+src/%.o: src/%.c | work
+	$(CC65) $(CFLAGS) -o work/$*.s $<
+	$(CA65) -o $@ work/$*.s
+
+work:
 	@if [[ ! -d work ]]; then \
 		mkdir work; \
 	fi
-	$(CC65) $(CFLAGS) -o work/$*.s $<
-	$(CA65) -o $@ work/$*.s
 
 # Unit tests using Xemu in "testing" mode
 #
