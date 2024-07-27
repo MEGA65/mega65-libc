@@ -3,6 +3,13 @@ set(LLVM_MOS_PLATFORM mega65)
 find_package(llvm-mos-sdk REQUIRED)
 project(mega65libc VERSION 0.3.0 LANGUAGES C ASM)
 
+if(PROJECT_SOURCE_DIR STREQUAL PROJECT_BINARY_DIR)
+    message(
+        FATAL_ERROR
+        "In-source builds not allowed. Please make a new directory (called a build directory) and run CMake from there."
+    )
+endif()
+
 enable_testing()
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
@@ -24,8 +31,8 @@ set(CLANG_WARNINGS
     -Wno-language-extension-token
 )
 
-install(FILES cmake/mega65libcConfig.cmake
-    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/mega65libc)
+install(FILES ${CMAKE_SOURCE_DIR}/cmake/mega65libcConfig.cmake
+    DESTINATION lib/cmake/mega65libc)
 
 add_subdirectory(src)
 add_subdirectory(doc)

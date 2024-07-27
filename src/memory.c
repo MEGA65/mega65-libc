@@ -108,7 +108,7 @@ void dma_poke(uint32_t address, uint8_t value)
 }
 
 void lcopy(
-    uint32_t source_address, uint32_t destination_address, uint16_t count)
+    uint32_t source_address, uint32_t destination_address, size_t count)
 {
     dmalist.option_0b = 0x0b;
     dmalist.option_80 = 0x80;
@@ -140,7 +140,7 @@ void lcopy(
     return;
 }
 
-void lfill(uint32_t destination_address, uint8_t value, uint16_t count)
+void lfill(uint32_t destination_address, uint8_t value, size_t count)
 {
     dmalist.option_0b = 0x0b;
     dmalist.option_80 = 0x80;
@@ -167,7 +167,7 @@ void lfill(uint32_t destination_address, uint8_t value, uint16_t count)
 }
 
 void lfill_skip(
-    uint32_t destination_address, uint8_t value, uint16_t count, uint8_t skip)
+    uint32_t destination_address, uint8_t value, size_t count, uint8_t skip)
 {
     dmalist.option_0b = 0x0b;
     dmalist.option_80 = 0x80;

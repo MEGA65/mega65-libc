@@ -84,3 +84,4 @@ CTestTestfile.cmake
 doc/html
 doc/xml
 doc/latex
+doc/*.tex

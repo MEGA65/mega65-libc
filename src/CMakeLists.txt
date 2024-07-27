@@ -19,19 +19,20 @@ set(objects
     time.c)
 
 set(headers
-    ${CMAKE_SOURCE_DIR}/include/mega65/conio.h
-    ${CMAKE_SOURCE_DIR}/include/mega65/debug.h
-    ${CMAKE_SOURCE_DIR}/include/mega65/dirent.h
-    ${CMAKE_SOURCE_DIR}/include/mega65/fileio.h
-    ${CMAKE_SOURCE_DIR}/include/mega65/hal.h
-    ${CMAKE_SOURCE_DIR}/include/mega65/math.h
-    ${CMAKE_SOURCE_DIR}/include/mega65/memory.h
-    ${CMAKE_SOURCE_DIR}/include/mega65/mouse.h
-    ${CMAKE_SOURCE_DIR}/include/mega65/random.h
-    ${CMAKE_SOURCE_DIR}/include/mega65/sdcard.h
-    ${CMAKE_SOURCE_DIR}/include/mega65/targets.h
-    ${CMAKE_SOURCE_DIR}/include/mega65/tests.h
-    ${CMAKE_SOURCE_DIR}/include/mega65/time.h)
+    ${PROJECT_SOURCE_DIR}/include/mega65/conio.h
+    ${PROJECT_SOURCE_DIR}/include/mega65/debug.h
+    ${PROJECT_SOURCE_DIR}/include/mega65/dirent.h
+    ${PROJECT_SOURCE_DIR}/include/mega65/fcio.h
+    ${PROJECT_SOURCE_DIR}/include/mega65/fileio.h
+    ${PROJECT_SOURCE_DIR}/include/mega65/hal.h
+    ${PROJECT_SOURCE_DIR}/include/mega65/math.h
+    ${PROJECT_SOURCE_DIR}/include/mega65/memory.h
+    ${PROJECT_SOURCE_DIR}/include/mega65/mouse.h
+    ${PROJECT_SOURCE_DIR}/include/mega65/random.h
+    ${PROJECT_SOURCE_DIR}/include/mega65/sdcard.h
+    ${PROJECT_SOURCE_DIR}/include/mega65/targets.h
+    ${PROJECT_SOURCE_DIR}/include/mega65/tests.h
+    ${PROJECT_SOURCE_DIR}/include/mega65/time.h)
 
 set_source_files_properties(${objects} PROPERTIES LANGUAGE C)
 set_source_files_properties(${assembler} PROPERTIES LANGUAGE ASM)
@@ -42,7 +43,7 @@ add_library(mega65libc ${objects} ${headers} ${assembler})
 target_include_directories(mega65libc
     PUBLIC 
     $<INSTALL_INTERFACE:include>    
-    $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>
+    $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
     PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}
     )
@@ -56,7 +57,7 @@ install(TARGETS mega65libc
     EXPORT mega65libc-export
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
     ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
-    PUBLIC_HEADER DESTINATION include/mega65
+    PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/mega65
     )
 # export mega65libc
 install(EXPORT mega65libc-export

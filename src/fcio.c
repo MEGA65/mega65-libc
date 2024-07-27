@@ -85,9 +85,6 @@ int gBottomBorder;
 bool csrflag; // cursor on/off
 bool autoCR;
 
-#ifdef __clang__
-#pragma GCC warning "readExt() is not implemented for clang yet"
-#else
 unsigned int readExt(FILE* inFile, himemPtr addr, byte skipCBMAddressBytes)
 {
 
@@ -113,11 +110,7 @@ unsigned int readExt(FILE* inFile, himemPtr addr, byte skipCBMAddressBytes)
 
     return overallRead;
 }
-#endif
 
-#ifdef __clang__
-#pragma GCC warning "loadExt() is not implemented for clang yet"
-#else
 unsigned int loadExt(char* filename, himemPtr addr, byte skipCBMAddressBytes)
 {
 
@@ -134,7 +127,6 @@ unsigned int loadExt(char* filename, himemPtr addr, byte skipCBMAddressBytes)
 
     return readBytes;
 }
-#endif
 
 void fc_loadReservedBitmap(char* name)
 {
@@ -201,8 +193,8 @@ unsigned char fc_nyblswap(unsigned char in) // oh why?!
                  "asl a\n"
                  "adc #$80\n"
                  "rol a\n"
-                 "st%0" ::"a"(swp)
-                 : "a");
+                 "st%0"
+                 : "+a"(swp));
 #else
 #pragma GCC warning "fc_nyblswap() is not implemented for this compiler"
 #endif
@@ -490,9 +482,6 @@ void fc_addGraphicsRect(
     }
 }
 
-#ifdef __clang__
-#pragma GCC warning "fc_loadFCI() is not implemented for clang yet"
-#else
 fciInfo* fc_loadFCI(char* filename, himemPtr address, himemPtr paletteAddress)
 {
     static byte numColumns, numRows, lastColourIndex;
@@ -578,7 +567,6 @@ fciInfo* fc_loadFCI(char* filename, himemPtr address, himemPtr paletteAddress)
 
     return info;
 }
-#endif
 
 void fc_zeroPalette(byte reservedSysPalette)
 {
@@ -941,9 +929,6 @@ char fc_getkey(void)
     return fc_cgetc();
 }
 
-#ifdef __clang__
-#pragma GCC warning "fc_getnum() is not implemented for clang yet"
-#else
 int fc_getnum(byte maxlen)
 {
     int res;
@@ -953,7 +938,6 @@ int fc_getnum(byte maxlen)
     free(inptr);
     return res;
 }
-#endif
 
 char* fc_input(byte maxlen)
 {

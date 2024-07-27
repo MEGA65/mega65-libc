@@ -17,6 +17,9 @@ enum
     TARGET_MEGA65R1 = 1,           //!< MEGA65 board revision 1
     TARGET_MEGA65R2 = 2,           //!< MEGA65 board revision 2
     TARGET_MEGA65R3 = 3,           //!< MEGA65 board revision 3
+    TARGET_MEGA65R4 = 4,           //!< MEGA65 board revision 4
+    TARGET_MEGA65R5 = 5,           //!< MEGA65 board revision 5
+    TARGET_MEGA65R6 = 6,           //!< MEGA65 board revision 6
     TARGET_MEGAPHONER1 = 0x21,     //!< MEGAphone revision 1
     TARGET_MEGAPHONER4 = 0x22,     //!< MEGAphone revision 4
     TARGET_NEXYS4 = 0x40,          //!< Nexys4 board

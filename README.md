@@ -19,11 +19,11 @@ Simple C library for the MEGA65
 2. Build with
 ~~~sh
 cd mega65-libc
-ln -s Makefile_cc65 Makefile # or `make -f Makefile_cc65` below
 export USE_LOCAL_CC65=1
-make
-make test                    # if `xmega65` (Xemu) is in your path
+make -f Makefile_cc65
+make -f Makefile_cc65 test # if `xmega65` (Xemu) is in your path
 ~~~
+
 ### Clang
 
 1. Install [llvm-mos-sdk](https://github.com/llvm-mos/llvm-mos-sdk#getting-started).

@@ -273,7 +273,7 @@ uint8_t mega65_sdcard_writesector(const uint32_t sector_number)
     // Copy buffer into the SD card buffer, and then execute the write job
     uint32_t sector_address;
     int i;
-    char tries = 0, result;
+    char tries = 0; // , result;
     uint16_t counter = 0;
 
     while (PEEK(sd_ctl) & 3) {
@@ -363,7 +363,7 @@ uint8_t mega65_sdcard_writesector(const uint32_t sector_number)
         POKE(0xD020, write_count & 0x0f);
 
         // Note result
-        result = PEEK(sd_ctl);
+        // result = PEEK(sd_ctl);
 
         if (!(PEEK(sd_ctl) & 0x67)) {
             write_count++;
