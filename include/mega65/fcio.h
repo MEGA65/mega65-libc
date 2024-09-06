@@ -39,6 +39,11 @@
 #define COLOUR_GREY3 15      //!< Grey3 color
 #define COLOUR_LIGHTGREY 15  //!< Light grey color
 
+#ifdef __cplusplus
+// Being compiled by a C++ compiler, inhibit name mangling
+extern "C" {
+#endif
+
 #ifndef byte
 typedef unsigned char byte;
 #endif
@@ -542,5 +547,9 @@ void fc_plotScreenChar(byte x, byte y, byte c, byte color, byte exAttr);
 [[deprecated("Use fc_plotScreenChar() instead.")]]
 #endif
 void fc_plotPetsciiChar(byte x, byte y, byte c, byte color, byte exAttr);
+
+#ifdef __cplusplus
+} // End of extern "C"
+#endif
 
 #endif // __MEGA65_FCIO_H

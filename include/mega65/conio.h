@@ -186,6 +186,11 @@
 #define CINPUT_NO_AUTOTRANSLATE 8
 #define CINPUT_ACCEPT_ALPHA CINPUT_ACCEPT_NUMERIC | CINPUT_ACCEPT_LETTER
 
+#ifdef __cplusplus
+// Being compiled by a C++ compiler, inhibit name mangling
+extern "C" {
+#endif
+
 /*------------------------------------------------------------------------
   Public structs
   -----------------------------------------------------------------------*/
@@ -923,10 +928,10 @@ void fastcall cputnc(unsigned char count, unsigned char c);
 void cputhex(unsigned long n, unsigned char prec);
 
 /* \m65libsummary{cputdec}{Output a decimal number at current position}
-    \m65libsyntax    {void cputdec(unsigned long n, unsigned char padding, unsigned char
-   leadingZ)} \m65libparam     {n}{The number to write} \m65libparam
-   {padding}{The padding space to add before number} \m65libparam {leadingZ}{The
-   leading zeros to print}
+    \m65libsyntax    {void cputdec(unsigned long n, unsigned char padding,
+   unsigned char leadingZ)} \m65libparam     {n}{The number to write}
+   \m65libparam {padding}{The padding space to add before number} \m65libparam
+   {leadingZ}{The leading zeros to print}
 */
 /**
  * @brief Output a decimal number at current position
@@ -1196,5 +1201,9 @@ void flushkeybuf(void);
  */
 unsigned char cinput(
     unsigned char* buffer, unsigned char buflen, unsigned char flags);
+
+#ifdef __cplusplus
+} // End of extern "C"
+#endif
 
 #endif /* __MEGA65_CONIO_H */

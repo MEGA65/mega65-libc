@@ -8,6 +8,11 @@
 
 #include <stdint.h>
 
+#ifdef __cplusplus
+// Being compiled by a C++ compiler, inhibit name mangling
+extern "C" {
+#endif
+
 enum
 #ifdef __clang__
     : uint8_t
@@ -37,5 +42,9 @@ enum
  * @brief Detect target
  */
 uint8_t detect_target(void);
+
+#ifdef __cplusplus
+} // End of extern "C"
+#endif
 
 #endif // __MEGA65_TARGETS_H

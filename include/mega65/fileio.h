@@ -12,6 +12,11 @@
 #include <stdint.h>
 #include <stddef.h>
 
+#ifdef __cplusplus
+// Being compiled by a C++ compiler, inhibit name mangling
+extern "C" {
+#endif
+
 #ifdef __clang__
 __attribute__((leaf))
 #endif
@@ -42,7 +47,8 @@ void close(uint8_t fd);
 #ifdef __clang__
 __attribute__((leaf))
 #endif
-uint8_t open(char* filename);
+uint8_t
+open(char* filename);
 
 /**
  * @brief Read up to 512 bytes from file
@@ -52,7 +58,8 @@ uint8_t open(char* filename);
 #ifdef __clang__
 __attribute__((leaf))
 #endif
-size_t read512(uint8_t* buffer);
+size_t
+read512(uint8_t* buffer);
 
 /**
  * @brief Change working directory
@@ -63,7 +70,8 @@ size_t read512(uint8_t* buffer);
 #ifdef __clang__
 __attribute__((leaf))
 #endif
-uint8_t chdir(char* filename);
+uint8_t
+chdir(char* filename);
 
 /**
  * @brief Change working directory to the root directory
@@ -72,7 +80,8 @@ uint8_t chdir(char* filename);
 #ifdef __clang__
 __attribute__((leaf))
 #endif
-uint8_t chdirroot(void);
+uint8_t
+chdirroot(void);
 
 /**
  * @brief Struct for holding version information of the hypervisor
@@ -95,5 +104,9 @@ struct hyppo_version {
 __attribute__((leaf))
 #endif
 void gethyppoversion(struct hyppo_version* version);
+
+#ifdef __cplusplus
+} // End of extern "C"
+#endif
 
 #endif // __MEGA65_FILEIO_H

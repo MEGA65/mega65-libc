@@ -22,6 +22,11 @@
 #define DMA_XYMOD_ADDR                                                         \
     0x03; //!< DMA XY MOD (bitmap rectangular) addressing mode (unimplemented)
 
+#ifdef __cplusplus
+// Being compiled by a C++ compiler, inhibit name mangling
+extern "C" {
+#endif
+
 /**
  * @brief DMA list structure
  */
@@ -70,14 +75,16 @@ void mega65_io_enable(void);
 #ifdef __clang__
 __attribute__((leaf))
 #endif
-uint8_t lpeek(uint32_t address);
+uint8_t
+lpeek(uint32_t address);
 
 #ifdef __llvm__
 /**
  * @brief Inlined version of `lpeek()`
  * @param ADDRESS 28-bit address; must be a compile-time constant.
  * @returns Value at address
- * @warning This function is experimental and may change/be removed in future versions
+ * @warning This function is experimental and may change/be removed in future
+ * versions
  */
 inline uint8_t lpeek_i(const uint32_t ADDRESS)
 {
@@ -172,6 +179,10 @@ void lfill_skip(
 #ifdef __clang__
 /// Peek eight bytes from the given address
 #define PEEK64(X) (*(volatile uint64_t*)(X))
+#endif
+
+#ifdef __cplusplus
+} // End of extern "C"
 #endif
 
 #endif // __MEGA65_MEMORY_H

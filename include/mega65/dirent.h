@@ -11,17 +11,24 @@
 
 #include <stdint.h>
 
+#ifdef __cplusplus
+// Being compiled by a C++ compiler, inhibit name mangling
+extern "C" {
+#endif
+
 /// Open a directory
 #ifdef __clang__
 __attribute__((leaf))
 #endif
-unsigned char opendir(void);
+unsigned char
+opendir(void);
 
 /// Read directory entry
 #ifdef __clang__
 __attribute__((leaf))
 #endif
-struct m65_dirent* readdir(unsigned char);
+struct m65_dirent*
+readdir(unsigned char);
 
 /// Close directory entry
 #ifdef __clang__
@@ -37,5 +44,9 @@ struct m65_dirent {
     uint16_t d_type;   //!< File type
     char d_name[256];  //!< Filename string of entry
 };
+
+#ifdef __cplusplus
+} // End of extern "C"
+#endif
 
 #endif // __MEGA65_DIRENT_H
