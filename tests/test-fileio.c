@@ -12,6 +12,7 @@
 #include <mega65/memory.h>
 #include <mega65/fileio.h>
 #include <mega65/tests.h>
+#include <mega65/debug.h>
 #include <stdlib.h>
 
 #define FILE_ERROR 0xff
@@ -33,6 +34,7 @@ int main(void)
     mega65_io_enable();
 
     // Get hypervisor version
+    debug_msg("TEST: hyppoversion()");
     gethyppoversion(&version);
     assert_eq(version.hyppo_major >= 1, 1);
     assert_eq(version.hyppo_minor >= 2, 1);
@@ -56,18 +58,22 @@ int main(void)
     }
 
     // Read single 512 byte chunk
+    debug_msg("TEST: read512()");
     num_bytes_read = read512(buffer);
     assert_eq(num_bytes_read, 512);
 
     // Check first two bytes of chunk
+    debug_msg("TEST: read512() - first two bytes");
     assert_eq(buffer[0], 0x3c);
     assert_eq(buffer[1], 0x66);
 
     // Check last two bytes of chunk
+    debug_msg("TEST: read512() - last two bytes");
     assert_eq(buffer[510], 0x18);
     assert_eq(buffer[511], 0x00);
 
     // The size of CHARROM is 8 x 512 = 4096 bytes; let's read until EOF
+    debug_msg("TEST: read512() until EOF");
     assert_eq(read512(buffer), 512);
     assert_eq(read512(buffer), 512);
     assert_eq(read512(buffer), 512);
@@ -76,6 +82,7 @@ int main(void)
     assert_eq(read512(buffer), 512);
     assert_eq(read512(buffer), 512);
     // This should return 0, indicating EOF
+    debug_msg("TEST: read512() EOF reached");
     assert_eq(read512(buffer), 0);
 
     // The very last byte of the file

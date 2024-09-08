@@ -15,6 +15,12 @@
  */
 #ifndef __MEGA65_TIME_H
 #define __MEGA65_TIME_H
+
+#ifdef __cplusplus
+// Being compiled by a C++ compiler, inhibit name mangling
+extern "C" {
+#endif
+
 /**
  * @brief Real-time clock structure
  */
@@ -38,5 +44,9 @@ struct m65_tm {
 void getrtc(struct m65_tm* tm);
 /// Set real-time clock
 void setrtc(struct m65_tm* tm);
+
+#ifdef __cplusplus
+} // End of extern "C"
+#endif
 
 #endif // __MEGA65_TIME_H

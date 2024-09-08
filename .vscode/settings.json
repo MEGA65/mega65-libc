@@ -1,6 +1,7 @@
 {
         "clang-tidy.buildPath": "build",
         "editor.formatOnSave": true,
+        "cmake.configureOnOpen": false,
         "files.associations": {
                 "memory.h": "c",
                 "cstdlib": "c",

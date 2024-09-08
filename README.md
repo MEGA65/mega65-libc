@@ -7,9 +7,8 @@ Simple C library for the MEGA65
 
 ## Using the library
 
-- **CC65**: Include the `.c` and `.s` files from the `src/` directory that you need.
-- **Clang**: Either use the provided CMake setup as detailed below, or include the `.c` and `.h` files you need.
-- **KickC**: Support will be coming soon (or sooner, if someone would like to port the routines :-)
+- _CC65_: Include the `.c` and `.s` files from the `src/` directory that you need.
+- _Clang/llvm-mos_: Either use the provided CMake setup as detailed below, or include the `.c` and `.h` files you need.
 
 ## Development and building
 
@@ -17,52 +16,53 @@ Simple C library for the MEGA65
 
 1. Install [CC65](https://cc65.github.io) with e.g. `brew install cc65` or `apt install cc65`.
 2. Build with
-~~~sh
-cd mega65-libc
-export USE_LOCAL_CC65=1
-make -f Makefile_cc65
-make -f Makefile_cc65 test # if `xmega65` (Xemu) is in your path
-~~~
+   ~~~sh
+   cd mega65-libc
+   export USE_LOCAL_CC65=1
+   make -f Makefile_cc65
+   make -f Makefile_cc65 test # if `xmega65` (Xemu) is in your path
+   ~~~
 
-### Clang
+### Clang / LLVM-MOS
 
 1. Install [llvm-mos-sdk](https://github.com/llvm-mos/llvm-mos-sdk#getting-started).
-This e.g. downloads for linux and unpacks into `$HOME/llvm-mos`:
-~~~sh
-wget https://github.com/llvm-mos/llvm-mos-sdk/releases/latest/download/llvm-mos-linux.tar.xz 
-tar xf llvm-mos-linux.tar.xz -C $HOME
-~~~
+   This e.g. downloads for linux and unpacks into `$HOME/llvm-mos`:
+   ~~~sh
+   wget https://github.com/llvm-mos/llvm-mos-sdk/releases/latest/download/llvm-mos-linux.tar.xz 
+   tar xf llvm-mos-linux.tar.xz -C $HOME
+   ~~~
 2. Configure and make with:
-~~~sh
-cd mega65-libc
-cmake -DCMAKE_PREFIX_PATH=$HOME/llvm-mos -B build
-make
-make test # if `xmega65` (Xemu) was in your path when running cmake
-~~~
+   ~~~sh
+   cd mega65-libc
+   cmake -DCMAKE_PREFIX_PATH=$HOME/llvm-mos -B build
+   cd build
+   make
+   make test # if `xmega65` (Xemu) was in your path when running cmake
+   ~~~
 
 #### Dependent projects
 
-It's trivial to write a classic `Makefile` for clang using `CC=mos-mega65-clang`.
-For dependent CMake based projects, `CMakeLists.txt` could look like this:
-~~~cmake
-cmake_minimum_required(VERSION 3.5)
-set(LLVM_MOS_PLATFORM mega65)
-find_package(llvm-mos-sdk REQUIRED)
-project(myproject LANGUAGES C)
-find_package(mega65libc REQUIRED)
-add_compile_options(-Os -Wall -Wextra -Wconversion)
-add_executable(main main.c)
-target_link_libraries(main mega65libc::mega65libc)
-set_target_properties(main PROPERTIES OUTPUT_NAME main.prg)
-~~~
-See more [here](https://github.com/llvm-mos/llvm-mos-sdk#developing-for-6502-with-cmake).
+- Classic `Makefile` projects should use `CC=mos-mega65-clang`.
+- In CMake projects, `CMakeLists.txt` could look like this:
+  ~~~cmake
+  cmake_minimum_required(VERSION 3.5)
+  set(LLVM_MOS_PLATFORM mega65)
+  find_package(llvm-mos-sdk REQUIRED)
+  project(myproject LANGUAGES C)
+  find_package(mega65libc REQUIRED)
+  add_compile_options(-Os -Wall -Wextra -Wconversion)
+  add_executable(main main.c)
+  target_link_libraries(main mega65libc::mega65libc)
+  set_target_properties(main PROPERTIES OUTPUT_NAME main.prg)
+  ~~~
+  See more [here](https://github.com/llvm-mos/llvm-mos-sdk#developing-for-6502-with-cmake).
 
 #### CPM.cmake dependency manager
 
 If using [CPM.cmake](https://github.com/cpm-cmake/CPM.cmake),
 `mega65libc` can be easily added and automatically downloaded to your project with:
 ~~~cmake
-CPMAddPackage(NAME mega65libc GITHUB_REPOSITORY mega65/mega65-libc GIT_TAG master)
+CPMAddPackage(NAME mega65libc GITHUB_REPOSITORY mega65/mega65-libc GIT_TAG development)
 target_link_libraries(<mytarget> mega65libc)
 ~~~
 
@@ -70,6 +70,7 @@ target_link_libraries(<mytarget> mega65libc)
 
 Building the docs requires `doxygen`; install with e.g. `apt install doxygen` or `brew install doxygen`.
 ~~~sh
+cd build # requires CMake build
 make doc # outputs to html, latex, xml in doc/
 ~~~
 

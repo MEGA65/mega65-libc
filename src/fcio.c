@@ -45,18 +45,18 @@ fcioConf stdConfig = {
 
 #define VIC_BASE 0xD000UL
 
-#define VIC2CTRL (*(unsigned char*)(0xd016))
-#define VIC4CTRL (*(unsigned char*)(0xd054))
-#define VIC3CTRL (*(unsigned char*)(0xd031))
-#define LINESTEP_LO (*(unsigned char*)(0xd058))
-#define LINESTEP_HI (*(unsigned char*)(0xd059))
-#define CHRCOUNT (*(unsigned char*)(0xd05e))
-#define HOTREG (*(unsigned char*)(0xd05d))
+#define VIC2CTRL (*(volatile unsigned char*)(0xd016))
+#define VIC4CTRL (*(volatile unsigned char*)(0xd054))
+#define VIC3CTRL (*(volatile unsigned char*)(0xd031))
+#define LINESTEP_LO (*(volatile unsigned char*)(0xd058))
+#define LINESTEP_HI (*(volatile unsigned char*)(0xd059))
+#define CHRCOUNT (*(volatile unsigned char*)(0xd05e))
+#define HOTREG (*(volatile unsigned char*)(0xd05d))
 
-#define SCNPTR_0 (*(unsigned char*)(0xd060))
-#define SCNPTR_1 (*(unsigned char*)(0xd061))
-#define SCNPTR_2 (*(unsigned char*)(0xd062))
-#define SCNPTR_3 (*(unsigned char*)(0xd063))
+#define SCNPTR_0 (*(volatile unsigned char*)(0xd060))
+#define SCNPTR_1 (*(volatile unsigned char*)(0xd061))
+#define SCNPTR_2 (*(volatile unsigned char*)(0xd062))
+#define SCNPTR_3 (*(volatile unsigned char*)(0xd063))
 
 // special graphics characters
 #define H_COLUMN_END 4
@@ -171,11 +171,11 @@ void fc_init(
     fc_textcolor(COLOR_GREEN);
 }
 
-static unsigned char swp;
 unsigned char fc_nyblswap(unsigned char in) // oh why?!
 {
-    swp = in;
 #ifdef __CC65__
+    static unsigned char swp;
+    swp = in;
     __asm__("lda %v", swp);
     __asm__("asl  a");
     __asm__("adc  #$80");
@@ -184,21 +184,22 @@ unsigned char fc_nyblswap(unsigned char in) // oh why?!
     __asm__("adc  #$80");
     __asm__("rol  a");
     __asm__("sta %v", swp);
+    return swp;
 #elif defined(__clang__)
-#pragma GCC warning "LLVM assembly needs to be checked in fc_nyblswap()"
-    asm volatile("ld%0\n"
-                 "asl a\n"
-                 "adc #$80\n"
-                 "rol a\n"
-                 "asl a\n"
-                 "adc #$80\n"
-                 "rol a\n"
-                 "st%0"
-                 : "+a"(swp));
+    __attribute__((leaf)) asm volatile("asl      \n"
+                                       "adc #$80 \n"
+                                       "rol      \n"
+                                       "asl      \n"
+                                       "adc #$80 \n"
+                                       "rol      \n"
+                                       : "=a"(in) /* output */
+                                       : "a"(in)  /* input */
+                                       : "p" /* clobbers */);
+    return in;
 #else
 #pragma GCC warning "fc_nyblswap() is not implemented for this compiler"
+    return in;
 #endif
-    return swp;
 }
 
 void fc_flash(byte f)
@@ -321,7 +322,7 @@ himemPtr fc_allocPalMem(word size)
     return 0;
 }
 
-char asciiToPetscii(byte c)
+char asciiToScreencode(byte c)
 {
     // TODO: could be made much faster with translation table
     if (c == '_') {
@@ -336,7 +337,7 @@ char asciiToPetscii(byte c)
     if (c >= 192) {
         return c - 128;
     }
-    return c;
+    return (char)c;
 }
 
 #ifdef __clang__
@@ -721,7 +722,7 @@ void cr(void)
     }
 }
 
-void fc_plotPetsciiChar(byte x, byte y, byte c, byte color, byte exAttr)
+void fc_plotScreenChar(byte x, byte y, byte c, byte color, byte exAttr)
 {
     word adrOffset;
     adrOffset = (x * 2) + (y * 2 * gScreenColumns);
@@ -729,6 +730,11 @@ void fc_plotPetsciiChar(byte x, byte y, byte c, byte color, byte exAttr)
     lpoke(gFcioConfig->screenBase + adrOffset + 1, 0);
     lpoke(gFcioConfig->colourBase + adrOffset + 1, color | exAttr);
     lpoke(gFcioConfig->colourBase + adrOffset, 0);
+}
+
+void fc_plotPetsciiChar(byte x, byte y, byte c, byte color, byte exAttr)
+{
+    fc_plotScreenChar(x, y, c, color, exAttr);
 }
 
 byte fc_wherex(void)
@@ -761,9 +767,9 @@ void fc_putc(char c)
         return;
     }
 
-    out = asciiToPetscii(c);
+    out = asciiToScreencode((byte)c);
 
-    fc_plotPetsciiChar(gCurrentWin->xc + gCurrentWin->x0,
+    fc_plotScreenChar(gCurrentWin->xc + gCurrentWin->x0,
         gCurrentWin->yc + gCurrentWin->y0, out, gCurrentWin->textcolor,
         gCurrentWin->extAttributes);
     gCurrentWin->xc++;
@@ -780,7 +786,7 @@ void fc_putc(char c)
     }
 
     if (csrflag) {
-        fc_plotPetsciiChar(gCurrentWin->xc + gCurrentWin->x0,
+        fc_plotScreenChar(gCurrentWin->xc + gCurrentWin->x0,
             gCurrentWin->yc + gCurrentWin->y0, CURSOR_CHARACTER,
             gCurrentWin->textcolor, 16);
     }
@@ -829,7 +835,7 @@ void fc_cursor(byte onoff)
 {
     csrflag = onoff;
 
-    fc_plotPetsciiChar(gCurrentWin->xc + gCurrentWin->x0,
+    fc_plotScreenChar(gCurrentWin->xc + gCurrentWin->x0,
         gCurrentWin->yc + gCurrentWin->y0, (csrflag ? CURSOR_CHARACTER : 32),
         gCurrentWin->textcolor, (csrflag ? 16 : 0));
 }

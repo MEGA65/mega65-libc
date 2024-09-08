@@ -1,5 +1,5 @@
 /**
- * @example test-integer-math.c
+ * @example test-math.c
  *
  * Tests for math functions
  *

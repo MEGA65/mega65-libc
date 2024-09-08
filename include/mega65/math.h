@@ -19,6 +19,11 @@
 #define MULTINB 0xD774
 #define MULTOUT 0xD778
 
+#ifdef __cplusplus
+// Being compiled by a C++ compiler, inhibit name mangling
+extern "C" {
+#endif
+
 /**
  * @brief Multiply two 32-bit unsigned integers and return 32-bit value
  * @param a First 32-bit value
@@ -66,6 +71,10 @@ inline uint8_t umul8(const uint8_t a, const uint8_t b)
 }
 #else
 uint8_t umul8(const uint8_t a, const uint8_t b);
+#endif
+
+#ifdef __cplusplus
+} // End of extern "C"
 #endif
 
 #endif // __MEGA65_MATH_H

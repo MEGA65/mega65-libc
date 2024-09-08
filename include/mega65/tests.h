@@ -20,6 +20,11 @@
 #define XEMU_CONTROL 0xD6CF
 #define XEMU_QUIT 0x42 //!< Command to make Xemu quit
 
+#ifdef __cplusplus
+// Being compiled by a C++ compiler, inhibit name mangling
+extern "C" {
+#endif
+
 /**
  * @brief Quits Xemu with given exit code
  * @param exit_code Exit code passed to Xemu, e.g. EXIT_SUCCESS or EXIT_FAILURE
@@ -216,5 +221,9 @@ void unit_test_print(uint8_t x, uint8_t y, uint8_t colour, char* msg);
  */
 void unit_test_read_pixel(
     short x, short y, uint8_t* red, uint8_t* green, uint8_t* blue);
+
+#ifdef __cplusplus
+} // End of extern "C"
+#endif
 
 #endif // __MEGA65_TESTS_H

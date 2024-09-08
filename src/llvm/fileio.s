@@ -13,7 +13,7 @@ HYPPO_CLOSEFILE  = $20
 HYPPO_CLOSEALL   = $22
 HYPPO_SETNAME    = $2E
 HYPPO_FINDFILE   = $34
-HYPPO_CHDIRROOT  = $3C; undocumented as of July 2023?
+HYPPO_CDROOTDIR  = $3C
 HYPPO_TOGGLE_ROM_WRITE_PROTECT = $70
 FILE_ERROR       = $FF
 NAME_ERROR       = $FF
@@ -133,7 +133,7 @@ close:
 .global chdirroot
 .section .text.fileio_chdirroot,"ax",@progbits
 chdirroot:
-	hyppo HYPPO_CHDIRROOT
+	hyppo HYPPO_CDROOTDIR
 	rts
 
 .global chdir	

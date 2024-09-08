@@ -62,14 +62,20 @@ void unit_test_report(
     __asm__("STA $D643");
     __asm__("CLV");
 #else
-    asm volatile("st%0 $D643\n"
-                 "clv" ::"a"((uint8_t)(issue & 0xff)));
-    asm volatile("st%0 $D643\n"
-                 "clv" ::"a"((uint8_t)(issue >> 8)));
-    asm volatile("st%0 $D643\n"
-                 "clv" ::"a"(sub));
-    asm volatile("st%0 $D643\n"
-                 "clv" ::"a"(status));
+    __attribute__((leaf)) asm volatile(
+        "st%0 $D643 \n"
+        "clv        \n" ::"a"((uint8_t)(issue & 0xff))
+        : "p");
+    __attribute__((leaf)) asm volatile(
+        "st%0 $D643 \n"
+        "clv        \n" ::"a"((uint8_t)(issue >> 8))
+        : "p");
+    __attribute__((leaf)) asm volatile("st%0 $D643 \n"
+                                       "clv        \n" ::"a"(sub)
+                                       : "p");
+    __attribute__((leaf)) asm volatile("st%0 $D643 \n"
+                                       "clv        \n" ::"a"(status)
+                                       : "p");
 #endif
 }
 
@@ -78,7 +84,7 @@ void _unit_test_msg(char* msg, char cmd)
     unsigned char* current;
 
     unit_test_report(0, 0, cmd);
-    current = (unsigned char *)msg;
+    current = (unsigned char*)msg;
 
     while (*current) {
 #ifdef __CC65__
@@ -87,8 +93,9 @@ void _unit_test_msg(char* msg, char cmd)
         __asm__("STA $D643");
         __asm__("CLV");
 #else
-        asm volatile("st%0 $D643\n"
-                     "clv" ::"a"(*current));
+        __attribute__((leaf)) asm volatile("st%0 $D643 \n"
+                                           "clv        \n" ::"a"(*current)
+                                           : "p");
 #endif
         current++;
     }
@@ -98,10 +105,10 @@ void _unit_test_msg(char* msg, char cmd)
     __asm__("STA $D643");
     __asm__("CLV");
 #else
-    asm volatile("lda #92\n"
-                 "sta $D643\n"
-                 "clv" ::
-                     : "a");
+    __attribute__((leaf)) asm volatile("lda #92   \n"
+                                       "sta $D643 \n"
+                                       "clv       \n" ::
+                                           : "a", "p");
 #endif
 }
 
