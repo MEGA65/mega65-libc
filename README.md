@@ -40,7 +40,7 @@ Simple C library for the MEGA65
    make test # if `xmega65` (Xemu) was in your path when running cmake
    ~~~
 
-Installed artifacts should be made visible to cmake's package search, e.g. by adding their path to CMAKE_PREFIX_PATH.
+Location of installed mega65-libc should be included into cmake's package search paths, e.g. by adding its path to the ```CMAKE_PREFIX_PATH```.
 
 #### Dependent projects
 
