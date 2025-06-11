@@ -914,7 +914,8 @@ void fastcall cputs(const unsigned char* s);
  * @param y The Y coordinate where string will be printed
  * @param s An array of screen codes to print. Must have non-zero length.
  * @remarks This function works with screen codes only. To output ordinary
- * @warning Undefined behavior if `s` has zero length.
+ * ASCII/PETSCII strings, use the "pcputsxy" macro. No pointer check is
+ * performed.  If s is null or invalid, behavior is undefined.
  */
 void cputsxy(unsigned char x, unsigned char y, const unsigned char* s);
 
@@ -946,7 +947,6 @@ void cputcxy(unsigned char x, unsigned char y, unsigned char c);
  * @param y The Y coordinate where character will be printed
  * @param count The number of characters to output. Must be larger than zero.
  * @param c The screen code of the characters to print
- * @warning Undefined behavior if `count` is zero.
  */
 void cputncxy(
     unsigned char x, unsigned char y, unsigned char count, unsigned char c);
