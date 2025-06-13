@@ -8,10 +8,14 @@
 	
 	;; closedir takes file descriptor as argument (appears in A)
 _shres_trap:
-	LDQ _shres_regs
+	NEG  			; Prefix instructions to make LDA -> LDQ
+	NEG
+	LDA _shres_regs
 	STA $D645
 	NOP
-	STQ _shres_regs
+	NEG			; Prefix instructions to make STA -> STQ
+	NEG
+	STA _shres_regs
 	PHP
 	PLA
 	STA _shres_regs+4
@@ -19,6 +23,6 @@ _shres_trap:
 	TAX
 	RTS
 
-_shres_regs:
+_shres_regs:	
 	.dword 0   		; regs
 	.byte 0 		; processor flags
