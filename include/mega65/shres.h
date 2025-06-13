@@ -20,4 +20,4 @@ char shopen(char *resource_name,unsigned long required_flags, struct shared_reso
 char shread(unsigned char *ptr, unsigned int count, struct shared_resource *file_handle);
 char shseek(struct shared_resource *,unsigned long offset, unsigned char whence);
 shared_resource_dir shdopen();
-char sddread(unsigned long required_flags, shared_resource_dir *directory_handle, struct shared_resource *dirent);
+char shdread(unsigned long required_flags, shared_resource_dir *directory_handle, struct shared_resource *dirent);

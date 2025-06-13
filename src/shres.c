@@ -26,7 +26,7 @@ shared_resource_dir shdopen()
   return 0xffff;
 }
 
-char sddread(unsigned long required_flags, shared_resource_dir *directory_handle, struct shared_resource *dirent)
+char shdread(unsigned long required_flags, shared_resource_dir *directory_handle, struct shared_resource *dirent)
 {
   return 1;
 }
