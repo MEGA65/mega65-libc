@@ -11,13 +11,19 @@ extern unsigned char shres_regs[5];
 #define SHRES_FLAG_16x16 2
 #define SHRES_FLAG_UNICODE 4
 
-#define MAX_RES_NAME_LEN 256
+#define MAX_RES_NAME_LEN 240
 struct shared_resource {
-   char name[MAX_RES_NAME_LEN];
-   unsigned long flags;
-   unsigned long length;
+  // Matches sector format:
    unsigned long first_sector;
-   unsigned long position;
+   unsigned long length_in_sectors;
+   unsigned long length;
+   unsigned long flags;
+   char name[MAX_RES_NAME_LEN];
+
+  // Internal state for tracking file once opened:
+  // (i.e., fields not stored on disk)
+  unsigned long position;
+
 }; 
 
 #define shared_resource_dir unsigned int

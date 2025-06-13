@@ -22,7 +22,7 @@ char do_shres_trap(unsigned long arg)
     return 1;
   }
 
-  printf("SD card was idle\n");
+  printf("SD card was idle, &shres_regs=0x%04x\n",&shres_regs[0]);
   
   shres_regs[0] = (arg>>0)&0xff;
   shres_regs[1] = (arg>>8)&0xff;
@@ -30,10 +30,10 @@ char do_shres_trap(unsigned long arg)
   shres_regs[3] = (arg>>24)&0xff;
   shres_trap();
 
-  printf("Trap A=0x%02x\n",shres_regs[0]);
+  printf("Trap C=%d\n",shres_regs[4]&1);
   
-  // Check trap response in A
-  return shres_regs[0];
+  // Check trap response in P
+  return (shres_regs[4]&0x01) ^0x01;
 
 }
 
@@ -80,5 +80,24 @@ shared_resource_dir shdopen()
 
 char shdread(unsigned long required_flags, shared_resource_dir *directory_handle, struct shared_resource *dirent)
 {
-  return 1;
+
+  // Scan shared resources file for the next matching file, or until we reach
+  // the end of the shared resources directory.
+  do {  
+    // The directory handle is really just the sector number in the shared resources area. 
+    if (do_shres_trap(*directory_handle)) return 1;
+    sdcard_busy_wait();
+    
+    // Check for end of directory (first byte of filename is null)
+    if (!lpeek(0xffd6e10)) return 1;
+    
+    // Copy directory entry to dirent
+    lcopy(0xffd6e00L,(unsigned long)dirent,256);
+    dirent->position = 0L;
+
+    (*directory_handle) ++;
+  }
+  while ((dirent->flags & required_flags) == required_flags);
+  
+  return 0;
 }
