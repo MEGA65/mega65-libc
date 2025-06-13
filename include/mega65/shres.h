@@ -3,7 +3,13 @@
 
 */
 
-extern unsigned char *shres_regs;
+extern void shres_trap(void);
+extern unsigned char shres_regs[5];
+
+#define SHRES_FLAG_FONT 1
+// Flags with meaning only if FLAG_FONT set
+#define SHRES_FLAG_16x16 2
+#define SHRES_FLAG_UNICODE 4
 
 #define MAX_RES_NAME_LEN 256
 struct shared_resource {
