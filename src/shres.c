@@ -88,9 +88,24 @@ unsigned int shread(unsigned char *ptr, unsigned int count, struct shared_resour
   return read_bytes;
 }
 
-char shseek(struct shared_resource *,unsigned long offset, unsigned char whence)
+char shseek(struct shared_resource *f,long offset, unsigned char whence)
 {
-  return 1;
+  if (!f) return 1;
+  switch(whence) {
+  case SEEK_CUR:
+    f->position += offset;
+    break;    
+  case SEEK_END:
+    f->position = f->length + offset;
+    break;    
+  case SEEK_SET:
+  default:
+    f->position = offset;
+  }
+
+  if (f->position<0) { f->position=0; return 1;}
+  if (f->position>f->length) { f->position = f->length; return 1; }  
+  
 }
 
 shared_resource_dir shdopen()
