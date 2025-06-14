@@ -2,9 +2,10 @@
  * @file shres.c
  * @brief Implementation of MEGA65 SYSPART Shared Resources Access API
  *
- * Provides functions to access shared resources stored in the MEGA65 system partition (SYSPART),
- * including file opening, reading, seeking, and directory traversal. Resources are accessed
- * via a custom trap interface to the SYSPART filesystem.
+ * Provides functions to access shared resources stored in the MEGA65 system
+ * partition (SYSPART), including file opening, reading, seeking, and directory
+ * traversal. Resources are accessed via a custom trap interface to the SYSPART
+ * filesystem.
  */
 
 #include <stdio.h>
@@ -14,20 +15,20 @@
 #include "mega65/memory.h"
 
 /// Magic string identifying the SYSPART shared resource area.
-static const unsigned char magic_string[] = {
-    0x4D, 0x45, 0x47, 0x41, '6', '5',                  // "MEGA65"
-    0x53, 0x48, 0x41, 0x52, 0x45, 0x44,                // "SHARED"
-    0x52, 0x45, 0x53, 0x4F, 0x55, 0x52, 0x43, 0x45, 0x53, // "RESOURCES"
-    0x00
-};
+static const unsigned char magic_string[]
+    = { 0x4D, 0x45, 0x47, 0x41, '6', '5',                       // "MEGA65"
+          0x53, 0x48, 0x41, 0x52, 0x45, 0x44,                   // "SHARED"
+          0x52, 0x45, 0x53, 0x4F, 0x55, 0x52, 0x43, 0x45, 0x53, // "RESOURCES"
+          0x00 };
 
 /**
  * @brief Waits until the SD card is no longer busy.
  */
 void sdcard_busy_wait(void)
 {
-    while (PEEK(0xD680) & 0x03)
+    while (PEEK(0xD680) & 0x03) {
         continue;
+    }
 }
 
 /**
@@ -60,16 +61,18 @@ char do_shres_trap(unsigned long arg)
  * @param file_handle Pointer to the shared_resource struct to populate.
  * @return 0 on success, 1 if the resource was not found or an error occurred.
  */
-char shopen(char *resource_name, unsigned long required_flags,
-            struct shared_resource *file_handle)
+char shopen(char* resource_name, unsigned long required_flags,
+    struct shared_resource* file_handle)
 {
     unsigned int d = shdopen();
-    if (d == 0xffff)
+    if (d == 0xffff) {
         return 1;
+    }
 
     while (!shdread(required_flags, &d, file_handle)) {
-        if (!strcmp(resource_name, file_handle->name))
+        if (!strcmp(resource_name, file_handle->name)) {
             return 0;
+        }
     }
 
     return 1;
@@ -83,25 +86,29 @@ char shopen(char *resource_name, unsigned long required_flags,
  * @param f Pointer to an open shared_resource structure.
  * @return Number of bytes actually read.
  */
-unsigned int shread(unsigned char *ptr, unsigned int count,
-                    struct shared_resource *f)
+unsigned int shread(
+    unsigned char* ptr, unsigned int count, struct shared_resource* f)
 {
     unsigned int read_bytes = 0;
 
-    if (!f || f->position >= f->length)
+    if (!f || f->position >= f->length) {
         return 0;
+    }
 
-    if (count > (f->length - f->position))
+    if (count > (f->length - f->position)) {
         count = (f->length - f->position);
+    }
 
     while (count > 0) {
         unsigned int bytes = 512 - (f->position & 511);
-        if (bytes > count)
+        if (bytes > count) {
             bytes = count;
+        }
 
         // Load the appropriate sector
-        if (do_shres_trap(f->first_sector + (f->position >> 9)))
+        if (do_shres_trap(f->first_sector + (f->position >> 9))) {
             break;
+        }
 
         // Copy bytes from the sector buffer to the output buffer
         lcopy(0xffd6e00L + (f->position & 511), (unsigned long)ptr, bytes);
@@ -123,10 +130,11 @@ unsigned int shread(unsigned char *ptr, unsigned int count,
  * @param whence One of SEEK_SET, SEEK_CUR, or SEEK_END.
  * @return 0 on success, 1 if seek was out of bounds or f is NULL.
  */
-char shseek(struct shared_resource *f, long offset, unsigned char whence)
+char shseek(struct shared_resource* f, long offset, unsigned char whence)
 {
-    if (!f)
+    if (!f) {
         return 1;
+    }
 
     switch (whence) {
     case SEEK_CUR:
@@ -156,21 +164,24 @@ char shseek(struct shared_resource *f, long offset, unsigned char whence)
 /**
  * @brief Opens the shared resource directory for reading entries.
  *
- * @return A directory handle (starting sector index) on success, or 0xffff on failure.
+ * @return A directory handle (starting sector index) on success, or 0xffff on
+ * failure.
  */
 shared_resource_dir shdopen(void)
 {
     char i;
 
-    if (do_shres_trap(0))
+    if (do_shres_trap(0)) {
         return 0xffff;
+    }
 
     sdcard_busy_wait();
 
     // Verify magic string in sector 0
     for (i = 0; magic_string[i]; i++) {
-        if (lpeek(0xffd6e00L + i) != magic_string[i])
+        if (lpeek(0xffd6e00L + i) != magic_string[i]) {
             return 0xffff;
+        }
     }
 
     // Directory starts at sector 1
@@ -182,7 +193,8 @@ shared_resource_dir shdopen(void)
  *        that matches the required flags.
  *
  * @param required_flags Bitmask of required flags the resource must have.
- * @param directory_handle Pointer to the current directory sector (auto-increments).
+ * @param directory_handle Pointer to the current directory sector
+ * (auto-increments).
  * @param dirent Pointer to a shared_resource struct to populate.
  * @return
  *   - 0 on success (matching entry read),
@@ -190,18 +202,19 @@ shared_resource_dir shdopen(void)
  *   - 2 if end of directory reached (no more entries).
  */
 char shdread(unsigned long required_flags,
-             shared_resource_dir *directory_handle,
-             struct shared_resource *dirent)
+    shared_resource_dir* directory_handle, struct shared_resource* dirent)
 {
     do {
-        if (do_shres_trap(*directory_handle))
+        if (do_shres_trap(*directory_handle)) {
             return 1;
+        }
 
         sdcard_busy_wait();
 
         // Check for end of directory (name_len == 0)
-        if (!lpeek(0xffd6e10L))
+        if (!lpeek(0xffd6e10L)) {
             return 2;
+        }
 
         // Copy entry from buffer into dirent
         lcopy(0xffd6e00L, (unsigned long)dirent, 256);
