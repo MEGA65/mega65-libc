@@ -40,28 +40,13 @@ char do_shres_trap(unsigned long arg)
 */
 char shopen(char *resource_name,unsigned long required_flags, struct shared_resource *file_handle)
 {
-  unsigned char r;
   unsigned int d;
   d = shdopen(); 
   if (d==0xffff) return 1;
 
-  printf("sdhopen() success\n");
-  
-  while (! (r=shdread(required_flags, &d,file_handle))) {
-    printf("File: '%s'%d vs '%s'%d (%d)\n",
-	   file_handle->name,strlen(file_handle->name),
-	   resource_name,strlen(resource_name),
-	   strcmp(resource_name,file_handle->name));
-    {
-      unsigned char i;
-      for(i=0;resource_name[i];i++) {
-	printf("[%02x vs %02x] ",
-	       file_handle->name[i], resource_name[i]);
-      }
-    }
+  while (! shdread(required_flags, &d,file_handle)) {
     if (!strcmp(resource_name,file_handle->name)) return 0;
   }
-  printf("r=%d\n",r);
   
   return 1;
 }
@@ -133,7 +118,6 @@ char shdread(unsigned long required_flags, shared_resource_dir *directory_handle
   // the end of the shared resources directory.
   do {  
     // The directory handle is really just the sector number in the shared resources area.
-    printf("directory sector = %d\n",*directory_handle);
 
     if (do_shres_trap(*directory_handle)) return 1;
     sdcard_busy_wait();
