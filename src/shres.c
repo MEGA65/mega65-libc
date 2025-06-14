@@ -19,20 +19,15 @@ char do_shres_trap(unsigned long arg)
 {
   // Fail if SD card is busy
   if (PEEK(0xD680)&0x03) {
-    printf("SD card is busy\n");
     return 1;
   }
 
-  printf("SD card was idle, &shres_regs=0x%04x\n",&shres_regs[0]);
-  
   shres_regs[0] = (arg>>0)&0xff;
   shres_regs[1] = (arg>>8)&0xff;
   shres_regs[2] = (arg>>16)&0xff;
   shres_regs[3] = (arg>>24)&0xff;
   shres_trap();
 
-  printf("Trap C=%d\n",shres_regs[4]&1);
-  
   // Check trap response in P
   return (shres_regs[4]&0x01) ^0x01;
 
@@ -63,7 +58,7 @@ char shopen(char *resource_name,unsigned long required_flags, struct shared_reso
 unsigned int shread(unsigned char *ptr, unsigned int count, struct shared_resource *f)
 {
   unsigned int read_bytes = 0;
-  
+
   if (!f) return 0;
 
   // EOF
@@ -77,7 +72,7 @@ unsigned int shread(unsigned char *ptr, unsigned int count, struct shared_resour
     if (bytes > count) bytes = count;
 
     // Read the sector in which our bytes are to be found
-    do_shres_trap(f->position >> 9);
+    do_shres_trap(f->first_sector + (f->position >> 9) );
 
     lcopy(0xffd6e00L + (f->position & 511),(unsigned long)ptr, bytes);
 
