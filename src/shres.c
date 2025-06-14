@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <string.h>
 
 #include "mega65/shres.h"
 #include "mega65/memory.h"
@@ -44,15 +45,53 @@ char do_shres_trap(unsigned long arg)
 */
 char shopen(char *resource_name,unsigned long required_flags, struct shared_resource *file_handle)
 {
+  unsigned int d;
+  d = shdopen(); 
+  if (d==0xffff) return 1;
+
+  while (!shdread(required_flags, &d,file_handle)) {
+    printf("File: '%s'\n",file_handle->name);
+    if (!strcmp(resource_name,file_handle->name)) return 0;
+  }
+  
   return 1;
 }
 
 /* Read bytes from a SYSPART shared resource.
-   Return 0 if success, or non-zero if error.
+   Returns number of bytes read.
  */
-char shread(unsigned char *ptr, unsigned int count, struct shared_resource *file_handle)
+unsigned int shread(unsigned char *ptr, unsigned int count, struct shared_resource *f)
 {
-  return 1;
+  unsigned int read_bytes = 0;
+  
+  if (!f) return 0;
+
+  // EOF
+  if ( f->position >= f->length ) return 0;
+
+  if (count > (f->length - f->position)) count = (f->length - f->position);
+
+  while(count > 0) {
+    // Work out how many bytes we can read from the current sector
+    unsigned int bytes = 512 - (f->position & 511);
+    if (bytes > count) bytes = count;
+
+    // Read the sector in which our bytes are to be found
+    do_shres_trap(f->position >> 9);
+
+    lcopy(0xffd6e00L + (f->position & 511),(unsigned long)ptr, bytes);
+
+    // Advance output pointer and file offset pointer
+    ptr += bytes;
+    f->position += bytes;
+
+    // And reduce the number of bytes we need.
+    count -= bytes;
+
+    read_bytes += bytes;
+  }
+
+  return read_bytes;
 }
 
 char shseek(struct shared_resource *,unsigned long offset, unsigned char whence)
