@@ -109,7 +109,9 @@ unsigned int shread(
         if (do_shres_trap(f->first_sector + (f->position >> 9))) {
             break;
         }
-
+	// And wait for the SD card to actually read it.
+	sdcard_busy_wait();
+	
         // Copy bytes from the sector buffer to the output buffer
         lcopy(0xffd6e00L + (f->position & 511), (unsigned long)ptr, bytes);
 
