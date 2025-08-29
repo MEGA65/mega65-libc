@@ -82,7 +82,7 @@ chdir(char* filename);
 __attribute__((leaf))
 #endif
 uint8_t
-chdirroot(void);
+chdirroot(uint8_t partition);
 
 /**
  * @brief Struct for holding version information of the hypervisor
