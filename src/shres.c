@@ -111,6 +111,9 @@ unsigned int shread(
         }
 	// And wait for the SD card to actually read it.
 	sdcard_busy_wait();
+
+	// Select SD card buffer, not FDC buffer
+	POKE(0xD689L,PEEK(0xD689L)|0x80);
 	
         // Copy bytes from the sector buffer to the output buffer
         lcopy(0xffd6e00L + (f->position & 511), (unsigned long)ptr, bytes);
