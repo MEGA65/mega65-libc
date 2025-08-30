@@ -182,9 +182,6 @@ chdir_file_exists:
 	lda #$0C
 	sta $d640
 	clv
-	lda #$18
-	sta $D640
-	clv
 	ldx #$00
 	rts
 
