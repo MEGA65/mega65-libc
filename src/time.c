@@ -68,7 +68,7 @@ void getrtc(struct m65_tm* tm)
     tm->tm_wday = 0;
     tm->tm_isdst = 0;
 
-    switch (detect_target()) {
+    switch (detect_target() & 0xf) {
     case TARGET_EMULATION:
     case TARGET_MEGA65R2:
     case TARGET_MEGA65R3:
@@ -119,7 +119,7 @@ void setrtc(struct m65_tm* tm)
         return;
     }
 
-    switch (detect_target()) {
+    switch (detect_target() & 0xf) {
     case TARGET_MEGA65R2:
     case TARGET_MEGA65R3:
         // Unlock RTC registers
