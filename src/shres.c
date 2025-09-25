@@ -179,6 +179,9 @@ shared_resource_dir shdopen(void)
 {
     char i;
 
+    POKE(0xD021,2);
+
+    
     if (do_shres_trap(0)) {
         return 0xffff;
     }

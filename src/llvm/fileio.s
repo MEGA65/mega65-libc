@@ -144,10 +144,10 @@ chdir:
 	hyppo HYPPO_FINDFILE
 	bcs chdir_ok
 	lda #FILE_ERROR
-	rts
+	rts		
 chdir_ok:
 	hyppo HYPPO_CHDIR
-	hyppo HYPPO_OPENFILE; outputs to A
+
 	rts
 
 .global gethyppoversion

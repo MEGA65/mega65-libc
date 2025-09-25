@@ -8,31 +8,35 @@
 ; then stores 32-bit return result back into _shres_regs[0..3]
 ; and processor flags into _shres_regs[4].
 
-_shres_trap:
-	ldx #3
-ll1:	lda _shres_regs,x
-	sta $D645,x
-	dex
-	bpl ll1
+_shres_trap:	
+
+phy
+phz
 	
     lda _shres_regs+0
     ldx _shres_regs+1
     ldy _shres_regs+2
     ldz _shres_regs+3
+	
     sta $D645           ; Store to the MEGA65 SYSPART trap address
     nop                 ; Delay/stabilize (preserved from original)
+	
 
 	; Store result back into _shres_regs
     sta _shres_regs+0
     stx _shres_regs+1
     sty _shres_regs+2
     stz _shres_regs+3
-
+	
     php
     pla
     sta _shres_regs+4   ; Save status register into 5th byte
     ldx #0
-    txa
+	txa
+
+	ply
+	plz
+	
     rts
 
 .section .bss
