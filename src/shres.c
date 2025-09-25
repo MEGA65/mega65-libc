@@ -14,6 +14,9 @@
 #include "mega65/shres.h"
 #include "mega65/memory.h"
 
+void _shres_trap(void);
+extern unsigned char *_shres_regs;
+
 /// Magic string identifying the SYSPART shared resource area.
 static const unsigned char magic_string[]
     = { 0x4D, 0x45, 0x47, 0x41, '6', '5',                       // "MEGA65"
@@ -43,14 +46,14 @@ char do_shres_trap(unsigned long arg)
         return 1;
     }
 
-    shres_regs[0] = (arg >> 0) & 0xff;
-    shres_regs[1] = (arg >> 8) & 0xff;
-    shres_regs[2] = (arg >> 16) & 0xff;
-    shres_regs[3] = (arg >> 24) & 0xff;
-    shres_trap();
+    _shres_regs[0] = (arg >> 0) & 0xff;
+    _shres_regs[1] = (arg >> 8) & 0xff;
+    _shres_regs[2] = (arg >> 16) & 0xff;
+    _shres_regs[3] = (arg >> 24) & 0xff;
+    _shres_trap();
 
     // Success is indicated by bit 0 = 1 in shres_regs[4]
-    return (shres_regs[4] & 0x01) ^ 0x01;
+    return (_shres_regs[4] & 0x01) ^ 0x01;
 }
 
 /**
