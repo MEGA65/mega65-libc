@@ -9,11 +9,24 @@
 ; and processor flags into _shres_regs[4].
 
 _shres_trap:
-    ldq _shres_regs     ; Load 32-bit value from _shres_regs
-    stq $D645           ; Store to the MEGA65 SYSPART trap address
+	ldx #3
+ll1:	lda _shres_regs,x
+	sta $D645,x
+	dex
+	bpl ll1
+	
+    lda _shres_regs+0
+    ldx _shres_regs+1
+    ldy _shres_regs+2
+    ldz _shres_regs+3
+    sta $D645           ; Store to the MEGA65 SYSPART trap address
     nop                 ; Delay/stabilize (preserved from original)
 
-    stq _shres_regs     ; Store result back into _shres_regs
+	; Store result back into _shres_regs
+    sta _shres_regs+0
+    stx _shres_regs+1
+    sty _shres_regs+2
+    stz _shres_regs+3
 
     php
     pla
