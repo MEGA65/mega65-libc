@@ -34,8 +34,8 @@ phz
     ldx #0
 	txa
 
-	ply
 	plz
+	ply
 	
     rts
 
