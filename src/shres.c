@@ -15,7 +15,7 @@
 #include "mega65/memory.h"
 
 void _shres_trap(void);
-extern unsigned char *_shres_regs;
+extern unsigned char _shres_regs[5];
 
 /// Magic string identifying the SYSPART shared resource area.
 static const unsigned char magic_string[]
@@ -178,9 +178,6 @@ char shseek(struct shared_resource* f, long offset, unsigned char whence)
 shared_resource_dir shdopen(void)
 {
     char i;
-
-    POKE(0xD021,2);
-
     
     if (do_shres_trap(0)) {
         return 0xffff;

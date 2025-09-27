@@ -39,8 +39,11 @@ phz
 	
     rts
 
-.section .bss
-
 ; Register block: 4 bytes for argument/result, 1 byte for flags
+
+	.section .bss
 _shres_regs:
-    .zero 5
+	.space 5
+
+
+	.section .text
