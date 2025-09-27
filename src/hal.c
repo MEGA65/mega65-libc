@@ -11,7 +11,7 @@ void usleep(uint32_t micros)
         while (PEEK(0xD012) == b) {
             continue;
         }
-        micros -= 64;
+	if (micros>=64) micros -= 64; else break;
     }
     return;
 }
