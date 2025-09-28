@@ -18,7 +18,7 @@ void _shres_trap(void);
 extern unsigned char _shres_regs[5];
 
 /// Magic string identifying the SYSPART shared resource area.
-static const unsigned char magic_string[]
+static const unsigned char magic_string[22]
     = { 0x4D, 0x45, 0x47, 0x41, '6', '5',                       // "MEGA65"
           0x53, 0x48, 0x41, 0x52, 0x45, 0x44,                   // "SHARED"
           0x52, 0x45, 0x53, 0x4F, 0x55, 0x52, 0x43, 0x45, 0x53, // "RESOURCES"
@@ -64,13 +64,15 @@ char do_shres_trap(unsigned long arg)
  * @param file_handle Pointer to the shared_resource struct to populate.
  * @return 0 on success, 1 if the resource was not found or an error occurred.
  */
+
 char shopen(char* resource_name, unsigned long required_flags,
     struct shared_resource* file_handle)
 {
-    unsigned int d = shdopen();
-    if (d == 0xffff) {
-        return 1;
-    }
+  unsigned int d = shdopen();  
+
+  if (d == 0xffff) {
+    return 1;
+  }
 
     while (!shdread(required_flags, &d, file_handle)) {
         if (!strcmp(resource_name, file_handle->name)) {
@@ -78,7 +80,7 @@ char shopen(char* resource_name, unsigned long required_flags,
         }
     }
 
-    return 1;
+    return 2;
 }
 
 /**
@@ -159,11 +161,11 @@ char shseek(struct shared_resource* f, long offset, unsigned char whence)
 
     if ((long)f->position < 0) {
         f->position = 0;
-        return 1;
+        return 2;
     }
     if (f->position > f->length) {
         f->position = f->length;
-        return 1;
+        return 3;
     }
 
     return 0;
@@ -180,15 +182,16 @@ shared_resource_dir shdopen(void)
     char i;
     
     if (do_shres_trap(0)) {
-        return 0xffff;
+      return 0xffff;
     }
 
     sdcard_busy_wait();
 
+    
     // Verify magic string in sector 0
     for (i = 0; magic_string[i]; i++) {
         if (lpeek(0xffd6e00L + i) != magic_string[i]) {
-            return 0xffff;
+	  return 0xffff;
         }
     }
 
