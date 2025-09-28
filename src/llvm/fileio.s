@@ -133,6 +133,7 @@ close:
 .global chdirroot
 .section .text.fileio_chdirroot,"ax",@progbits
 chdirroot:
+	ldx #0
 	hyppo HYPPO_CDROOTDIR
 	rts
 
