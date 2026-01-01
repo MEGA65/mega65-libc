@@ -40,7 +40,7 @@ extern unsigned char shres_regs[5];
  * sector info), as well as an in-memory field to track read position for
  * streaming access.
  */
-struct shared_resource {
+struct shared_resource_dirent {
     /// First sector of the resource.
     unsigned long first_sector;
 
@@ -58,10 +58,22 @@ struct shared_resource {
 
     /// Null-terminated name of the resource (up to MAX_RES_NAME_LEN).
     char name[MAX_RES_NAME_LEN + 1];
+};
+
+struct shared_resource {
+    /// First sector of the resource.
+    unsigned long first_sector;
+
+    /// Length of the resource in sectors.
+    unsigned long length_in_sectors;
+
+    /// Length of the resource in bytes.
+    unsigned long length;
 
     /// Current read position in bytes (used internally; not stored on disk).
     unsigned long position;
 };
+
 
 /// Type alias for a directory handle (really a sector index).
 #define shared_resource_dir unsigned int
@@ -118,6 +130,7 @@ shared_resource_dir shdopen(void);
  *   - 2 if end of directory reached (no more entries match).
  */
 char shdread(unsigned long required_flags,
-    shared_resource_dir* directory_handle, struct shared_resource* dirent);
+	     shared_resource_dir* directory_handle,
+	     struct shared_resource_dirent* dirent);
 
 #endif // SHRES_H

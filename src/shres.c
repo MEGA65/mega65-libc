@@ -65,6 +65,8 @@ char do_shres_trap(unsigned long arg)
  * @return 0 on success, 1 if the resource was not found or an error occurred.
  */
 
+struct shared_resource_dirent sr_dirent;
+
 char shopen(char* resource_name, unsigned long required_flags,
     struct shared_resource* file_handle)
 {
@@ -74,9 +76,13 @@ char shopen(char* resource_name, unsigned long required_flags,
     return 1;
   }
 
-    while (!shdread(required_flags, &d, file_handle)) {
-        if (!strcmp(resource_name, file_handle->name)) {
-            return 0;
+    while (!shdread(required_flags, &d, &sr_dirent)) {
+        if (!strcmp(resource_name, sr_dirent.name)) {
+	  lcopy((unsigned long)&sr_dirent,
+		(unsigned long)file_handle,
+		sizeof(struct shared_resource));
+	  file_handle->position=0;
+	  return 0;
         }
     }
 
@@ -179,24 +185,24 @@ char shseek(struct shared_resource* f, long offset, unsigned char whence)
  */
 shared_resource_dir shdopen(void)
 {
-    char i;
+  unsigned char i;
     
-    if (do_shres_trap(0)) {
+  if (do_shres_trap(0)) {
+    return 0xffff;
+  }
+  
+  sdcard_busy_wait();
+  
+  
+  // Verify magic string in sector 0
+  for (i = 0; magic_string[i]; i++) {
+    if (lpeek(0xffd6e00L + i) != magic_string[i]) {
       return 0xffff;
     }
-
-    sdcard_busy_wait();
-
-    
-    // Verify magic string in sector 0
-    for (i = 0; magic_string[i]; i++) {
-        if (lpeek(0xffd6e00L + i) != magic_string[i]) {
-	  return 0xffff;
-        }
-    }
-
-    // Directory starts at sector 1
-    return 1;
+  }
+  
+  // Directory starts at sector 1
+  return 1;
 }
 
 /**
@@ -213,7 +219,7 @@ shared_resource_dir shdopen(void)
  *   - 2 if end of directory reached (no more entries).
  */
 char shdread(unsigned long required_flags,
-    shared_resource_dir* directory_handle, struct shared_resource* dirent)
+    shared_resource_dir* directory_handle, struct shared_resource_dirent* dirent)
 {
     do {
         if (do_shres_trap(*directory_handle)) {
@@ -229,7 +235,6 @@ char shdread(unsigned long required_flags,
 
         // Copy entry from buffer into dirent
         lcopy(0xffd6e00L, (unsigned long)dirent, 256);
-        dirent->position = 0L;
 
         (*directory_handle)++;
     } while ((dirent->flags & required_flags) != required_flags);
