@@ -1,6 +1,7 @@
 set(assembler
     llvm/fileio.s
     llvm/dirent.s
+    llvm/shres_asm.s
     llvm/memory_asm.s)
 
 set(objects
@@ -14,6 +15,7 @@ set(objects
     mouse.c
     random.c
     sdcard.c
+    shres.c
     targets.c
     tests.c
     time.c)
@@ -30,6 +32,7 @@ set(headers
     ${PROJECT_SOURCE_DIR}/include/mega65/mouse.h
     ${PROJECT_SOURCE_DIR}/include/mega65/random.h
     ${PROJECT_SOURCE_DIR}/include/mega65/sdcard.h
+    ${PROJECT_SOURCE_DIR}/include/mega65/shres.h
     ${PROJECT_SOURCE_DIR}/include/mega65/targets.h
     ${PROJECT_SOURCE_DIR}/include/mega65/tests.h
     ${PROJECT_SOURCE_DIR}/include/mega65/time.h)

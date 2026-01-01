@@ -146,10 +146,15 @@ _close:
 	rts
 
 _chdirroot:
+	;; HYPPO requires partition number in X.
+	tax
 	;; Change to root directory of volume
 	lda #$3C
 	sta $d640
 	clv
+	;; HYPPO trap_dos_cdroot() doesn't set return value: It is deemed to always succeed
+	;; if called on a valid disk.
+	ldx #$00
 	ldx #$00
 	rts
 
@@ -176,9 +181,6 @@ chdir_file_exists:
 	;; Actually call chdir
 	lda #$0C
 	sta $d640
-	clv
-	lda #$18
-	sta $D640
 	clv
 	ldx #$00
 	rts
