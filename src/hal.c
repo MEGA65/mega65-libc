@@ -7,11 +7,23 @@ void usleep(uint32_t micros)
     // Each VIC-II raster line is ~64 microseconds
     // this is not totally accurate, but is a reasonable approach
     while (micros > 64) {
-        uint8_t b = PEEK(0xD012);
+#ifdef LLVM_503_WORKAROUND
+      asm volatile(
+        "ldx $D012\n"
+        "1:\n"
+        "cpx $D012\n"
+        "beq 1b\n"
+        :
+        :
+        : "x"   // X is clobbered
+    );
+#else
+      uint8_t b = PEEK(0xD012);
         while (PEEK(0xD012) == b) {
-            continue;
+	  continue;
         }
-        micros -= 64;
+#endif
+        micros -= 64; 
     }
     return;
 }

@@ -133,6 +133,7 @@ close:
 .global chdirroot
 .section .text.fileio_chdirroot,"ax",@progbits
 chdirroot:
+	ldx #0
 	hyppo HYPPO_CDROOTDIR
 	rts
 
@@ -144,16 +145,18 @@ chdir:
 	hyppo HYPPO_FINDFILE
 	bcs chdir_ok
 	lda #FILE_ERROR
-	rts
+	rts		
 chdir_ok:
 	hyppo HYPPO_CHDIR
-	hyppo HYPPO_OPENFILE; outputs to A
+
 	rts
 
 .global gethyppoversion
 .section .text.fileio_gethyppoversion,"ax",@progbits
 gethyppoversion:
-    hyppo HYPPO_GETVERSION ; outputs to Q = A, X, Y, Z
-    stq (__rc2)            ; store Q to __rc2 pointer
-    ldz #0                 ; Z must be cleared before returning
-    rts
+	phy
+	hyppo HYPPO_GETVERSION ; outputs to Q = A, X, Y, Z
+	stq (__rc2)            ; store Q to __rc2 pointer
+	ldz #0                 ; Z must be cleared before returning
+	ply
+	rts
